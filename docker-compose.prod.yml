@@ -1,0 +1,59 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: liyang-photo-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: liyang_photo
+      POSTGRES_USER: photography
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app_network
+    # 不暴露端口到公网，仅内网访问
+    # ports:
+    #   - "5432:5432"
+
+  app:
+    build: .
+    container_name: liyang-photo-app
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: "postgresql://photography:${POSTGRES_PASSWORD}@postgres:5432/liyang_photo"
+      JWT_SECRET: ${JWT_SECRET}
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-changeme123}
+      NODE_ENV: production
+    # 不暴露端口到公网
+    # ports:
+    #   - "3000:3000"
+    volumes:
+      - uploads:/app/public/uploads
+    networks:
+      - app_network
+
+  caddy:
+    image: caddy:alpine
+    container_name: liyang-photo-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - uploads:/var/www/uploads:ro
+    networks:
+      - app_network
+
+volumes:
+  postgres_data:
+  uploads:
+  caddy_data:
+
+networks:
+  app_network:
+    driver: bridge

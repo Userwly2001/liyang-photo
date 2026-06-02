@@ -1,16 +1,19 @@
 export const dynamic = 'force-dynamic'
 
 import { prisma } from '@/lib/prisma'
-import HeroSection from '@/components/Home/HeroSection'
-import FeaturedPhotos from '@/components/Home/FeaturedPhotos'
-import ParallaxSection from '@/components/Home/ParallaxSection'
+import GalleryPageContent from '@/components/Gallery/GalleryPageContent'
+import type { Metadata } from 'next'
 
-async function getFeaturedPhotos() {
+export const metadata: Metadata = {
+  title: '风光作品 | LEONPHOTO',
+  description: 'Leon Wang 的风光摄影作品集',
+}
+
+async function getLandscapes() {
   try {
     const photos = await prisma.photo.findMany({
-      where: { featured: true, published: true },
+      where: { category: 'landscape', published: true },
       orderBy: { sortOrder: 'asc' },
-      take: 6,
     })
     return photos.map((p) => ({
       id: p.id,
@@ -38,14 +41,14 @@ async function getFeaturedPhotos() {
   }
 }
 
-export default async function HomePage() {
-  const photos = await getFeaturedPhotos()
-
+export default async function LandscapePage() {
+  const photos = await getLandscapes()
   return (
-    <>
-      <HeroSection />
-      <FeaturedPhotos photos={photos} />
-      <ParallaxSection />
-    </>
+    <GalleryPageContent
+      title="风光"
+      subtitle="在静谧中感受大自然的壮丽"
+      photos={photos}
+      emptyMessage="风光作品即将上线"
+    />
   )
 }

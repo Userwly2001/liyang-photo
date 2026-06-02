@@ -1,16 +1,19 @@
 export const dynamic = 'force-dynamic'
 
 import { prisma } from '@/lib/prisma'
-import HeroSection from '@/components/Home/HeroSection'
-import FeaturedPhotos from '@/components/Home/FeaturedPhotos'
-import ParallaxSection from '@/components/Home/ParallaxSection'
+import GalleryPageContent from '@/components/Gallery/GalleryPageContent'
+import type { Metadata } from 'next'
 
-async function getFeaturedPhotos() {
+export const metadata: Metadata = {
+  title: '美食作品 | LEONPHOTO',
+  description: 'Leon Wang 的美食摄影作品集',
+}
+
+async function getFoodPhotos() {
   try {
     const photos = await prisma.photo.findMany({
-      where: { featured: true, published: true },
+      where: { category: 'food', published: true },
       orderBy: { sortOrder: 'asc' },
-      take: 6,
     })
     return photos.map((p) => ({
       id: p.id,
@@ -38,14 +41,14 @@ async function getFeaturedPhotos() {
   }
 }
 
-export default async function HomePage() {
-  const photos = await getFeaturedPhotos()
-
+export default async function FoodPage() {
+  const photos = await getFoodPhotos()
   return (
-    <>
-      <HeroSection />
-      <FeaturedPhotos photos={photos} />
-      <ParallaxSection />
-    </>
+    <GalleryPageContent
+      title="美食"
+      subtitle="用镜头品味生活中的美好滋味"
+      photos={photos}
+      emptyMessage="美食作品即将上线"
+    />
   )
 }

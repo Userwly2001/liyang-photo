@@ -1,0 +1,105 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Profile {
+  id       String @id @default("default")
+  name     String @default("Leon Wang")
+  title    String @default("摄影师")
+  bio      String @default("")
+  avatar   String @default("")
+  email    String @default("")
+  instagram String @default("")
+  wechat   String @default("")
+  location String @default("")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("profile")
+}
+
+model Category {
+  id        String  @id @default(cuid())
+  slug      String  @unique  // e.g. "portrait", "landscape", "food"
+  label     String  // e.g. "人像", "风光", "美食"
+  sortOrder Int     @default(0) @map("sort_order")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("categories")
+}
+
+model Photo {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  category    String    // "portrait" | "landscape"
+  imageUrl    String    @map("image_url")
+  thumbnailUrl String?  @map("thumbnail_url")
+  blurHash    String?   @map("blur_hash")
+  width       Int?
+  height      Int?
+  focalLength String?   @map("focal_length")
+  aperture    String?
+  iso         String?
+  shutterSpeed String?  @map("shutter_speed")
+  camera      String?
+  lens        String?
+  tags        String[]
+  featured    Boolean   @default(false)
+  sortOrder   Int       @default(0) @map("sort_order")
+  published   Boolean   @default(true)
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  comments    Message[] @relation("PhotoComments")
+
+  @@map("photos")
+}
+
+model BlogPost {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  content     String   // Markdown content
+  excerpt     String?
+  coverImage  String?  @map("cover_image")
+  tags        String[]
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("blog_posts")
+}
+
+model Message {
+  id         String   @id @default(cuid())
+  nickname   String   @default("Anonymous")
+  content    String
+  images     String[] // Array of image URLs
+  type       String   @default("comment") // "comment" | "photo_share"
+  photoId    String?  @map("photo_id")
+  photo      Photo?   @relation("PhotoComments", fields: [photoId], references: [id])
+  parentId   String?  @map("parent_id")
+  parent     Message? @relation("MessageReplies", fields: [parentId], references: [id])
+  replies    Message[] @relation("MessageReplies")
+  status     String   @default("pending") // "pending" | "approved" | "rejected"
+  ip         String?
+  userAgent  String?  @map("user_agent")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@map("messages")
+}
+
+model Admin {
+  id            String   @id @default(cuid())
+  username      String   @unique
+  passwordHash  String   @map("password_hash")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@map("admins")
+}

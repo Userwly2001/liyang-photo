@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: liyang-photo-db-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: liyang_photo
+      POSTGRES_USER: photography
+      POSTGRES_PASSWORD: photography_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+
+volumes:
+  postgres_data_dev:

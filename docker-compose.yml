@@ -1,0 +1,57 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: liyang-photo-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: liyang_photo
+      POSTGRES_USER: photography
+      POSTGRES_PASSWORD: photography_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - app_network
+
+  app:
+    build: .
+    container_name: liyang-photo-app
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: "postgresql://photography:photography_password@postgres:5432/liyang_photo"
+      JWT_SECRET: "${JWT_SECRET:-change-this-to-a-very-long-random-string-in-production}"
+      ADMIN_USERNAME: "${ADMIN_USERNAME:-admin}"
+      ADMIN_PASSWORD: "${ADMIN_PASSWORD:-changeme123}"
+      NODE_ENV: production
+    ports:
+      - "3000:3000"
+    volumes:
+      - uploads:/app/public/uploads
+    networks:
+      - app_network
+
+  nginx:
+    image: nginx:alpine
+    container_name: liyang-photo-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - uploads:/var/www/uploads:ro
+    depends_on:
+      - app
+    networks:
+      - app_network
+
+volumes:
+  postgres_data:
+  uploads:
+
+networks:
+  app_network:
+    driver: bridge
