@@ -1,16 +1,8 @@
 #!/bin/sh
 set -e
 
-echo "Starting application..."
+echo "初始化数据库..."
+node /app/scripts/init.js
 
-# Attempt DB migration in background (don't block startup)
-# If it fails, the admin can run it manually via docker exec
-npx prisma db push --accept-data-loss --skip-generate 2>/dev/null &
-sleep 2
-
-# Attempt admin seed in background
-npx tsx scripts/seed.ts 2>/dev/null &
-sleep 1
-
-echo "Ready."
+echo "启动应用..."
 exec node server.js

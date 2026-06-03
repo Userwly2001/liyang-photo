@@ -3,9 +3,9 @@ import path from 'path'
 import fs from 'fs/promises'
 
 const UPLOAD_DIR = process.env.UPLOAD_DIR || 'public/uploads'
-const MAX_WIDTH = 1920
+const MAX_WIDTH = 1600
 const THUMB_WIDTH = 480
-const COMPRESSION_QUALITY = 85
+const COMPRESSION_QUALITY = 75
 
 export async function compressImage(
   buffer: Buffer,
@@ -37,7 +37,7 @@ export async function compressImage(
   // Generate thumbnail
   const thumbImage = await sharp(rotated)
     .resize(THUMB_WIDTH)
-    .webp({ quality: 60 })
+    .webp({ quality: 50 })
     .toBuffer()
   await fs.writeFile(path.join(dir, thumbName), thumbImage)
 
