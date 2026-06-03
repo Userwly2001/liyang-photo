@@ -9,7 +9,7 @@ function VisitCounter() {
   useEffect(() => {
     fetch('/api/stats')
       .then((r) => r.json())
-      .then((d) => setCount(d.count))
+      .then((d) => setCount(d.total ?? d.count ?? 0))
       .catch(() => {})
   }, [])
 

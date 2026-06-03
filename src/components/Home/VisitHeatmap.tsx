@@ -64,7 +64,7 @@ export default function VisitHeatmap() {
           访问统计
         </p>
         <p className="text-4xl sm:text-5xl font-bold text-center mb-2">
-          {total.toLocaleString()}
+          {(total || 0).toLocaleString()}
         </p>
         <p className="text-sm text-white/30 text-center mb-12">次访问</p>
 
