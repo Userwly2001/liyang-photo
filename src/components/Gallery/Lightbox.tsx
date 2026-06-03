@@ -2,7 +2,6 @@
 
 import { useEffect, useCallback, useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import Image from 'next/image'
 import type { PhotoType, MessageType } from '@/types'
 
 interface LightboxProps {
@@ -192,14 +191,12 @@ export default function Lightbox({
                 height: Math.min((photo.height || 1280) * 0.8, 800),
               }}
             >
-              <Image
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
                 src={photo.imageUrl}
                 alt={photo.title}
-                fill
-                className="object-contain"
+                className="w-full h-full object-contain"
                 onLoad={() => setImageLoaded(true)}
-                sizes="90vw"
-                priority
               />
             </div>
 
