@@ -244,24 +244,31 @@ export default function Lightbox({
           </button>
         </div>
 
-        {/* Comments side panel */}
+        {/* Comments side panel - fullscreen on mobile, side panel on desktop */}
         <AnimatePresence>
           {showComments && (
             <motion.div
-              initial={{ width: 0, opacity: 0 }}
-              animate={{ width: 380, opacity: 1 }}
-              exit={{ width: 0, opacity: 0 }}
-              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-              className="bg-surface/80 backdrop-blur-xl border-l border-white/10 overflow-hidden flex-shrink-0"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[101] bg-surface/95 backdrop-blur-xl flex flex-col sm:relative sm:inset-auto sm:w-[380px] sm:border-l sm:border-white/10 sm:bg-surface/80"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="w-[380px] h-full flex flex-col">
+              <div className="w-full sm:w-[380px] h-full flex flex-col">
                 {/* Header */}
-                <div className="px-5 py-4 border-b border-white/10">
+                <div className="px-5 py-4 border-b border-white/10 flex items-center justify-between">
                   <h4 className="text-sm font-medium">
                     评论
                     <span className="text-white/30 ml-2">({comments.length})</span>
                   </h4>
+                  <button
+                    onClick={() => setShowComments(false)}
+                    className="sm:hidden w-8 h-8 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 transition-colors"
+                  >
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                      <path d="M1 1L13 13M13 1L1 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                    </svg>
+                  </button>
                 </div>
 
                 {/* Comment list */}
