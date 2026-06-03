@@ -1,19 +1,17 @@
-# 把 your-domain.com 换成你的域名
-# 如果没有域名，删掉这行，用 :80 替代（仅 HTTP）
+www.leonwang.cc {
+    # 直接提供上传的图片文件
+    handle_path /uploads/* {
+        root * /var/www/uploads
+        file_server
+        header Cache-Control "public, max-age=31536000, immutable"
+    }
 
-your-domain.com {
+    # 其他请求代理到 Next.js
     reverse_proxy app:3000
 
     encode gzip
 
-    # 图片上传大小限制
     request_body {
         max_size 20MB
     }
-
-    # 图片缓存
-    @uploads {
-        path /uploads/*
-    }
-    header @uploads Cache-Control "public, max-age=31536000, immutable"
 }
