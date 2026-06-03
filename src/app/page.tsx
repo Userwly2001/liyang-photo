@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic'
 import { prisma } from '@/lib/prisma'
 import HeroSection from '@/components/Home/HeroSection'
 import FeaturedPhotos from '@/components/Home/FeaturedPhotos'
+import VisitHeatmap from '@/components/Home/VisitHeatmap'
 import ParallaxSection from '@/components/Home/ParallaxSection'
 
 async function getFeaturedPhotos() {
@@ -45,6 +46,7 @@ export default async function HomePage() {
     <>
       <HeroSection />
       <FeaturedPhotos photos={photos} />
+      <VisitHeatmap />
       <ParallaxSection />
     </>
   )
