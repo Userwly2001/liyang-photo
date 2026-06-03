@@ -1,4 +1,27 @@
+'use client'
+
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
+
+function VisitCounter() {
+  const [count, setCount] = useState<number | null>(null)
+
+  useEffect(() => {
+    fetch('/api/stats')
+      .then((r) => r.json())
+      .then((d) => setCount(d.count))
+      .catch(() => {})
+  }, [])
+
+  if (count === null) return null
+
+  return (
+    <span className="inline-flex items-center gap-1 text-white/20">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      访问 {count.toLocaleString()}
+    </span>
+  )
+}
 
 export default function Footer() {
   return (
@@ -42,8 +65,9 @@ export default function Footer() {
             </ul>
           </div>
         </div>
-        <div className="mt-16 pt-8 border-t border-white/5 text-center text-xs text-white/20">
-          &copy; {new Date().getFullYear()} Leon Wang. 保留所有权利。
+        <div className="mt-16 pt-8 border-t border-white/5 text-center text-xs text-white/20 flex items-center justify-center gap-6">
+          <span>&copy; {new Date().getFullYear()} Leon Wang. 保留所有权利。</span>
+          <VisitCounter />
         </div>
       </div>
     </footer>

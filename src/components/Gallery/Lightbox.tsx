@@ -147,19 +147,6 @@ export default function Lightbox({
             {currentIndex + 1} / {photos.length}
           </div>
 
-          {/* Comments toggle */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              setShowComments(!showComments)
-            }}
-            className="absolute top-6 right-16 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 transition-colors"
-            aria-label="Comments"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-            </svg>
-          </button>
 
           {/* Previous */}
           <button
@@ -235,6 +222,21 @@ export default function Lightbox({
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
               <path d="M6 4L12 10L6 16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
+          </button>
+
+          {/* Comments button - bottom right */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              setShowComments(!showComments)
+            }}
+            className="absolute bottom-6 right-6 z-10 flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-colors group"
+            aria-label="Comments"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+            <span className="text-sm text-white/80 group-hover:text-white transition-colors">评论</span>
           </button>
         </div>
 
