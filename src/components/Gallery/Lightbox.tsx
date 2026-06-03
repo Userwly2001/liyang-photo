@@ -181,21 +181,15 @@ export default function Lightbox({
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className="relative max-w-[90vw] max-h-[85vh]"
+            className="relative w-[90vw] h-[85vh] flex items-center justify-center"
             onClick={(e) => e.stopPropagation()}
           >
-            <div
-              className={`relative ${imageLoaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-500`}
-              style={{
-                width: Math.min((photo.width || 1920) * 0.8, 1200),
-                height: Math.min((photo.height || 1280) * 0.8, 800),
-              }}
-            >
+            <div className={`${imageLoaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-500 max-w-full max-h-full`}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={photo.imageUrl}
                 alt={photo.title}
-                className="w-full h-full object-contain"
+                className="max-w-full max-h-[85vh] object-contain"
                 onLoad={() => setImageLoaded(true)}
               />
             </div>
