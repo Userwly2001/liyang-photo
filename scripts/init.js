@@ -3,7 +3,23 @@ const { createHash } = require('crypto');
 
 const prisma = new PrismaClient();
 
+async function waitForDB(retries = 30) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      await prisma.$executeRawUnsafe('SELECT 1');
+      return;
+    } catch {
+      console.log(`等待数据库... (${i + 1}/${retries})`);
+      await new Promise(r => setTimeout(r, 2000));
+    }
+  }
+  throw new Error('数据库连接超时');
+}
+
 async function init() {
+  await waitForDB();
+  console.log('数据库已连接');
+
   // 建表
   await prisma.$executeRawUnsafe(`
     CREATE TABLE IF NOT EXISTS admins (
