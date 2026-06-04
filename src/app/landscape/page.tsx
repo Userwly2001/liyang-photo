@@ -22,6 +22,7 @@ async function getLandscapes() {
       category: p.category,
       imageUrl: p.imageUrl,
       thumbnailUrl: p.thumbnailUrl ?? undefined,
+      originalUrl: p.originalUrl ?? undefined,
       blurHash: p.blurHash ?? undefined,
       width: p.width ?? undefined,
       height: p.height ?? undefined,

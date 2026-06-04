@@ -3,12 +3,15 @@ import { prisma } from '@/lib/prisma'
 import { rateLimit } from '@/lib/rate-limit'
 import { containsSensitiveContent } from '@/lib/sensitive-words'
 import { saveUploadedFile } from '@/lib/image'
+import { verifyAdmin } from '@/lib/admin-auth'
 import type { Prisma } from '@prisma/client'
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const status = searchParams.get('status') || 'approved'
+    const requestedStatus = searchParams.get('status') || 'approved'
+    const isAdmin = await verifyAdmin(request)
+    const status = isAdmin ? requestedStatus : 'approved'
     const page = parseInt(searchParams.get('page') || '1')
     const limit = Math.min(parseInt(searchParams.get('limit') || '20'), 50)
     const skip = (page - 1) * limit

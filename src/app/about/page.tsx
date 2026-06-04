@@ -22,14 +22,14 @@ export default async function AboutPage() {
   const profile = await getProfile()
 
   return (
-    <div className="pt-28 pb-24 px-6 min-h-screen">
+    <div className="min-h-screen px-5 pb-24 pt-28 sm:px-6">
       <div className="max-w-3xl mx-auto">
         <AnimatedSection>
           <div className="mb-16">
             <p className="text-xs uppercase tracking-[0.3em] text-white/30 mb-4">
               关于
             </p>
-            <h1 className="text-5xl sm:text-6xl font-bold tracking-tight mb-4">
+            <h1 className="mb-4 text-4xl font-bold tracking-tight sm:text-6xl">
               {profile?.name || 'Leon Wang'}
             </h1>
             <p className="text-sm text-white/40 max-w-md leading-relaxed">

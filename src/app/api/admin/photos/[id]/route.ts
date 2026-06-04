@@ -90,7 +90,7 @@ export async function DELETE(
 
     // Delete associated image files
     const publicDir = path.join(process.cwd(), 'public')
-    const filesToDelete = [photo.imageUrl, photo.thumbnailUrl].filter(Boolean) as string[]
+    const filesToDelete = [photo.imageUrl, photo.thumbnailUrl, photo.originalUrl].filter(Boolean) as string[]
     for (const filePath of filesToDelete) {
       try {
         await fs.unlink(path.join(publicDir, filePath))

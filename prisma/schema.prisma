@@ -13,6 +13,7 @@ model Profile {
   title    String @default("摄影师")
   bio      String @default("")
   avatar   String @default("")
+  heroImage String @default("") @map("hero_image")
   email    String @default("")
   instagram String @default("")
   wechat   String @default("")
@@ -39,6 +40,7 @@ model Photo {
   category    String    // "portrait" | "landscape"
   imageUrl    String    @map("image_url")
   thumbnailUrl String?  @map("thumbnail_url")
+  originalUrl String?   @map("original_url")
   blurHash    String?   @map("blur_hash")
   width       Int?
   height      Int?

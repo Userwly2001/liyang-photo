@@ -1,28 +1,76 @@
-import { NextResponse } from 'next/server'
+import { createHash } from 'crypto'
+import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
-export async function GET() {
-  try {
-    // Ensure table exists
-    await prisma.$executeRawUnsafe(`
+async function ensureStatsTables() {
+  await prisma.$executeRawUnsafe(`
       CREATE TABLE IF NOT EXISTS site_stats (
         date DATE PRIMARY KEY,
         count INTEGER DEFAULT 0
       )
     `)
+  await prisma.$executeRawUnsafe(`
+      CREATE TABLE IF NOT EXISTS site_visitors (
+        date DATE NOT NULL,
+        visitor_hash TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT NOW(),
+        PRIMARY KEY (date, visitor_hash)
+      )
+    `)
+}
 
-    // Increment today's count
-    const today = new Date().toISOString().slice(0, 10)
-    await prisma.$executeRawUnsafe(
-      `INSERT INTO site_stats (date, count) VALUES ($1, 1) ON CONFLICT (date) DO UPDATE SET count = site_stats.count + 1`,
-      today
+function getShanghaiDate() {
+  const date = new Date()
+  date.setHours(date.getHours() + 8)
+  return date.toISOString().slice(0, 10)
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    await ensureStatsTables()
+
+    const today = getShanghaiDate()
+    const ip =
+      request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+      request.headers.get('x-real-ip') ||
+      'unknown'
+    const userAgent = request.headers.get('user-agent') || 'unknown'
+    const visitorHash = createHash('sha256')
+      .update(`${today}:${ip}:${userAgent}`)
+      .digest('hex')
+
+    const inserted = await prisma.$executeRawUnsafe(
+      `INSERT INTO site_visitors (date, visitor_hash)
+       VALUES ($1::date, $2)
+       ON CONFLICT DO NOTHING`,
+      today,
+      visitorHash
     )
 
-    // Get last 365 days
+    if (inserted > 0) {
+      await prisma.$executeRawUnsafe(
+        `INSERT INTO site_stats (date, count)
+         VALUES ($1::date, 1)
+         ON CONFLICT (date) DO UPDATE SET count = site_stats.count + 1`,
+        today
+      )
+    }
+
+    return NextResponse.json({ success: true, counted: inserted > 0 })
+  } catch (error) {
+    console.error('POST /api/stats error:', error)
+    return NextResponse.json({ success: false, error: 'Failed to record visit' }, { status: 500 })
+  }
+}
+
+export async function GET() {
+  try {
+    await ensureStatsTables()
+
     const startDate = new Date()
     startDate.setFullYear(startDate.getFullYear() - 1)
     const rows = await prisma.$queryRawUnsafe<{ date: string; count: number }[]>(
-      `SELECT date::text, count FROM site_stats WHERE date >= $1 ORDER BY date`,
+      `SELECT date::text, count FROM site_stats WHERE date >= $1::date ORDER BY date`,
       startDate.toISOString().slice(0, 10)
     )
 
@@ -36,7 +84,8 @@ export async function GET() {
     for (const row of rows) stats[row.date] = row.count
 
     return NextResponse.json({ daily: stats, total })
-  } catch {
+  } catch (error) {
+    console.error('GET /api/stats error:', error)
     return NextResponse.json({ daily: {}, total: 0 })
   }
 }

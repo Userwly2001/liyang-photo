@@ -196,7 +196,19 @@ export default function Lightbox({
                 transition={{ delay: 0.2 }}
                 className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/60 to-transparent"
               >
-                <h3 className="text-sm font-medium">{photo.title}</h3>
+                <div className="flex items-center justify-between gap-4">
+                  <h3 className="text-sm font-medium">{photo.title}</h3>
+                  {photo.originalUrl && (
+                    <a
+                      href={photo.originalUrl}
+                      download
+                      onClick={(e) => e.stopPropagation()}
+                      className="shrink-0 rounded-full border border-white/15 px-3 py-1.5 text-xs text-white/70 transition-colors hover:border-white/35 hover:text-white"
+                    >
+                      下载原图
+                    </a>
+                  )}
+                </div>
                 {photo.description && (
                   <p className="text-xs text-white/50 mt-1">{photo.description}</p>
                 )}

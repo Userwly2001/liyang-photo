@@ -123,27 +123,33 @@ export default function AdminDashboard() {
   if (!isAuth) return null
 
   return (
-    <div className="min-h-screen px-6 py-28">
+    <div className="min-h-screen px-4 py-24 sm:px-6 sm:py-28">
       <div className="max-w-4xl mx-auto">
-        <div className="flex items-center justify-between mb-12">
+        <div className="mb-12 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-2xl font-bold">留言管理</h1>
             <p className="text-sm text-white/40 mt-1">
               {pendingCount} 条留言待审核
             </p>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-3">
             <a
               href="/admin/photos"
-              className="px-5 py-2.5 text-sm rounded-lg bg-white/10 hover:bg-white/20 text-white/70 hover:text-white transition-colors"
+              className="px-4 py-2.5 text-sm rounded-lg bg-white/10 hover:bg-white/20 text-white/70 hover:text-white transition-colors sm:px-5"
             >
               照片管理
             </a>
             <a
               href="/admin/blog"
-              className="px-5 py-2.5 text-sm rounded-lg bg-white/10 hover:bg-white/20 text-white/70 hover:text-white transition-colors"
+              className="px-4 py-2.5 text-sm rounded-lg bg-white/10 hover:bg-white/20 text-white/70 hover:text-white transition-colors sm:px-5"
             >
-              博客管理
+              日志管理
+            </a>
+            <a
+              href="/admin/settings"
+              className="px-4 py-2.5 text-sm rounded-lg bg-white/10 hover:bg-white/20 text-white/70 hover:text-white transition-colors sm:px-5"
+            >
+              站点设置
             </a>
             <button
               onClick={handleLogout}

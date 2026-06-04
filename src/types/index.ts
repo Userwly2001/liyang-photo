@@ -5,6 +5,7 @@ export interface PhotoType {
   category: string
   imageUrl: string
   thumbnailUrl?: string
+  originalUrl?: string
   blurHash?: string
   width?: number
   height?: number

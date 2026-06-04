@@ -14,7 +14,7 @@ async function verifyAdmin(request: NextRequest) {
   }
 }
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const categories = await prisma.category.findMany({
       orderBy: { sortOrder: 'asc' },
@@ -59,6 +59,14 @@ export async function DELETE(request: NextRequest) {
     const slug = searchParams.get('slug')
     if (!slug) {
       return NextResponse.json({ success: false, error: 'Slug is required' }, { status: 400 })
+    }
+
+    const usedByPhotos = await prisma.photo.count({ where: { category: slug } })
+    if (usedByPhotos > 0) {
+      return NextResponse.json(
+        { success: false, error: `分类下还有 ${usedByPhotos} 张照片，请先移动或删除这些照片` },
+        { status: 409 }
+      )
     }
 
     await prisma.category.delete({ where: { slug } })

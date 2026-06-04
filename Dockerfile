@@ -3,20 +3,22 @@ FROM node:23-alpine AS builder
 
 WORKDIR /app
 
-# Copy prisma schema first (needed by postinstall hook)
-COPY prisma ./prisma
+# Configure npm for SSL and transient network retries
+RUN npm config set strict-ssl false \
+  && npm config set fetch-retries 5 \
+  && npm config set fetch-retry-mintimeout 20000 \
+  && npm config set fetch-retry-maxtimeout 120000
 
-# Configure npm for SSL
-RUN npm config set strict-ssl false
-
-# Install dependencies (includes devDeps like tsx for seeding)
+# Install dependencies (includes devDeps like tsx for seeding).
+# Prisma is generated after the schema is copied so dependency install can stay cached.
 COPY package.json package-lock.json* ./
-RUN npm ci
+RUN npm ci --ignore-scripts
+
+COPY prisma ./prisma
+RUN npx prisma generate
 
 # Copy source
 COPY . .
-
-ENV NODE_TLS_REJECT_UNAUTHORIZED=0
 
 # Build Next.js
 RUN npm run build
@@ -62,7 +64,6 @@ USER nextjs
 
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
-ENV NODE_TLS_REJECT_UNAUTHORIZED=0
 ENV PRISMA_SKIP_VALIDATE=true
 
 ENTRYPOINT ["/entrypoint.sh"]

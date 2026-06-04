@@ -38,21 +38,28 @@ async function init() {
     CREATE TABLE IF NOT EXISTS profile (
       id TEXT PRIMARY KEY DEFAULT 'default', name TEXT DEFAULT 'Leon Wang',
       title TEXT DEFAULT '摄影师', bio TEXT DEFAULT '', avatar TEXT DEFAULT '',
+      hero_image TEXT DEFAULT '',
       email TEXT DEFAULT '', instagram TEXT DEFAULT '', wechat TEXT DEFAULT '',
       location TEXT DEFAULT '', updated_at TIMESTAMP DEFAULT NOW()
     )
   `);
   await prisma.$executeRawUnsafe(`
+    ALTER TABLE profile ADD COLUMN IF NOT EXISTS hero_image TEXT DEFAULT ''
+  `);
+  await prisma.$executeRawUnsafe(`
     CREATE TABLE IF NOT EXISTS photos (
       id TEXT PRIMARY KEY, title TEXT NOT NULL, description TEXT,
       category TEXT NOT NULL, image_url TEXT NOT NULL, thumbnail_url TEXT,
-      blur_hash TEXT, width INTEGER, height INTEGER,
+      original_url TEXT, blur_hash TEXT, width INTEGER, height INTEGER,
       focal_length TEXT, aperture TEXT, iso TEXT, shutter_speed TEXT,
       camera TEXT, lens TEXT, tags TEXT[] DEFAULT '{}',
       featured BOOLEAN DEFAULT false, sort_order INTEGER DEFAULT 0,
       published BOOLEAN DEFAULT true,
       created_at TIMESTAMP DEFAULT NOW(), updated_at TIMESTAMP DEFAULT NOW()
     )
+  `);
+  await prisma.$executeRawUnsafe(`
+    ALTER TABLE photos ADD COLUMN IF NOT EXISTS original_url TEXT
   `);
   await prisma.$executeRawUnsafe(`
     CREATE TABLE IF NOT EXISTS blog_posts (
@@ -70,6 +77,20 @@ async function init() {
       parent_id TEXT, status TEXT DEFAULT 'pending',
       ip TEXT, user_agent TEXT,
       created_at TIMESTAMP DEFAULT NOW(), updated_at TIMESTAMP DEFAULT NOW()
+    )
+  `);
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS site_stats (
+      date DATE PRIMARY KEY,
+      count INTEGER DEFAULT 0
+    )
+  `);
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS site_visitors (
+      date DATE NOT NULL,
+      visitor_hash TEXT NOT NULL,
+      created_at TIMESTAMP DEFAULT NOW(),
+      PRIMARY KEY (date, visitor_hash)
     )
   `);
   console.log('数据表已就绪');

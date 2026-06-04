@@ -25,29 +25,38 @@ export default function PhotoCard({ photo, index, onOpen }: PhotoCardProps) {
       onClick={() => onOpen(photo)}
     >
       <div
-        className="relative overflow-hidden rounded-lg mb-3 bg-surface"
+        className="relative mb-4 overflow-hidden rounded-sm bg-surface ring-1 ring-accent/10 transition-all duration-500 group-hover:ring-accent/35"
         style={{ aspectRatio: `${w} / ${h}` }}
       >
         <BlurImage
-          src={photo.imageUrl}
+          src={photo.thumbnailUrl || photo.imageUrl}
           alt={photo.title}
           width={w}
           height={h}
-          className="w-full h-full"
+          className="w-full h-full transition-transform duration-700 group-hover:scale-[1.025]"
         />
-        {/* Hover overlay */}
-        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-500 flex items-center justify-center">
-          <span className="text-white/0 group-hover:text-white/80 text-sm tracking-wider uppercase transition-all duration-500 translate-y-2 group-hover:translate-y-0">
-            查看
+        <div className="absolute inset-0 bg-black/0 transition-colors duration-500 group-hover:bg-black/22" />
+        <div className="absolute bottom-3 left-3 right-3 flex translate-y-2 items-center justify-between opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
+          <span className="text-[10px] uppercase tracking-[0.24em] text-foreground/82">
+            View
           </span>
+          <span className="h-px flex-1 mx-3 bg-accent/45" />
+          <span className="text-[10px] text-foreground/64">{photo.category}</span>
         </div>
       </div>
-      <h3 className="text-sm font-medium text-white/80 group-hover:text-white transition-colors">
-        {photo.title}
-      </h3>
-      {photo.description && (
-        <p className="text-xs text-white/30 mt-1 line-clamp-1">{photo.description}</p>
-      )}
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h3 className="text-sm font-medium text-foreground/78 transition-colors group-hover:text-foreground">
+            {photo.title}
+          </h3>
+          {photo.description && (
+            <p className="mt-1 line-clamp-1 text-xs text-foreground/32">{photo.description}</p>
+          )}
+        </div>
+        <span className="mt-1 text-[10px] text-accent/55">
+          {String(index + 1).padStart(2, '0')}
+        </span>
+      </div>
     </motion.div>
   )
 }

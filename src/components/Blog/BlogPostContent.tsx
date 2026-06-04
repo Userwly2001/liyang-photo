@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import { getPostCategory } from '@/lib/blog-categories'
 
 interface BlogPostContentProps {
   title: string
@@ -18,8 +19,10 @@ export default function BlogPostContent({
   createdAt,
   tags,
 }: BlogPostContentProps) {
+  const category = getPostCategory({ tags })
+
   return (
-    <article className="pt-28 pb-24 px-6 min-h-screen">
+    <article className="min-h-screen px-5 pb-24 pt-28 sm:px-6">
       <div className="max-w-2xl mx-auto">
         <Link
           href="/blog"
@@ -28,7 +31,7 @@ export default function BlogPostContent({
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
             <path d="M8 2L4 6L8 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-          返回博客
+          返回日志
         </Link>
 
         <motion.div
@@ -36,7 +39,9 @@ export default function BlogPostContent({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         >
-          <div className="flex items-center gap-3 text-xs text-white/20 mb-4">
+          <div className="flex flex-wrap items-center gap-3 text-xs text-white/20 mb-4">
+            <span className="text-white/45">{category.label}</span>
+            <span>·</span>
             <time dateTime={createdAt}>
               {new Date(createdAt).toLocaleDateString('zh-CN', {
                 year: 'numeric',

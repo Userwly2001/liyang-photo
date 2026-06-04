@@ -58,7 +58,7 @@ export default function VisitHeatmap() {
   const dayLabels = ['', '一', '', '三', '', '五', '']
 
   return (
-    <section className="py-32 px-6 border-t border-white/5">
+    <section className="border-t border-white/5 px-5 py-24 sm:px-6 sm:py-32">
       <div className="max-w-4xl mx-auto">
         <p className="text-xs uppercase tracking-[0.3em] text-white/30 mb-2 text-center">
           访问统计

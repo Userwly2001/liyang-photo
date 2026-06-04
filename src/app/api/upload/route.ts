@@ -1,8 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { saveUploadedFile } from '@/lib/image'
 import { rateLimit } from '@/lib/rate-limit'
+import { verifyAdmin } from '@/lib/admin-auth'
 
 export async function POST(request: NextRequest) {
+  const isAdmin = await verifyAdmin(request)
+  if (!isAdmin) {
+    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
+  }
+
   const ip = request.headers.get('x-forwarded-for') || 'unknown'
   const rl = rateLimit(`upload:${ip}`, { interval: 60_000, maxRequests: 10 })
   if (!rl.allowed) {
@@ -34,7 +40,7 @@ export async function POST(request: NextRequest) {
 
     const uploaded = results
       .filter((r) => r.status === 'fulfilled')
-      .map((r) => (r as PromiseFulfilledResult<{ url: string; thumbUrl: string; width: number; height: number }>).value)
+      .map((r) => (r as PromiseFulfilledResult<{ url: string; thumbUrl: string; originalUrl?: string; width: number; height: number }>).value)
 
     return NextResponse.json({ success: true, data: uploaded })
   } catch (error) {

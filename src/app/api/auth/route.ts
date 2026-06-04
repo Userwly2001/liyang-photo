@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { SignJWT } from 'jose'
-import { createHash } from 'crypto'
+import { getJwtSecret, hashAdminPassword } from '@/lib/admin-auth'
+import { rateLimit } from '@/lib/rate-limit'
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,6 +12,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { success: false, error: 'Username and password required' },
         { status: 400 }
+      )
+    }
+
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || request.headers.get('x-real-ip') || 'unknown'
+    const rl = rateLimit(`auth:${ip}:${username}`, { interval: 60_000, maxRequests: 5 })
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { success: false, error: 'Too many login attempts. Please wait before trying again.' },
+        { status: 429 }
       )
     }
 
@@ -24,7 +34,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const hash = createHash('sha256').update(password + process.env.JWT_SECRET).digest('hex')
+    const hash = hashAdminPassword(password)
     if (admin.passwordHash !== hash) {
       return NextResponse.json(
         { success: false, error: 'Invalid credentials' },
@@ -32,7 +42,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'fallback-secret')
+    const secret = new TextEncoder().encode(getJwtSecret())
     const token = await new SignJWT({ role: 'admin', sub: admin.id })
       .setProtectedHeader({ alg: 'HS256' })
       .setIssuedAt()

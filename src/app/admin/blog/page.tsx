@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -37,19 +37,12 @@ export default function AdminBlogPage() {
   const [messageType, setMessageType] = useState<'success' | 'error'>('success')
   const router = useRouter()
 
-  const getToken = () => {
+  const getToken = useCallback(() => {
     if (typeof window === 'undefined') return null
     return localStorage.getItem('admin_token')
-  }
+  }, [])
 
-  useEffect(() => {
-    const token = getToken()
-    if (!token) { router.push('/admin/login'); return }
-    setIsAuth(true)
-    fetchPosts()
-  }, [router])
-
-  const fetchPosts = async () => {
+  const fetchPosts = useCallback(async () => {
     const token = getToken()
     if (!token) return
     try {
@@ -65,7 +58,20 @@ export default function AdminBlogPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [getToken, router])
+
+  useEffect(() => {
+    const init = async () => {
+      const token = getToken()
+      if (!token) {
+        router.push('/admin/login')
+        return
+      }
+      await fetchPosts()
+      setIsAuth(true)
+    }
+    init()
+  }, [fetchPosts, getToken, router])
 
   const openCreateForm = () => {
     setForm(emptyForm)
@@ -175,31 +181,37 @@ export default function AdminBlogPage() {
   if (!isAuth) return null
 
   return (
-    <div className="min-h-screen px-6 py-28">
+    <div className="min-h-screen px-4 py-24 sm:px-6 sm:py-28">
       <div className="max-w-5xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
+        <div className="mb-8 flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h1 className="text-2xl font-bold">博客管理</h1>
+            <h1 className="text-2xl font-bold">日志管理</h1>
             <p className="text-sm text-white/40 mt-1">共 {posts.length} 篇文章</p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <button
               onClick={openCreateForm}
-              className="px-5 py-2.5 text-sm font-medium rounded-lg bg-white/15 hover:bg-white/25 text-white transition-colors"
+              className="px-4 py-2.5 text-sm font-medium rounded-lg bg-white/15 hover:bg-white/25 text-white transition-colors sm:px-5"
             >
-              + 写文章
+              + 写日志
             </button>
             <a
               href="/admin"
-              className="px-5 py-2.5 text-sm rounded-lg bg-white/5 hover:bg-white/10 text-white/50 hover:text-white/70 transition-colors"
+              className="px-4 py-2.5 text-sm rounded-lg bg-white/5 hover:bg-white/10 text-white/50 hover:text-white/70 transition-colors sm:px-5"
             >
               留言管理
             </a>
             <a
               href="/admin/photos"
-              className="px-5 py-2.5 text-sm rounded-lg bg-white/5 hover:bg-white/10 text-white/50 hover:text-white/70 transition-colors"
+              className="px-4 py-2.5 text-sm rounded-lg bg-white/5 hover:bg-white/10 text-white/50 hover:text-white/70 transition-colors sm:px-5"
             >
               照片管理
+            </a>
+            <a
+              href="/admin/settings"
+              className="px-4 py-2.5 text-sm rounded-lg bg-white/5 hover:bg-white/10 text-white/50 hover:text-white/70 transition-colors sm:px-5"
+            >
+              站点设置
             </a>
             <button
               onClick={handleLogout}
@@ -232,16 +244,16 @@ export default function AdminBlogPage() {
                 initial={{ opacity: 0, y: 20, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 20, scale: 0.95 }}
-                className="w-full max-w-3xl max-h-[90vh] bg-surface border border-white/10 rounded-xl flex flex-col my-8"
+                className="my-4 flex max-h-[92vh] w-full max-w-3xl flex-col rounded-xl border border-white/10 bg-surface sm:my-8"
                 onClick={(e) => e.stopPropagation()}
               >
-                <div className="px-6 pt-6 pb-2 border-b border-white/10 shrink-0">
-                  <h2 className="text-lg font-bold">{editingId ? '编辑文章' : '写文章'}</h2>
+                <div className="border-b border-white/10 px-4 pb-2 pt-5 shrink-0 sm:px-6 sm:pt-6">
+                  <h2 className="text-lg font-bold">{editingId ? '编辑日志' : '写日志'}</h2>
                 </div>
 
                 <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
-                  <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
+                  <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 sm:px-6">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                       <div>
                         <label className="text-xs text-white/40 block mb-1">标题 *</label>
                         <input
@@ -280,12 +292,12 @@ export default function AdminBlogPage() {
                     </div>
 
                     <div>
-                      <label className="text-xs text-white/40 block mb-1">标签（逗号分隔）</label>
+                      <label className="text-xs text-white/40 block mb-1">标签（逗号分隔，用于前台栏目筛选）</label>
                       <input
                         type="text"
                         value={form.tags}
                         onChange={(e) => setForm({ ...form, tags: e.target.value })}
-                        placeholder="e.g. 摄影, 器材, 教程"
+                        placeholder="e.g. 摄影, 生活, 随笔, 城市, 作品笔记"
                         className="w-full bg-transparent border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-white/30"
                       />
                     </div>
@@ -314,7 +326,7 @@ export default function AdminBlogPage() {
                     </label>
                   </div>
 
-                  <div className="flex justify-end gap-3 px-6 py-4 border-t border-white/10 shrink-0">
+                  <div className="flex justify-end gap-3 border-t border-white/10 px-4 py-4 shrink-0 sm:px-6">
                     <button
                       type="button"
                       onClick={() => setShowForm(false)}

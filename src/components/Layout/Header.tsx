@@ -10,7 +10,7 @@ const navLinks = [
   { href: '/portrait', label: '人像' },
   { href: '/landscape', label: '风景' },
   { href: '/food', label: '美食' },
-  { href: '/blog', label: '博客' },
+  { href: '/blog', label: '日志' },
   { href: '/about', label: '关于' },
 ]
 
@@ -33,7 +33,7 @@ export default function Header() {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         isScrolled
-          ? 'bg-black/80 backdrop-blur-xl border-b border-white/10'
+          ? 'bg-background/84 backdrop-blur-xl border-b border-accent/10'
           : 'bg-transparent'
       }`}
     >
@@ -41,9 +41,9 @@ export default function Header() {
         <Link
           href="/"
           onClick={handleNavClick}
-          className="text-lg font-semibold tracking-tight hover:opacity-70 transition-opacity"
+          className="text-lg font-semibold hover:opacity-70 transition-opacity"
         >
-          LEON<span className="text-white/40">PHOTO</span>
+          LEON<span className="text-accent/70">PHOTO</span>
         </Link>
 
         {/* Desktop nav */}
@@ -54,8 +54,8 @@ export default function Header() {
                 href={link.href}
                 className={`text-sm tracking-wide transition-colors duration-300 ${
                   pathname === link.href
-                    ? 'text-white'
-                    : 'text-white/50 hover:text-white/80'
+                    ? 'text-foreground'
+                    : 'text-foreground/46 hover:text-foreground/80'
                 }`}
               >
                 {link.label}
@@ -71,17 +71,17 @@ export default function Header() {
           aria-label="菜单"
         >
           <span
-            className={`block w-5 h-[1.5px] bg-white transition-all duration-300 ${
+            className={`block w-5 h-[1.5px] bg-foreground transition-all duration-300 ${
               mobileOpen ? 'rotate-45 translate-y-[6.5px]' : ''
             }`}
           />
           <span
-            className={`block w-5 h-[1.5px] bg-white transition-all duration-300 ${
+            className={`block w-5 h-[1.5px] bg-foreground transition-all duration-300 ${
               mobileOpen ? 'opacity-0' : ''
             }`}
           />
           <span
-            className={`block w-5 h-[1.5px] bg-white transition-all duration-300 ${
+            className={`block w-5 h-[1.5px] bg-foreground transition-all duration-300 ${
               mobileOpen ? '-rotate-45 -translate-y-[6.5px]' : ''
             }`}
           />
@@ -96,7 +96,7 @@ export default function Header() {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="md:hidden bg-black/95 backdrop-blur-xl border-b border-white/10 overflow-hidden"
+            className="md:hidden bg-background/96 backdrop-blur-xl border-b border-accent/10 overflow-hidden"
           >
             <ul className="px-6 py-4 space-y-2">
               {navLinks.map((link) => (
@@ -107,7 +107,7 @@ export default function Header() {
                     className={`block py-3 text-lg transition-colors ${
                       pathname === link.href
                         ? 'text-white'
-                        : 'text-white/50 hover:text-white/80'
+                        : 'text-foreground/50 hover:text-foreground/80'
                     }`}
                   >
                     {link.label}

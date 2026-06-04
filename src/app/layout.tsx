@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "@/components/Layout/Header";
 import Footer from "@/components/Layout/Footer";
 import ScrollProgress from "@/components/ui/ScrollProgress";
+import VisitTracker from "@/components/ui/VisitTracker";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,13 +17,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "LEONPHOTO | Leon Wang - 摄影作品集",
+  title: "LEONPHOTO | Leon Wang - 摄影与个人日志",
   description:
-    "Leon Wang 的个人摄影作品集，包含人像摄影与风光摄影作品展示。",
-  keywords: ["摄影", "人像", "风光", "作品集", "摄影师", "Leon Wang"],
+    "Leon Wang 的个人摄影作品集与日志，记录人像、风光、美食、生活随笔和城市片段。",
+  keywords: ["摄影", "人像", "风光", "美食", "作品集", "生活随笔", "日志", "Leon Wang"],
   openGraph: {
     title: "LEONPHOTO | Leon Wang",
-    description: "Leon Wang 的个人摄影作品集",
+    description: "Leon Wang 的个人摄影作品集与生活日志",
     type: "website",
   },
 };
@@ -39,6 +40,7 @@ export default function RootLayout({
     >
       <body className="bg-background text-foreground min-h-screen antialiased">
         <ScrollProgress />
+        <VisitTracker />
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />

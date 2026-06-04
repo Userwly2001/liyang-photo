@@ -19,7 +19,7 @@ export default function GalleryPageContent({
   emptyMessage = '暂无作品',
 }: GalleryPageContentProps) {
   return (
-    <div className="pt-28 pb-24 px-6 min-h-screen">
+    <div className="min-h-screen px-5 pb-24 pt-28 sm:px-6">
       <div className="max-w-7xl mx-auto">
         <AnimatedSection>
           <div className="mb-16">
@@ -27,7 +27,7 @@ export default function GalleryPageContent({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-xs uppercase tracking-[0.3em] text-white/30 mb-4"
+              className="text-xs uppercase tracking-[0.3em] text-accent/55 mb-4"
             >
               作品集
             </motion.p>
@@ -35,7 +35,7 @@ export default function GalleryPageContent({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight mb-4"
+              className="mb-4 text-4xl font-semibold sm:text-6xl md:text-7xl"
             >
               {title}
             </motion.h1>
@@ -43,7 +43,7 @@ export default function GalleryPageContent({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="text-sm text-white/40 max-w-md leading-relaxed"
+              className="text-sm text-foreground/45 max-w-md leading-relaxed"
             >
               {subtitle}
             </motion.p>
@@ -52,8 +52,8 @@ export default function GalleryPageContent({
 
         {photos.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-32 text-center">
-            <div className="text-6xl mb-6 opacity-20">◻</div>
-            <p className="text-white/30 text-sm">{emptyMessage}</p>
+            <div className="text-6xl mb-6 text-accent/20">◻</div>
+            <p className="text-foreground/32 text-sm">{emptyMessage}</p>
           </div>
         ) : (
           <PhotoGrid photos={photos} />

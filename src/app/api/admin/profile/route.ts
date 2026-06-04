@@ -48,6 +48,7 @@ export async function PUT(request: NextRequest) {
     if (body.title !== undefined) data.title = body.title
     if (body.bio !== undefined) data.bio = body.bio
     if (body.avatar !== undefined) data.avatar = body.avatar
+    if (body.heroImage !== undefined) data.heroImage = body.heroImage
     if (body.email !== undefined) data.email = body.email
     if (body.instagram !== undefined) data.instagram = body.instagram
     if (body.wechat !== undefined) data.wechat = body.wechat

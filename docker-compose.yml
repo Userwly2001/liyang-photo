@@ -6,7 +6,7 @@ services:
     environment:
       POSTGRES_DB: liyang_photo
       POSTGRES_USER: photography
-      POSTGRES_PASSWORD: photography_password
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:-sqlwly2026!@#}"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
@@ -21,10 +21,10 @@ services:
     depends_on:
       - postgres
     environment:
-      DATABASE_URL: "postgresql://photography:photography_password@postgres:5432/liyang_photo"
-      JWT_SECRET: "${JWT_SECRET:-change-this-to-a-very-long-random-string-in-production}"
+      DATABASE_URL: "${DATABASE_URL:-postgresql://photography:sqlwly2026%21%40%23@postgres:5432/liyang_photo}"
+      JWT_SECRET: "${JWT_SECRET:-sqlwly2026!@#}"
       ADMIN_USERNAME: "${ADMIN_USERNAME:-admin}"
-      ADMIN_PASSWORD: "${ADMIN_PASSWORD:-changeme123}"
+      ADMIN_PASSWORD: "${ADMIN_PASSWORD:-dailywang2026!@#}"
       NODE_ENV: production
     ports:
       - "3000:3000"

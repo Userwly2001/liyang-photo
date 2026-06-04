@@ -67,61 +67,120 @@ export async function POST(request: NextRequest) {
 
   try {
     const formData = await request.formData()
-    const file = formData.get('file') as File | null
-    if (!file) {
+    const files = [
+      ...formData.getAll('files'),
+      ...formData.getAll('file'),
+    ].filter((item): item is File => item instanceof File && item.size > 0)
+
+    if (files.length === 0) {
       return NextResponse.json({ success: false, error: 'Image file is required' }, { status: 400 })
     }
 
-    if (!file.type.startsWith('image/')) {
-      return NextResponse.json({ success: false, error: 'File must be an image' }, { status: 400 })
+    if (files.length > 30) {
+      return NextResponse.json({ success: false, error: 'Upload up to 30 files at once' }, { status: 400 })
     }
 
-    if (file.size > 20 * 1024 * 1024) {
-      return NextResponse.json({ success: false, error: 'File too large (max 20MB)' }, { status: 400 })
+    const invalidFile = files.find((file) => !file.type.startsWith('image/'))
+    if (invalidFile) {
+      return NextResponse.json({ success: false, error: `File must be an image: ${invalidFile.name}` }, { status: 400 })
+    }
+
+    const oversizedFile = files.find((file) => file.size > 20 * 1024 * 1024)
+    if (oversizedFile) {
+      return NextResponse.json({ success: false, error: `File too large (max 20MB): ${oversizedFile.name}` }, { status: 400 })
     }
 
     const title = (formData.get('title') as string)?.trim()
-    if (!title) {
-      return NextResponse.json({ success: false, error: 'Title is required' }, { status: 400 })
-    }
-
     const category = (formData.get('category') as string)?.trim()
     if (!category) {
       return NextResponse.json({ success: false, error: 'Category is required' }, { status: 400 })
     }
 
-    // Process image
-    const img = await saveUploadedFile(file)
+    if (files.length === 1 && !title) {
+      return NextResponse.json({ success: false, error: 'Title is required' }, { status: 400 })
+    }
 
-    const photo = await prisma.photo.create({
-      data: {
-        title,
-        description: (formData.get('description') as string)?.trim() || null,
-        category,
-        imageUrl: img.url,
-        thumbnailUrl: img.thumbUrl,
-        width: img.width,
-        height: img.height,
-        focalLength: (formData.get('focalLength') as string)?.trim() || null,
-        aperture: (formData.get('aperture') as string)?.trim() || null,
-        iso: (formData.get('iso') as string)?.trim() || null,
-        shutterSpeed: (formData.get('shutterSpeed') as string)?.trim() || null,
-        camera: (formData.get('camera') as string)?.trim() || null,
-        lens: (formData.get('lens') as string)?.trim() || null,
-        tags: parseTags(formData.get('tags') as string),
-        featured: formData.get('featured') === 'true',
-        sortOrder: parseInt(formData.get('sortOrder') as string) || 0,
-        published: formData.get('published') !== 'false',
-      },
-    })
+    const baseSortOrder = parseInt(formData.get('sortOrder') as string) || 0
+    const preserveOriginal = formData.get('preserveOriginal') !== 'false'
+    const created = []
+
+    const createPhoto = async (file: File, index: number) => {
+      const img = await saveUploadedFile(file, { preserveOriginal })
+      const fallbackTitle = file.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ').trim() || `照片 ${index + 1}`
+
+      return prisma.photo.create({
+        data: {
+          title: files.length === 1 ? (title || fallbackTitle) : fallbackTitle,
+          description: (formData.get('description') as string)?.trim() || null,
+          category,
+          imageUrl: img.url,
+          thumbnailUrl: img.thumbUrl,
+          originalUrl: img.originalUrl || null,
+          width: img.width,
+          height: img.height,
+          focalLength: (formData.get('focalLength') as string)?.trim() || null,
+          aperture: (formData.get('aperture') as string)?.trim() || null,
+          iso: (formData.get('iso') as string)?.trim() || null,
+          shutterSpeed: (formData.get('shutterSpeed') as string)?.trim() || null,
+          camera: (formData.get('camera') as string)?.trim() || null,
+          lens: (formData.get('lens') as string)?.trim() || null,
+          tags: parseTags(formData.get('tags') as string),
+          featured: formData.get('featured') === 'true',
+          sortOrder: baseSortOrder + index,
+          published: formData.get('published') !== 'false',
+        },
+      })
+    }
+
+    for (let start = 0; start < files.length; start += 3) {
+      const batch = files.slice(start, start + 3)
+      const batchPhotos = await Promise.all(
+        batch.map((file, offset) => createPhoto(file, start + offset))
+      )
+      created.push(...batchPhotos)
+    }
 
     return NextResponse.json({
       success: true,
-      data: { ...photo, createdAt: photo.createdAt.toISOString(), updatedAt: photo.updatedAt.toISOString() },
+      data: created.map((photo) => ({
+        ...photo,
+        createdAt: photo.createdAt.toISOString(),
+        updatedAt: photo.updatedAt.toISOString(),
+      })),
     }, { status: 201 })
   } catch (error) {
     console.error('POST /api/admin/photos error:', error)
     return NextResponse.json({ success: false, error: 'Failed to create photo' }, { status: 500 })
+  }
+}
+
+export async function PATCH(request: NextRequest) {
+  const isAdmin = await verifyAdmin(request)
+  if (!isAdmin) {
+    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
+  }
+
+  try {
+    const body = await request.json()
+    const orderedIds: string[] = Array.isArray(body.orderedIds)
+      ? body.orderedIds.filter((id: unknown): id is string => typeof id === 'string')
+      : []
+
+    if (orderedIds.length === 0) {
+      return NextResponse.json({ success: false, error: 'No photo order provided' }, { status: 400 })
+    }
+
+    await prisma.$transaction(
+      orderedIds.map((id, index) => prisma.photo.update({
+        where: { id },
+        data: { sortOrder: index },
+      }))
+    )
+
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error('PATCH /api/admin/photos error:', error)
+    return NextResponse.json({ success: false, error: 'Failed to update order' }, { status: 500 })
   }
 }
 

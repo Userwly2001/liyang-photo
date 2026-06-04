@@ -20,6 +20,7 @@ async function getFeaturedPhotos() {
       category: p.category,
       imageUrl: p.imageUrl,
       thumbnailUrl: p.thumbnailUrl ?? undefined,
+      originalUrl: p.originalUrl ?? undefined,
       blurHash: p.blurHash ?? undefined,
       width: p.width ?? undefined,
       height: p.height ?? undefined,
@@ -39,12 +40,27 @@ async function getFeaturedPhotos() {
   }
 }
 
+async function getProfile() {
+  try {
+    return await prisma.profile.findUnique({ where: { id: 'default' } })
+  } catch {
+    return null
+  }
+}
+
 export default async function HomePage() {
-  const photos = await getFeaturedPhotos()
+  const [photos, profile] = await Promise.all([getFeaturedPhotos(), getProfile()])
+  const heroPhoto = profile?.heroImage
+    ? {
+        imageUrl: profile.heroImage,
+        title: '',
+        showCaption: false,
+      }
+    : photos[0]
 
   return (
     <>
-      <HeroSection />
+      <HeroSection photo={heroPhoto} />
       <FeaturedPhotos photos={photos} />
       <VisitHeatmap />
       <ParallaxSection />

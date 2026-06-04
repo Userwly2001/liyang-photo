@@ -1,13 +1,19 @@
 export const dynamic = 'force-dynamic'
 
 import { prisma } from '@/lib/prisma'
+import Link from 'next/link'
 import BlogList from '@/components/Blog/BlogList'
 import AnimatedSection from '@/components/ui/AnimatedSection'
+import { blogCategories, filterPostsByCategory, getBlogCategory } from '@/lib/blog-categories'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: '博客 | LEONPHOTO',
-  description: 'Leon Wang 的摄影博客',
+  title: '日志 | LEONPHOTO',
+  description: 'Leon Wang 关于影像、生活、城市和随笔的个人日志',
+}
+
+interface BlogPageProps {
+  searchParams?: Promise<{ category?: string }>
 }
 
 async function getPosts() {
@@ -28,27 +34,58 @@ async function getPosts() {
   }
 }
 
-export default async function BlogPage() {
+export default async function BlogPage({ searchParams }: BlogPageProps) {
+  const params = await searchParams
+  const activeCategory = getBlogCategory(params?.category)
   const posts = await getPosts()
+  const filteredPosts = filterPostsByCategory(posts, activeCategory.slug)
 
   return (
-    <div className="pt-28 pb-24 px-6 min-h-screen">
+    <div className="min-h-screen px-5 pb-24 pt-28 sm:px-6">
       <div className="max-w-3xl mx-auto">
         <div className="mb-16">
           <AnimatedSection>
-            <p className="text-xs uppercase tracking-[0.3em] text-white/30 mb-4">
+            <p className="text-xs uppercase tracking-[0.3em] text-accent/55 mb-4">
               日志
             </p>
-            <h1 className="text-5xl sm:text-6xl font-bold tracking-tight mb-4">
-              博客
+            <h1 className="mb-4 text-4xl font-semibold sm:text-6xl">
+              札记
             </h1>
-            <p className="text-sm text-white/40 max-w-md leading-relaxed">
-              关于摄影的思考、器材评测和镜头背后的故事
+            <p className="text-sm text-foreground/45 max-w-md leading-relaxed">
+              影像、生活、城市和一些未完成的想法
             </p>
           </AnimatedSection>
         </div>
 
-        <BlogList posts={posts} />
+        <AnimatedSection delay={0.1}>
+          <div className="mb-14">
+            <div className="flex flex-wrap gap-2 mb-5">
+              {blogCategories.map((category) => {
+                const active = category.slug === activeCategory.slug
+                const href = category.slug === 'all' ? '/blog' : `/blog?category=${category.slug}`
+
+                return (
+                  <Link
+                    key={category.slug}
+                    href={href}
+                    className={`px-4 py-2 rounded-sm text-sm transition-colors ${
+                      active
+                        ? 'bg-accent text-background'
+                        : 'border border-accent/12 bg-foreground/[0.035] text-foreground/45 hover:border-accent/35 hover:text-foreground/75'
+                    }`}
+                  >
+                    {category.label}
+                  </Link>
+                )
+              })}
+            </div>
+            <p className="text-xs text-foreground/30 leading-relaxed">
+              {activeCategory.description}
+            </p>
+          </div>
+        </AnimatedSection>
+
+        <BlogList posts={filteredPosts} activeCategoryLabel={activeCategory.label} />
       </div>
     </div>
   )

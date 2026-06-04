@@ -2,9 +2,7 @@ import { PrismaClient } from '@prisma/client'
 import sharp from 'sharp'
 import path from 'path'
 import fs from 'fs'
-import { fileURLToPath } from 'url'
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const prisma = new PrismaClient()
 
 const UPLOAD_BASE = path.join(process.cwd(), 'public', 'uploads')
