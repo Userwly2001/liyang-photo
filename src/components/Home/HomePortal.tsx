@@ -136,13 +136,18 @@ export default function HomePortal({
             type="button"
             onClick={enter}
             aria-label={t.home.hero.enterAriaLabel}
-            className="absolute bottom-0 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 pb-6 sm:pb-8 group"
+            className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 group sm:bottom-10"
           >
-            <span className="text-[9px] uppercase tracking-[0.35em] text-foreground/25 group-hover:text-accent/60 transition-colors">
+            <span className="text-[10px] uppercase tracking-[0.35em] text-accent/50 group-hover:text-accent transition-colors">
               Scroll
             </span>
-            <span className="relative flex h-12 w-px justify-center bg-white/10 group-hover:bg-accent/30 transition-colors">
-              <span className="absolute top-0 h-3 w-px bg-accent animate-scroll-line" />
+            <span className="flex flex-col items-center gap-0.5 animate-bounce">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="text-accent/70">
+                <path d="M6 8L10 13L14 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="text-accent/40 -mt-1">
+                <path d="M6 8L10 13L14 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
             </span>
           </button>
         </div>
