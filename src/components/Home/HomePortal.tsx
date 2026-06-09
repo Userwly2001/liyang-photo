@@ -1,0 +1,232 @@
+'use client'
+
+import { useEffect, useRef } from 'react'
+import Link from 'next/link'
+import { motion } from 'framer-motion'
+
+interface PortalPhoto {
+  imageUrl: string
+  title: string
+}
+
+interface HomePortalProps {
+  name: string
+  title: string
+  bio: string
+  location?: string
+  heroPhoto?: PortalPhoto
+  galleryPhoto?: PortalPhoto
+  journalPhoto?: PortalPhoto
+  photoCount: number
+  postCount: number
+}
+
+export default function HomePortal({
+  name,
+  title,
+  bio,
+  location,
+  heroPhoto,
+  galleryPhoto,
+  journalPhoto,
+  photoCount,
+  postCount,
+}: HomePortalProps) {
+  const introRef = useRef<HTMLElement>(null)
+  const portalRef = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    const intro = introRef.current
+    if (!intro) return
+
+    const onPointerMove = (event: PointerEvent) => {
+      intro.style.setProperty('--pointer-x', `${event.clientX}px`)
+      intro.style.setProperty('--pointer-y', `${event.clientY}px`)
+    }
+
+    window.addEventListener('pointermove', onPointerMove, { passive: true })
+    return () => window.removeEventListener('pointermove', onPointerMove)
+  }, [])
+
+  const enter = () => {
+    portalRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  return (
+    <div className="home-portal bg-background">
+      <section
+        ref={introRef}
+        className="home-portal-intro relative flex h-[100svh] overflow-hidden"
+      >
+        <div className="absolute inset-0 bg-[#080706]">
+          {heroPhoto && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={heroPhoto.imageUrl}
+              alt={heroPhoto.title}
+              className="h-full w-full object-cover opacity-72 saturate-[0.82] contrast-[1.06]"
+            />
+          )}
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,7,6,0.88),rgba(8,7,6,0.26)_58%,rgba(8,7,6,0.62))]" />
+          <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(8,7,6,0.9),transparent_48%,rgba(8,7,6,0.58))]" />
+          <div className="home-portal-light absolute inset-0" />
+        </div>
+
+        <div className="relative z-10 mx-auto flex h-full w-full max-w-[1480px] flex-col justify-between px-5 py-6 sm:px-8 sm:py-8 lg:px-12">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1 }}
+            className="flex items-center justify-between text-[10px] uppercase tracking-[0.28em] text-foreground/48"
+          >
+            <span>Leon Wang</span>
+            <span>{location || 'Photography / Notes'}</span>
+          </motion.div>
+
+          <div className="pb-[2svh] pt-12 sm:pt-16">
+            <motion.p
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.15 }}
+              className="mb-6 text-[10px] uppercase tracking-[0.38em] text-accent/78 sm:text-xs"
+            >
+              Personal archive · 2026
+            </motion.p>
+            <h1 className="max-w-5xl text-5xl font-semibold leading-[0.92] sm:text-7xl md:text-8xl lg:text-[7.8rem]">
+              <motion.span
+                initial={{ opacity: 0, y: 34 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.9, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                className="block"
+              >
+                光落下来，
+              </motion.span>
+              <motion.span
+                initial={{ opacity: 0, y: 34 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.9, delay: 0.46, ease: [0.16, 1, 0.3, 1] }}
+                className="block text-foreground/46"
+              >
+                生活留下来。
+              </motion.span>
+            </h1>
+            <p className="mt-6 max-w-[17rem] text-sm leading-7 text-foreground/58 sm:max-w-md">
+              一些影像，一些生活片段，以及那些值得被慢慢记住的时刻。
+            </p>
+          </div>
+
+          <div className="absolute bottom-6 right-5 flex items-end justify-end sm:bottom-8 sm:right-8 lg:right-12">
+            <button
+              type="button"
+              onClick={enter}
+              aria-label="进入内容入口"
+              className="group flex min-h-11 items-center gap-4 text-left text-xs uppercase tracking-[0.3em] text-foreground/68 transition-colors hover:text-foreground"
+            >
+              <span className="flex h-10 w-10 items-center justify-center rounded-full border border-accent/35 transition-all group-hover:border-accent/75 group-hover:bg-accent/10">
+                ↓
+              </span>
+              <span className="hidden sm:inline">进入</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="portal"
+        ref={portalRef}
+        className="relative min-h-[100svh] px-5 pb-8 pt-8 sm:px-8 lg:px-12"
+      >
+        <div className="mx-auto flex min-h-[calc(100svh-4rem)] max-w-[1480px] flex-col">
+          <div className="flex items-start justify-between gap-8 border-b border-accent/15 pb-7">
+            <div>
+              <p className="mb-3 text-[10px] uppercase tracking-[0.32em] text-accent/62">Leonphoto</p>
+              <h2 className="text-3xl font-semibold sm:text-5xl">{name}</h2>
+            </div>
+            <div className="max-w-sm text-right">
+              <p className="text-sm text-foreground/52">{title}</p>
+              <p className="mt-2 hidden text-xs leading-6 text-foreground/32 sm:block">
+                {bio || '记录影像，也记录影像之外的生活。'}
+              </p>
+            </div>
+          </div>
+
+          <div className="grid flex-1 gap-3 py-5 md:grid-cols-[1.35fr_1fr]">
+            <PortalLink
+              href="/gallery"
+              label="相册"
+              english="Gallery"
+              detail={`${photoCount} 张影像 · 人像 / 风景 / 美食`}
+              photo={galleryPhoto || heroPhoto}
+              index="01"
+            />
+            <PortalLink
+              href="/blog"
+              label="随笔"
+              english="Notes"
+              detail={`${postCount} 篇随笔 · 生活 / 成长 / 摄影`}
+              photo={journalPhoto || heroPhoto}
+              index="02"
+            />
+          </div>
+
+          <div className="flex flex-wrap items-center justify-between gap-4 border-t border-accent/15 pt-5 text-[10px] uppercase tracking-[0.24em] text-foreground/32">
+            <span>© {new Date().getFullYear()} Leon Wang</span>
+            <nav className="flex gap-5 sm:gap-7">
+              <Link href="/about" className="transition-colors hover:text-foreground/75">关于</Link>
+              <Link href="/guestbook" className="transition-colors hover:text-foreground/75">留言</Link>
+              <Link href="/admin" className="transition-colors hover:text-foreground/75">管理</Link>
+            </nav>
+          </div>
+        </div>
+      </section>
+    </div>
+  )
+}
+
+function PortalLink({
+  href,
+  label,
+  english,
+  detail,
+  photo,
+  index,
+}: {
+  href: string
+  label: string
+  english: string
+  detail: string
+  photo?: PortalPhoto
+  index: string
+}) {
+  return (
+    <Link
+      href={href}
+      className="group relative min-h-[34svh] overflow-hidden rounded-sm border border-accent/10 bg-surface md:min-h-0"
+    >
+      {photo && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={photo.imageUrl}
+          alt={photo.title}
+          className="absolute inset-0 h-full w-full object-cover opacity-56 saturate-[0.72] transition-all duration-1000 group-hover:scale-[1.025] group-hover:opacity-72 group-hover:saturate-[0.9]"
+        />
+      )}
+      <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(8,7,6,0.92),rgba(8,7,6,0.08)_65%,rgba(8,7,6,0.3))]" />
+      <div className="absolute inset-0 flex flex-col justify-between p-5 sm:p-7">
+        <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.28em] text-foreground/48">
+          <span>{index}</span>
+          <span>{english}</span>
+        </div>
+        <div>
+          <div className="mb-4 flex items-end justify-between gap-4">
+            <h3 className="text-4xl font-semibold sm:text-6xl lg:text-7xl">{label}</h3>
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-foreground/25 text-lg transition-all duration-500 group-hover:border-accent/70 group-hover:bg-accent group-hover:text-background">
+              ↗
+            </span>
+          </div>
+          <p className="border-t border-foreground/18 pt-4 text-xs text-foreground/52">{detail}</p>
+        </div>
+      </div>
+    </Link>
+  )
+}

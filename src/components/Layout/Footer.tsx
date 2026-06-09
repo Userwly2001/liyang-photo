@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 function VisitCounter() {
   const [count, setCount] = useState<number | null>(null)
@@ -24,6 +25,10 @@ function VisitCounter() {
 }
 
 export default function Footer() {
+  const pathname = usePathname()
+
+  if (pathname === '/') return null
+
   return (
     <footer className="border-t border-accent/10 mt-32">
       <div className="max-w-7xl mx-auto px-6 py-16">
@@ -40,10 +45,11 @@ export default function Footer() {
             <h4 className="text-xs uppercase tracking-widest text-accent/55 mb-4">导航</h4>
             <ul className="space-y-2">
               {[
+                { href: '/gallery', label: '全部相册' },
                 { href: '/portrait', label: '人像作品' },
                 { href: '/landscape', label: '风光作品' },
                 { href: '/food', label: '美食作品' },
-                { href: '/blog', label: '日志' },
+                { href: '/blog', label: '生活随笔' },
               ].map((link) => (
                 <li key={link.href}>
                   <Link

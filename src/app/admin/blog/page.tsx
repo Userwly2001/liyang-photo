@@ -185,7 +185,7 @@ export default function AdminBlogPage() {
       <div className="max-w-5xl mx-auto">
         <div className="mb-8 flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h1 className="text-2xl font-bold">日志管理</h1>
+            <h1 className="text-2xl font-bold">随笔管理</h1>
             <p className="text-sm text-white/40 mt-1">共 {posts.length} 篇文章</p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
@@ -193,7 +193,7 @@ export default function AdminBlogPage() {
               onClick={openCreateForm}
               className="px-4 py-2.5 text-sm font-medium rounded-lg bg-white/15 hover:bg-white/25 text-white transition-colors sm:px-5"
             >
-              + 写日志
+              + 写随笔
             </button>
             <a
               href="/admin"
@@ -248,7 +248,7 @@ export default function AdminBlogPage() {
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="border-b border-white/10 px-4 pb-2 pt-5 shrink-0 sm:px-6 sm:pt-6">
-                  <h2 className="text-lg font-bold">{editingId ? '编辑日志' : '写日志'}</h2>
+                  <h2 className="text-lg font-bold">{editingId ? '编辑随笔' : '写随笔'}</h2>
                 </div>
 
                 <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">

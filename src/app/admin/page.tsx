@@ -143,7 +143,7 @@ export default function AdminDashboard() {
               href="/admin/blog"
               className="px-4 py-2.5 text-sm rounded-lg bg-white/10 hover:bg-white/20 text-white/70 hover:text-white transition-colors sm:px-5"
             >
-              日志管理
+              随笔管理
             </a>
             <a
               href="/admin/settings"

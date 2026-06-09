@@ -4,7 +4,7 @@ import type { MetadataRoute } from 'next'
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost'
 
-  const staticRoutes = ['', '/portrait', '/landscape', '/food', '/blog', '/guestbook', '/about'].map((path) => ({
+  const staticRoutes = ['', '/gallery', '/portrait', '/landscape', '/food', '/blog', '/guestbook', '/about'].map((path) => ({
     url: `${siteUrl}${path}`,
     lastModified: new Date(),
   }))

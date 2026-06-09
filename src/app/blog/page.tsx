@@ -8,8 +8,8 @@ import { blogCategories, filterPostsByCategory, getBlogCategory } from '@/lib/bl
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: '日志 | LEONPHOTO',
-  description: 'Leon Wang 关于影像、生活、城市和随笔的个人日志',
+  title: '随笔 | LEONPHOTO',
+  description: 'Leon Wang 记录生活片段、成长感受和摄影思考的个人随笔',
 }
 
 interface BlogPageProps {
@@ -46,13 +46,13 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
         <div className="mb-16">
           <AnimatedSection>
             <p className="text-xs uppercase tracking-[0.3em] text-accent/55 mb-4">
-              日志
+              生活与成长
             </p>
             <h1 className="mb-4 text-4xl font-semibold sm:text-6xl">
-              札记
+              随笔
             </h1>
             <p className="text-sm text-foreground/45 max-w-md leading-relaxed">
-              影像、生活、城市和一些未完成的想法
+              记录生活片段、成长感受，以及一些未完成的想法
             </p>
           </AnimatedSection>
         </div>

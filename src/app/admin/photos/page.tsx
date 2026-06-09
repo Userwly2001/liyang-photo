@@ -408,7 +408,7 @@ export default function AdminPhotosPage() {
               href="/admin/blog"
               className="px-4 py-2.5 text-sm rounded-lg bg-white/5 hover:bg-white/10 text-white/50 hover:text-white/70 transition-colors sm:px-5"
             >
-              日志管理
+              随笔管理
             </a>
             <a
               href="/admin/settings"

@@ -7,10 +7,9 @@ import { motion, AnimatePresence } from 'framer-motion'
 
 const navLinks = [
   { href: '/', label: '首页' },
-  { href: '/portrait', label: '人像' },
-  { href: '/landscape', label: '风景' },
-  { href: '/food', label: '美食' },
-  { href: '/blog', label: '日志' },
+  { href: '/gallery', label: '相册' },
+  { href: '/blog', label: '随笔' },
+  { href: '/guestbook', label: '留言' },
   { href: '/about', label: '关于' },
 ]
 
@@ -24,6 +23,8 @@ export default function Header() {
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
+
+  if (pathname === '/') return null
 
   const handleNavClick = () => {
     setMobileOpen(false)

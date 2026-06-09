@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = await getPost(slug)
   if (!post) return { title: '未找到 | LEONPHOTO' }
   return {
-    title: `${post.title} | LEONPHOTO 日志`,
+    title: `${post.title} | LEONPHOTO 随笔`,
     description: post.excerpt || post.title,
   }
 }

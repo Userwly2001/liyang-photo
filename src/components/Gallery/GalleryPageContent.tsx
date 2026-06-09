@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import Link from 'next/link'
 import PhotoGrid from './PhotoGrid'
 import AnimatedSection from '@/components/ui/AnimatedSection'
 import type { PhotoType } from '@/types'
@@ -47,6 +48,28 @@ export default function GalleryPageContent({
             >
               {subtitle}
             </motion.p>
+            <motion.nav
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="mt-8 flex flex-wrap gap-x-5 gap-y-3 text-xs text-foreground/38"
+              aria-label="相册分类"
+            >
+              {[
+                { href: '/gallery', label: '全部' },
+                { href: '/portrait', label: '人像' },
+                { href: '/landscape', label: '风景' },
+                { href: '/food', label: '美食' },
+              ].map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="border-b border-accent/15 pb-1 transition-colors hover:border-accent/65 hover:text-foreground/78"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </motion.nav>
           </div>
         </AnimatedSection>
 

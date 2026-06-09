@@ -18,8 +18,8 @@
   --color-glass: rgba(244, 239, 230, 0.06);
   --color-glass-border: rgba(244, 239, 230, 0.12);
 
-  --font-sans: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
-  --font-mono: var(--font-geist-mono), "SF Mono", monospace;
+  --font-sans: "SF Pro Display", "SF Pro Text", "PingFang SC", system-ui, -apple-system, sans-serif;
+  --font-mono: "SF Mono", "Roboto Mono", monospace;
 
   --radius-sm: 8px;
   --radius-md: 12px;
@@ -77,6 +77,28 @@ body::before {
     linear-gradient(90deg, rgba(244, 239, 230, 0.1) 1px, transparent 1px);
   background-size: 72px 72px;
   mask-image: linear-gradient(to bottom, transparent, black 18%, black 82%, transparent);
+}
+
+.home-portal-intro {
+  --pointer-x: 50vw;
+  --pointer-y: 50vh;
+}
+
+.home-portal-light {
+  background:
+    radial-gradient(
+      circle 24rem at var(--pointer-x) var(--pointer-y),
+      rgba(198, 161, 91, 0.13),
+      transparent 70%
+    );
+  mix-blend-mode: screen;
+  transition: opacity 300ms ease;
+}
+
+@media (pointer: coarse), (prefers-reduced-motion: reduce) {
+  .home-portal-light {
+    display: none;
+  }
 }
 
 /* Custom scrollbar */

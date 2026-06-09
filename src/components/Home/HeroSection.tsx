@@ -131,7 +131,7 @@ export default function HeroSection({ photo }: HeroSectionProps) {
       >
         <span>Scroll</span>
         <span className="h-px flex-1 mx-5 bg-accent/18" />
-        <span>Portfolio / Journal</span>
+        <span>Portfolio / Notes</span>
       </motion.div>
     </section>
   )
