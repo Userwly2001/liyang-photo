@@ -3,16 +3,16 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --color-background: #0d0b08;
-  --color-foreground: #f5f0e8;
-  --color-surface: #161310;
-  --color-surface-elevated: #201c16;
-  --color-surface-hover: #2a251d;
-  --color-border: #332e26;
-  --color-border-light: #4a4032;
+  --color-background: #000000;
+  --color-foreground: #ffffff;
+  --color-surface: #0a0a0a;
+  --color-surface-elevated: #141414;
+  --color-surface-hover: #1c1c1c;
+  --color-border: #2a2a2a;
+  --color-border-light: #3d3d3d;
   --color-accent: #d4a84b;
-  --color-muted: #9d9485;
-  --color-muted-light: #c4b69e;
+  --color-muted: #888888;
+  --color-muted-light: #aaaaaa;
   --color-danger: #ff4444;
   --color-success: #44ff88;
   --color-glass: rgba(244, 239, 230, 0.06);
@@ -88,7 +88,7 @@ body::before {
   background:
     radial-gradient(
       circle 28rem at var(--pointer-x) var(--pointer-y),
-      rgba(212, 168, 75, 0.18),
+      rgba(212, 168, 75, 0.16),
       transparent 70%
     );
   mix-blend-mode: screen;

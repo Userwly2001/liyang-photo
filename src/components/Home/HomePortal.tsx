@@ -68,17 +68,15 @@ export default function HomePortal({
         ref={introRef}
         className="home-portal-intro relative flex h-[100svh] overflow-hidden"
       >
-        <div className="absolute inset-0 bg-background">
+        <div className="absolute inset-0 bg-black">
           {heroPhoto && (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={heroPhoto.imageUrl}
               alt={heroTitle}
-              className="h-full w-full object-cover opacity-82 saturate-[0.92] contrast-[1.04]"
+              className="h-full w-full object-cover"
             />
           )}
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(13,11,8,0.78),rgba(13,11,8,0.22)_58%,rgba(13,11,8,0.52))]" />
-          <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(13,11,8,0.82),transparent_48%,rgba(13,11,8,0.5))]" />
           <div className="home-portal-light absolute inset-0" />
         </div>
 
@@ -87,7 +85,7 @@ export default function HomePortal({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1 }}
-            className="flex items-center justify-between text-[10px] uppercase tracking-[0.28em] text-foreground/48"
+            className="flex items-center justify-between text-[10px] uppercase tracking-[0.28em] text-foreground/72"
           >
             <span>{t.home.hero.topLeft}</span>
             <span className="flex items-center gap-4">
@@ -105,12 +103,15 @@ export default function HomePortal({
             >
               {t.home.hero.archiveLabel.replace('{year}', String(year))}
             </motion.p>
-            <h1 className="max-w-5xl text-5xl font-semibold leading-[0.92] sm:text-7xl md:text-8xl lg:text-[7.8rem]">
+            <h1
+              className="max-w-5xl text-5xl font-semibold leading-[0.92] sm:text-7xl md:text-8xl lg:text-[7.8rem]"
+              style={{ textShadow: '0 2px 40px rgba(0,0,0,0.7), 0 1px 4px rgba(0,0,0,0.5)' }}
+            >
               <motion.span
                 initial={{ opacity: 0, y: 34 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.9, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                className="block"
+                className="block text-foreground"
               >
                 {t.home.hero.line1}
               </motion.span>
@@ -118,12 +119,15 @@ export default function HomePortal({
                 initial={{ opacity: 0, y: 34 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.9, delay: 0.46, ease: [0.16, 1, 0.3, 1] }}
-                className="block text-foreground/46"
+                className="block text-accent"
               >
                 {t.home.hero.line2}
               </motion.span>
             </h1>
-            <p className="mt-6 max-w-[17rem] text-sm leading-7 text-foreground/58 sm:max-w-md">
+            <p
+              className="mt-6 max-w-[17rem] text-sm leading-7 text-foreground/78 sm:max-w-md"
+              style={{ textShadow: '0 1px 8px rgba(0,0,0,0.6)' }}
+            >
               {t.home.hero.subtitle}
             </p>
           </div>
@@ -223,30 +227,38 @@ function PortalLink({
   return (
     <Link
       href={href}
-      className="group relative min-h-[34svh] overflow-hidden rounded-sm border border-accent/10 bg-surface md:min-h-0"
+      className="group relative min-h-[34svh] overflow-hidden rounded-sm border border-accent/20 bg-black md:min-h-0"
     >
       {photo && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={photo.imageUrl}
           alt={photo.title}
-          className="absolute inset-0 h-full w-full object-cover opacity-66 saturate-[0.85] transition-all duration-1000 group-hover:scale-[1.025] group-hover:opacity-80 group-hover:saturate-[0.95]"
+          className="absolute inset-0 h-full w-full object-cover transition-all duration-1000 group-hover:scale-[1.025]"
         />
       )}
-      <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(13,11,8,0.78),rgba(13,11,8,0.06)_65%,rgba(13,11,8,0.25))]" />
+      <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(0,0,0,0.5),transparent_50%)]" />
       <div className="absolute inset-0 flex flex-col justify-between p-5 sm:p-7">
-        <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.28em] text-foreground/48">
+        <div
+          className="flex items-center justify-between text-[10px] uppercase tracking-[0.28em] text-foreground/60"
+          style={{ textShadow: '0 1px 4px rgba(0,0,0,0.6)' }}
+        >
           <span>{index}</span>
           <span>{english}</span>
         </div>
         <div>
           <div className="mb-4 flex items-end justify-between gap-4">
-            <h3 className="text-4xl font-semibold sm:text-6xl lg:text-7xl">{label}</h3>
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-foreground/25 text-lg transition-all duration-500 group-hover:border-accent/70 group-hover:bg-accent group-hover:text-background">
+            <h3
+              className="text-4xl font-semibold sm:text-6xl lg:text-7xl"
+              style={{ textShadow: '0 2px 24px rgba(0,0,0,0.8), 0 1px 4px rgba(0,0,0,0.5)' }}
+            >
+              {label}
+            </h3>
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-foreground/40 text-lg transition-all duration-500 group-hover:border-accent group-hover:bg-accent group-hover:text-black">
               ↗
             </span>
           </div>
-          <p className="border-t border-foreground/18 pt-4 text-xs text-foreground/52">{detail}</p>
+          <p className="border-t border-accent/30 pt-4 text-xs text-foreground/62">{detail}</p>
         </div>
       </div>
     </Link>
