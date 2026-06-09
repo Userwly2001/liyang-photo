@@ -132,19 +132,19 @@ export default function HomePortal({
             </p>
           </div>
 
-          <div className="absolute bottom-6 right-5 flex items-end justify-end sm:bottom-8 sm:right-8 lg:right-12">
-            <button
-              type="button"
-              onClick={enter}
-              aria-label={t.home.hero.enterAriaLabel}
-              className="group flex min-h-11 items-center gap-4 text-left text-xs uppercase tracking-[0.3em] text-foreground/68 transition-colors hover:text-foreground"
-            >
-              <span className="flex h-10 w-10 items-center justify-center rounded-full border border-white/25 bg-white/5 backdrop-blur-md transition-all group-hover:border-accent group-hover:bg-accent/25">
-                ↓
-              </span>
-              <span className="hidden rounded-full px-4 py-2 border border-white/15 bg-white/5 backdrop-blur-md sm:inline">{t.home.hero.enter}</span>
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={enter}
+            aria-label={t.home.hero.enterAriaLabel}
+            className="absolute bottom-0 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 pb-6 sm:pb-8 group"
+          >
+            <span className="text-[9px] uppercase tracking-[0.35em] text-foreground/25 group-hover:text-accent/60 transition-colors">
+              Scroll
+            </span>
+            <span className="relative flex h-12 w-px justify-center bg-white/10 group-hover:bg-accent/30 transition-colors">
+              <span className="absolute top-0 h-3 w-px bg-accent animate-scroll-line" />
+            </span>
+          </button>
         </div>
       </section>
 
