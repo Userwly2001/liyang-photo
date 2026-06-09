@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { useLanguage } from '@/i18n/useLanguage'
+import { LanguageSwitcher } from '@/i18n/LanguageSwitcher'
 
 interface PortalPhoto {
   imageUrl: string
@@ -89,7 +90,10 @@ export default function HomePortal({
             className="flex items-center justify-between text-[10px] uppercase tracking-[0.28em] text-foreground/48"
           >
             <span>{t.home.hero.topLeft}</span>
-            <span>{displayLocation}</span>
+            <span className="flex items-center gap-4">
+              <span>{displayLocation}</span>
+              <LanguageSwitcher />
+            </span>
           </motion.div>
 
           <div className="pb-[2svh] pt-12 sm:pt-16">
@@ -192,6 +196,7 @@ export default function HomePortal({
               <Link href="/admin" className="transition-colors hover:text-foreground/75">
                 {t.home.portal.adminNav}
               </Link>
+              <LanguageSwitcher />
             </nav>
           </div>
         </div>
