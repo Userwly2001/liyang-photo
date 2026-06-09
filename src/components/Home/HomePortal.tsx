@@ -136,18 +136,15 @@ export default function HomePortal({
             type="button"
             onClick={enter}
             aria-label={t.home.hero.enterAriaLabel}
-            className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 group sm:bottom-10"
+            className="absolute right-0 bottom-0 flex items-end gap-4 pr-5 pb-8 sm:pr-8 sm:pb-10 lg:pr-12 group"
           >
-            <span className="text-[10px] uppercase tracking-[0.35em] text-accent/50 group-hover:text-accent transition-colors">
-              Scroll
+            {/* Vertical metallic line with pulsing dot */}
+            <span className="relative flex w-px items-start h-20 sm:h-24" style={{ background: 'linear-gradient(to bottom, #d4a84b 0%, transparent 100%)' }}>
+              <span className="absolute top-0 left-1/2 -translate-x-1/2 h-2 w-2 rounded-full bg-accent animate-pulse" style={{ boxShadow: '0 0 12px rgba(212,168,75,0.6)' }} />
             </span>
-            <span className="flex flex-col items-center gap-0.5 animate-bounce">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="text-accent/70">
-                <path d="M6 8L10 13L14 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="text-accent/40 -mt-1">
-                <path d="M6 8L10 13L14 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+            {/* Rotated scroll text */}
+            <span className="text-[9px] uppercase tracking-[0.4em] text-accent/40 group-hover:text-accent/70 transition-colors [writing-mode:vertical-rl] pb-0.5">
+              Scroll
             </span>
           </button>
         </div>
