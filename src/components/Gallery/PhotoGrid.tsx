@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react'
 import PhotoCard from './PhotoCard'
 import Lightbox from './Lightbox'
+import { useLanguage } from '@/i18n/useLanguage'
 import type { PhotoType } from '@/types'
 
 interface PhotoGridProps {
@@ -12,6 +13,7 @@ interface PhotoGridProps {
 export default function PhotoGrid({ photos }: PhotoGridProps) {
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(0)
+  const { t } = useLanguage()
 
   const openLightbox = useCallback((photo: PhotoType) => {
     const index = photos.findIndex((p) => p.id === photo.id)
@@ -31,8 +33,8 @@ export default function PhotoGrid({ photos }: PhotoGridProps) {
     return (
       <div className="flex flex-col items-center justify-center py-32 text-center">
         <div className="text-6xl mb-6 opacity-20">◻</div>
-        <p className="text-white/30 text-sm">暂无照片</p>
-        <p className="text-white/10 text-xs mt-2">照片上传后将在此展示</p>
+        <p className="text-white/30 text-sm">{t.gallery.noPhotos}</p>
+        <p className="text-white/10 text-xs mt-2">{t.gallery.noPhotosHint}</p>
       </div>
     )
   }

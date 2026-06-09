@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import "./globals.css";
 import Header from "@/components/Layout/Header";
 import Footer from "@/components/Layout/Footer";
 import ScrollProgress from "@/components/ui/ScrollProgress";
 import VisitTracker from "@/components/ui/VisitTracker";
+import { LanguageProvider } from "@/i18n/LanguageProvider";
+import { COOKIE_NAME, DEFAULT_LANG, type Language } from "@/i18n/settings";
 
 export const metadata: Metadata = {
   title: "LEONPHOTO | Leon Wang - 摄影与生活随笔",
@@ -17,22 +20,28 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const lang: Language = (cookieStore.get(COOKIE_NAME)?.value === 'en' ? 'en' : DEFAULT_LANG);
+  const htmlLang = lang === 'en' ? 'en' : 'zh-CN';
+
   return (
     <html
-      lang="zh-CN"
+      lang={htmlLang}
       className="dark"
     >
       <body className="bg-background text-foreground min-h-screen antialiased">
-        <ScrollProgress />
-        <VisitTracker />
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <LanguageProvider initialLang={lang}>
+          <ScrollProgress />
+          <VisitTracker />
+          <Header />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </LanguageProvider>
       </body>
     </html>
   );

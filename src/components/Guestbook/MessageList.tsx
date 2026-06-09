@@ -1,6 +1,7 @@
 'use client'
 
 import MessageCard from './MessageCard'
+import { useLanguage } from '@/i18n/useLanguage'
 import type { MessageType } from '@/types'
 
 interface MessageListProps {
@@ -8,10 +9,12 @@ interface MessageListProps {
 }
 
 export default function MessageList({ messages }: MessageListProps) {
+  const { t } = useLanguage()
+
   if (!messages.length) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center">
-        <p className="text-white/30 text-sm">快来写下第一条留言吧！</p>
+        <p className="text-white/30 text-sm">{t.guestbook.empty}</p>
       </div>
     )
   }

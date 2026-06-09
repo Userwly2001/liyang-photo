@@ -1,8 +1,11 @@
 export const dynamic = 'force-dynamic'
 
+import { cookies } from 'next/headers'
 import { prisma } from '@/lib/prisma'
 import GalleryPageContent from '@/components/Gallery/GalleryPageContent'
 import type { Metadata } from 'next'
+import { getDictionary } from '@/i18n/dictionaries'
+import { COOKIE_NAME, DEFAULT_LANG, type Language } from '@/i18n/settings'
 
 export const metadata: Metadata = {
   title: '风光作品 | LEONPHOTO',
@@ -43,13 +46,17 @@ async function getLandscapes() {
 }
 
 export default async function LandscapePage() {
+  const cookieStore = await cookies()
+  const lang: Language = (cookieStore.get(COOKIE_NAME)?.value === 'en' ? 'en' : DEFAULT_LANG)
+  const t = getDictionary(lang)
+
   const photos = await getLandscapes()
   return (
     <GalleryPageContent
-      title="风光"
-      subtitle="在静谧中感受大自然的壮丽"
+      title={t.gallery.navLandscape}
+      subtitle={t.home.featured.landscape.desc}
       photos={photos}
-      emptyMessage="风光作品即将上线"
+      emptyMessage={t.gallery.emptyLandscape}
     />
   )
 }

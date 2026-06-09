@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
+import { useLanguage } from '@/i18n/useLanguage'
 
 interface PortalPhoto {
   imageUrl: string
@@ -34,6 +35,8 @@ export default function HomePortal({
 }: HomePortalProps) {
   const introRef = useRef<HTMLElement>(null)
   const portalRef = useRef<HTMLElement>(null)
+  const { t } = useLanguage()
+  const year = new Date().getFullYear()
 
   useEffect(() => {
     const intro = introRef.current
@@ -52,6 +55,12 @@ export default function HomePortal({
     portalRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
 
+  const heroTitle = heroPhoto?.title || t.home.portal.coverTitle
+  const displayName = name || t.about.nameFallback
+  const displayTitle = title || t.home.portal.titleFallback
+  const displayBio = bio || t.home.portal.bioFallback
+  const displayLocation = location || t.home.hero.topRight
+
   return (
     <div className="home-portal bg-background">
       <section
@@ -63,7 +72,7 @@ export default function HomePortal({
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={heroPhoto.imageUrl}
-              alt={heroPhoto.title}
+              alt={heroTitle}
               className="h-full w-full object-cover opacity-72 saturate-[0.82] contrast-[1.06]"
             />
           )}
@@ -79,8 +88,8 @@ export default function HomePortal({
             transition={{ duration: 1 }}
             className="flex items-center justify-between text-[10px] uppercase tracking-[0.28em] text-foreground/48"
           >
-            <span>Leon Wang</span>
-            <span>{location || 'Photography / Notes'}</span>
+            <span>{t.home.hero.topLeft}</span>
+            <span>{displayLocation}</span>
           </motion.div>
 
           <div className="pb-[2svh] pt-12 sm:pt-16">
@@ -90,7 +99,7 @@ export default function HomePortal({
               transition={{ duration: 0.8, delay: 0.15 }}
               className="mb-6 text-[10px] uppercase tracking-[0.38em] text-accent/78 sm:text-xs"
             >
-              Personal archive · 2026
+              {t.home.hero.archiveLabel.replace('{year}', String(year))}
             </motion.p>
             <h1 className="max-w-5xl text-5xl font-semibold leading-[0.92] sm:text-7xl md:text-8xl lg:text-[7.8rem]">
               <motion.span
@@ -99,7 +108,7 @@ export default function HomePortal({
                 transition={{ duration: 0.9, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
                 className="block"
               >
-                光落下来，
+                {t.home.hero.line1}
               </motion.span>
               <motion.span
                 initial={{ opacity: 0, y: 34 }}
@@ -107,11 +116,11 @@ export default function HomePortal({
                 transition={{ duration: 0.9, delay: 0.46, ease: [0.16, 1, 0.3, 1] }}
                 className="block text-foreground/46"
               >
-                生活留下来。
+                {t.home.hero.line2}
               </motion.span>
             </h1>
             <p className="mt-6 max-w-[17rem] text-sm leading-7 text-foreground/58 sm:max-w-md">
-              一些影像，一些生活片段，以及那些值得被慢慢记住的时刻。
+              {t.home.hero.subtitle}
             </p>
           </div>
 
@@ -119,13 +128,13 @@ export default function HomePortal({
             <button
               type="button"
               onClick={enter}
-              aria-label="进入内容入口"
+              aria-label={t.home.hero.enterAriaLabel}
               className="group flex min-h-11 items-center gap-4 text-left text-xs uppercase tracking-[0.3em] text-foreground/68 transition-colors hover:text-foreground"
             >
               <span className="flex h-10 w-10 items-center justify-center rounded-full border border-accent/35 transition-all group-hover:border-accent/75 group-hover:bg-accent/10">
                 ↓
               </span>
-              <span className="hidden sm:inline">进入</span>
+              <span className="hidden sm:inline">{t.home.hero.enter}</span>
             </button>
           </div>
         </div>
@@ -139,13 +148,15 @@ export default function HomePortal({
         <div className="mx-auto flex min-h-[calc(100svh-4rem)] max-w-[1480px] flex-col">
           <div className="flex items-start justify-between gap-8 border-b border-accent/15 pb-7">
             <div>
-              <p className="mb-3 text-[10px] uppercase tracking-[0.32em] text-accent/62">Leonphoto</p>
-              <h2 className="text-3xl font-semibold sm:text-5xl">{name}</h2>
+              <p className="mb-3 text-[10px] uppercase tracking-[0.32em] text-accent/62">
+                {t.home.portal.brandLabel}
+              </p>
+              <h2 className="text-3xl font-semibold sm:text-5xl">{displayName}</h2>
             </div>
             <div className="max-w-sm text-right">
-              <p className="text-sm text-foreground/52">{title}</p>
+              <p className="text-sm text-foreground/52">{displayTitle}</p>
               <p className="mt-2 hidden text-xs leading-6 text-foreground/32 sm:block">
-                {bio || '记录影像，也记录影像之外的生活。'}
+                {displayBio}
               </p>
             </div>
           </div>
@@ -153,16 +164,16 @@ export default function HomePortal({
           <div className="grid flex-1 gap-3 py-5 md:grid-cols-[1.35fr_1fr]">
             <PortalLink
               href="/gallery"
-              label="相册"
-              english="Gallery"
+              label={t.home.portal.galleryLabel}
+              english={t.home.portal.galleryEnglish}
               detail={`${photoCount} 张影像 · 人像 / 风景 / 美食`}
               photo={galleryPhoto || heroPhoto}
               index="01"
             />
             <PortalLink
               href="/blog"
-              label="随笔"
-              english="Notes"
+              label={t.home.portal.blogLabel}
+              english={t.home.portal.blogEnglish}
               detail={`${postCount} 篇随笔 · 生活 / 成长 / 摄影`}
               photo={journalPhoto || heroPhoto}
               index="02"
@@ -170,11 +181,17 @@ export default function HomePortal({
           </div>
 
           <div className="flex flex-wrap items-center justify-between gap-4 border-t border-accent/15 pt-5 text-[10px] uppercase tracking-[0.24em] text-foreground/32">
-            <span>© {new Date().getFullYear()} Leon Wang</span>
+            <span>© {year} Leon Wang</span>
             <nav className="flex gap-5 sm:gap-7">
-              <Link href="/about" className="transition-colors hover:text-foreground/75">关于</Link>
-              <Link href="/guestbook" className="transition-colors hover:text-foreground/75">留言</Link>
-              <Link href="/admin" className="transition-colors hover:text-foreground/75">管理</Link>
+              <Link href="/about" className="transition-colors hover:text-foreground/75">
+                {t.home.portal.aboutNav}
+              </Link>
+              <Link href="/guestbook" className="transition-colors hover:text-foreground/75">
+                {t.home.portal.guestbookNav}
+              </Link>
+              <Link href="/admin" className="transition-colors hover:text-foreground/75">
+                {t.home.portal.adminNav}
+              </Link>
             </nav>
           </div>
         </div>

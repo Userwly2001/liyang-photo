@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useLanguage } from '@/i18n/useLanguage'
 
-function VisitCounter() {
+function VisitCounter({ label }: { label: string }) {
   const [count, setCount] = useState<number | null>(null)
 
   useEffect(() => {
@@ -19,15 +20,26 @@ function VisitCounter() {
   return (
     <span className="inline-flex items-center gap-1 text-white/20">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-      访问 {count.toLocaleString()}
+      {label.replace('{count}', count.toLocaleString())}
     </span>
   )
 }
 
 export default function Footer() {
   const pathname = usePathname()
+  const { t } = useLanguage()
 
   if (pathname === '/') return null
+
+  const year = new Date().getFullYear()
+
+  const footerLinks = [
+    { href: '/gallery', label: t.footer.allGallery },
+    { href: '/portrait', label: t.footer.portrait },
+    { href: '/landscape', label: t.footer.landscape },
+    { href: '/food', label: t.footer.food },
+    { href: '/blog', label: t.footer.blogNotes },
+  ]
 
   return (
     <footer className="border-t border-accent/10 mt-32">
@@ -38,19 +50,15 @@ export default function Footer() {
               LEON<span className="text-accent/70">PHOTO</span>
             </h3>
             <p className="text-sm text-foreground/42 leading-relaxed max-w-xs">
-              用镜头捕捉瞬间，也记录生活里的光、城市和一些缓慢形成的想法。
+              {t.footer.tagline}
             </p>
           </div>
           <div>
-            <h4 className="text-xs uppercase tracking-widest text-accent/55 mb-4">导航</h4>
+            <h4 className="text-xs uppercase tracking-widest text-accent/55 mb-4">
+              {t.footer.navHeading}
+            </h4>
             <ul className="space-y-2">
-              {[
-                { href: '/gallery', label: '全部相册' },
-                { href: '/portrait', label: '人像作品' },
-                { href: '/landscape', label: '风光作品' },
-                { href: '/food', label: '美食作品' },
-                { href: '/blog', label: '生活随笔' },
-              ].map((link) => (
+              {footerLinks.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
@@ -63,17 +71,19 @@ export default function Footer() {
             </ul>
           </div>
           <div>
-            <h4 className="text-xs uppercase tracking-widest text-accent/55 mb-4">联系</h4>
+            <h4 className="text-xs uppercase tracking-widest text-accent/55 mb-4">
+              {t.footer.contactHeading}
+            </h4>
             <ul className="space-y-2 text-sm text-foreground/48">
-              <li>liyang.wang.max@icloud.com</li>
-              <li>Instagram</li>
-              <li>微信</li>
+              <li>{t.footer.email}</li>
+              <li>{t.footer.instagram}</li>
+              <li>{t.footer.wechat}</li>
             </ul>
           </div>
         </div>
         <div className="mt-16 pt-8 border-t border-accent/8 text-center text-xs text-foreground/24 flex items-center justify-center gap-6">
-          <span>&copy; {new Date().getFullYear()} Leon Wang. 保留所有权利。</span>
-          <VisitCounter />
+          <span>{t.footer.copyright.replace('{year}', String(year))}</span>
+          <VisitCounter label={t.footer.visits} />
         </div>
       </div>
     </footer>

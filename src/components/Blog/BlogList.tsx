@@ -3,19 +3,29 @@
 import Link from 'next/link'
 import AnimatedSection from '@/components/ui/AnimatedSection'
 import { getPostCategory } from '@/lib/blog-categories'
+import { useLanguage } from '@/i18n/useLanguage'
+import { longDate } from '@/i18n/formatDate'
+import type { Language } from '@/i18n/settings'
 import type { BlogPostType } from '@/types'
 
 interface BlogListProps {
   posts: BlogPostType[]
   activeCategoryLabel?: string
+  lang?: Language
 }
 
-export default function BlogList({ posts, activeCategoryLabel = '全部' }: BlogListProps) {
+export default function BlogList({ posts, activeCategoryLabel, lang: langProp }: BlogListProps) {
+  const { t, lang: ctxLang } = useLanguage()
+  const lang = langProp || ctxLang
+  const categoryLabel = activeCategoryLabel || t.blog.allLabel
+
   if (!posts.length) {
     return (
       <div className="flex flex-col items-center justify-center py-32 text-center">
-        <p className="text-foreground/32 text-sm">暂无{activeCategoryLabel}内容</p>
-        <p className="text-foreground/14 text-xs mt-2">发布后的文字会在这里慢慢长出来</p>
+        <p className="text-foreground/32 text-sm">
+          {t.blog.noPosts.replace('{category}', categoryLabel)}
+        </p>
+        <p className="text-foreground/14 text-xs mt-2">{t.blog.noPostsHint}</p>
       </div>
     )
   }
@@ -40,11 +50,7 @@ export default function BlogList({ posts, activeCategoryLabel = '全部' }: Blog
                     <span className="text-accent/60">{getPostCategory(post).label}</span>
                     <span>·</span>
                     <time dateTime={post.createdAt}>
-                      {new Date(post.createdAt).toLocaleDateString('zh-CN', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                      })}
+                      {longDate(post.createdAt, lang)}
                     </time>
                     {post.tags.length > 0 && (
                       <>
@@ -74,7 +80,7 @@ export default function BlogList({ posts, activeCategoryLabel = '全部' }: Blog
                     </div>
                   )}
                   <div className="mt-4 flex items-center gap-1 text-xs uppercase tracking-[0.2em] text-accent/35 group-hover:text-accent/70 transition-colors">
-                    <span>阅读</span>
+                    <span>{t.blog.readMore}</span>
                     <span className="text-lg leading-none group-hover:translate-x-1 transition-transform">
                       →
                     </span>

@@ -5,12 +5,16 @@ import { motion } from 'framer-motion'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { getPostCategory } from '@/lib/blog-categories'
+import { useLanguage } from '@/i18n/useLanguage'
+import { longDate } from '@/i18n/formatDate'
+import type { Language } from '@/i18n/settings'
 
 interface BlogPostContentProps {
   title: string
   content: string
   createdAt: string
   tags: string[]
+  lang?: Language
 }
 
 export default function BlogPostContent({
@@ -18,7 +22,10 @@ export default function BlogPostContent({
   content,
   createdAt,
   tags,
+  lang: langProp,
 }: BlogPostContentProps) {
+  const { t, lang: ctxLang } = useLanguage()
+  const lang = langProp || ctxLang
   const category = getPostCategory({ tags })
 
   return (
@@ -31,7 +38,7 @@ export default function BlogPostContent({
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
             <path d="M8 2L4 6L8 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-          返回随笔
+          {t.blog.backToBlog}
         </Link>
 
         <motion.div
@@ -43,11 +50,7 @@ export default function BlogPostContent({
             <span className="text-white/45">{category.label}</span>
             <span>·</span>
             <time dateTime={createdAt}>
-              {new Date(createdAt).toLocaleDateString('zh-CN', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              })}
+              {longDate(createdAt, lang)}
             </time>
           </div>
 

@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import PhotoGrid from './PhotoGrid'
 import AnimatedSection from '@/components/ui/AnimatedSection'
+import { useLanguage } from '@/i18n/useLanguage'
 import type { PhotoType } from '@/types'
 
 interface GalleryPageContentProps {
@@ -17,8 +18,11 @@ export default function GalleryPageContent({
   title,
   subtitle,
   photos,
-  emptyMessage = '暂无作品',
+  emptyMessage,
 }: GalleryPageContentProps) {
+  const { t } = useLanguage()
+  const defaultEmpty = emptyMessage || t.gallery.emptyDefault
+
   return (
     <div className="min-h-screen px-5 pb-24 pt-28 sm:px-6">
       <div className="max-w-7xl mx-auto">
@@ -30,7 +34,7 @@ export default function GalleryPageContent({
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-xs uppercase tracking-[0.3em] text-accent/55 mb-4"
             >
-              作品集
+              {t.gallery.collectionLabel}
             </motion.p>
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
@@ -53,13 +57,13 @@ export default function GalleryPageContent({
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
               className="mt-8 flex flex-wrap gap-x-5 gap-y-3 text-xs text-foreground/38"
-              aria-label="相册分类"
+              aria-label={t.gallery.navAriaLabel}
             >
               {[
-                { href: '/gallery', label: '全部' },
-                { href: '/portrait', label: '人像' },
-                { href: '/landscape', label: '风景' },
-                { href: '/food', label: '美食' },
+                { href: '/gallery', label: t.gallery.navAll },
+                { href: '/portrait', label: t.gallery.navPortrait },
+                { href: '/landscape', label: t.gallery.navLandscape },
+                { href: '/food', label: t.gallery.navFood },
               ].map((link) => (
                 <Link
                   key={link.href}
@@ -76,7 +80,7 @@ export default function GalleryPageContent({
         {photos.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-32 text-center">
             <div className="text-6xl mb-6 text-accent/20">◻</div>
-            <p className="text-foreground/32 text-sm">{emptyMessage}</p>
+            <p className="text-foreground/32 text-sm">{defaultEmpty}</p>
           </div>
         ) : (
           <PhotoGrid photos={photos} />

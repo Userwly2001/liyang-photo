@@ -1,8 +1,11 @@
 export const dynamic = 'force-dynamic'
 
+import { cookies } from 'next/headers'
 import { prisma } from '@/lib/prisma'
 import GalleryPageContent from '@/components/Gallery/GalleryPageContent'
 import type { Metadata } from 'next'
+import { getDictionary } from '@/i18n/dictionaries'
+import { COOKIE_NAME, DEFAULT_LANG, type Language } from '@/i18n/settings'
 
 export const metadata: Metadata = {
   title: '美食作品 | LEONPHOTO',
@@ -43,13 +46,17 @@ async function getFoodPhotos() {
 }
 
 export default async function FoodPage() {
+  const cookieStore = await cookies()
+  const lang: Language = (cookieStore.get(COOKIE_NAME)?.value === 'en' ? 'en' : DEFAULT_LANG)
+  const t = getDictionary(lang)
+
   const photos = await getFoodPhotos()
   return (
     <GalleryPageContent
-      title="美食"
-      subtitle="用镜头品味生活中的美好滋味"
+      title={t.gallery.navFood}
+      subtitle={t.home.featured.food.desc}
       photos={photos}
-      emptyMessage="美食作品即将上线"
+      emptyMessage={t.gallery.emptyFood}
     />
   )
 }

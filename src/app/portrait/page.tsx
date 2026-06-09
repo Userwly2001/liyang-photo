@@ -1,8 +1,11 @@
 export const dynamic = 'force-dynamic'
 
+import { cookies } from 'next/headers'
 import { prisma } from '@/lib/prisma'
 import GalleryPageContent from '@/components/Gallery/GalleryPageContent'
 import type { Metadata } from 'next'
+import { getDictionary } from '@/i18n/dictionaries'
+import { COOKIE_NAME, DEFAULT_LANG, type Language } from '@/i18n/settings'
 
 export const metadata: Metadata = {
   title: '人像作品 | LEONPHOTO',
@@ -43,13 +46,17 @@ async function getPortraits() {
 }
 
 export default async function PortraitPage() {
+  const cookieStore = await cookies()
+  const lang: Language = (cookieStore.get(COOKIE_NAME)?.value === 'en' ? 'en' : DEFAULT_LANG)
+  const t = getDictionary(lang)
+
   const photos = await getPortraits()
   return (
     <GalleryPageContent
-      title="人像"
-      subtitle="用光影讲述每一个人的故事"
+      title={t.gallery.navPortrait}
+      subtitle={t.home.featured.portrait.desc}
       photos={photos}
-      emptyMessage="人像作品即将上线"
+      emptyMessage={t.gallery.emptyPortrait}
     />
   )
 }

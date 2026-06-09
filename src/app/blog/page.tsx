@@ -1,10 +1,13 @@
 export const dynamic = 'force-dynamic'
 
+import { cookies } from 'next/headers'
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import BlogList from '@/components/Blog/BlogList'
 import AnimatedSection from '@/components/ui/AnimatedSection'
-import { blogCategories, filterPostsByCategory, getBlogCategory } from '@/lib/blog-categories'
+import { filterPostsByCategory, getBlogCategory, getTranslatedCategories } from '@/lib/blog-categories'
+import { getDictionary } from '@/i18n/dictionaries'
+import { COOKIE_NAME, DEFAULT_LANG, type Language } from '@/i18n/settings'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -35,10 +38,18 @@ async function getPosts() {
 }
 
 export default async function BlogPage({ searchParams }: BlogPageProps) {
+  const cookieStore = await cookies()
+  const lang: Language = (cookieStore.get(COOKIE_NAME)?.value === 'en' ? 'en' : DEFAULT_LANG)
+  const t = getDictionary(lang)
+
   const params = await searchParams
   const activeCategory = getBlogCategory(params?.category)
   const posts = await getPosts()
   const filteredPosts = filterPostsByCategory(posts, activeCategory.slug)
+  const categories = getTranslatedCategories(t)
+
+  // Find the translated category that matches the active slug
+  const activeTranslated = categories.find(c => c.slug === activeCategory.slug) ?? categories[0]
 
   return (
     <div className="min-h-screen px-5 pb-24 pt-28 sm:px-6">
@@ -46,13 +57,13 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
         <div className="mb-16">
           <AnimatedSection>
             <p className="text-xs uppercase tracking-[0.3em] text-accent/55 mb-4">
-              生活与成长
+              {t.blog.pageLabel}
             </p>
             <h1 className="mb-4 text-4xl font-semibold sm:text-6xl">
-              随笔
+              {t.blog.pageTitle}
             </h1>
             <p className="text-sm text-foreground/45 max-w-md leading-relaxed">
-              记录生活片段、成长感受，以及一些未完成的想法
+              {t.blog.pageSubtitle}
             </p>
           </AnimatedSection>
         </div>
@@ -60,7 +71,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
         <AnimatedSection delay={0.1}>
           <div className="mb-14">
             <div className="flex flex-wrap gap-2 mb-5">
-              {blogCategories.map((category) => {
+              {categories.map((category) => {
                 const active = category.slug === activeCategory.slug
                 const href = category.slug === 'all' ? '/blog' : `/blog?category=${category.slug}`
 
@@ -80,12 +91,16 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
               })}
             </div>
             <p className="text-xs text-foreground/30 leading-relaxed">
-              {activeCategory.description}
+              {activeTranslated.description}
             </p>
           </div>
         </AnimatedSection>
 
-        <BlogList posts={filteredPosts} activeCategoryLabel={activeCategory.label} />
+        <BlogList
+          posts={filteredPosts}
+          activeCategoryLabel={activeTranslated.label}
+          lang={lang}
+        />
       </div>
     </div>
   )

@@ -4,19 +4,22 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-
-const navLinks = [
-  { href: '/', label: '首页' },
-  { href: '/gallery', label: '相册' },
-  { href: '/blog', label: '随笔' },
-  { href: '/guestbook', label: '留言' },
-  { href: '/about', label: '关于' },
-]
+import { useLanguage } from '@/i18n/useLanguage'
+import { LanguageSwitcher } from '@/i18n/LanguageSwitcher'
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const pathname = usePathname()
+  const { t } = useLanguage()
+
+  const navLinks = [
+    { href: '/', label: t.header.home },
+    { href: '/gallery', label: t.header.gallery },
+    { href: '/blog', label: t.header.blog },
+    { href: '/guestbook', label: t.header.guestbook },
+    { href: '/about', label: t.header.about },
+  ]
 
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 50)
@@ -48,45 +51,51 @@ export default function Header() {
         </Link>
 
         {/* Desktop nav */}
-        <ul className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => (
-            <li key={link.href}>
-              <Link
-                href={link.href}
-                className={`text-sm tracking-wide transition-colors duration-300 ${
-                  pathname === link.href
-                    ? 'text-foreground'
-                    : 'text-foreground/46 hover:text-foreground/80'
-                }`}
-              >
-                {link.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <div className="hidden md:flex items-center gap-8">
+          <ul className="flex items-center gap-8">
+            {navLinks.map((link) => (
+              <li key={link.href}>
+                <Link
+                  href={link.href}
+                  className={`text-sm tracking-wide transition-colors duration-300 ${
+                    pathname === link.href
+                      ? 'text-foreground'
+                      : 'text-foreground/46 hover:text-foreground/80'
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <LanguageSwitcher />
+        </div>
 
         {/* Mobile toggle */}
-        <button
-          onClick={() => setMobileOpen(!mobileOpen)}
-          className="md:hidden w-8 h-8 flex flex-col items-center justify-center gap-[5px]"
-          aria-label="菜单"
-        >
-          <span
-            className={`block w-5 h-[1.5px] bg-foreground transition-all duration-300 ${
-              mobileOpen ? 'rotate-45 translate-y-[6.5px]' : ''
-            }`}
-          />
-          <span
-            className={`block w-5 h-[1.5px] bg-foreground transition-all duration-300 ${
-              mobileOpen ? 'opacity-0' : ''
-            }`}
-          />
-          <span
-            className={`block w-5 h-[1.5px] bg-foreground transition-all duration-300 ${
-              mobileOpen ? '-rotate-45 -translate-y-[6.5px]' : ''
-            }`}
-          />
-        </button>
+        <div className="flex items-center gap-3 md:hidden">
+          <LanguageSwitcher />
+          <button
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className="w-8 h-8 flex flex-col items-center justify-center gap-[5px]"
+            aria-label={t.header.menuAriaLabel}
+          >
+            <span
+              className={`block w-5 h-[1.5px] bg-foreground transition-all duration-300 ${
+                mobileOpen ? 'rotate-45 translate-y-[6.5px]' : ''
+              }`}
+            />
+            <span
+              className={`block w-5 h-[1.5px] bg-foreground transition-all duration-300 ${
+                mobileOpen ? 'opacity-0' : ''
+              }`}
+            />
+            <span
+              className={`block w-5 h-[1.5px] bg-foreground transition-all duration-300 ${
+                mobileOpen ? '-rotate-45 -translate-y-[6.5px]' : ''
+              }`}
+            />
+          </button>
+        </div>
       </nav>
 
       {/* Mobile menu */}

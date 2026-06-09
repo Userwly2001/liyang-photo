@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useLanguage } from '@/i18n/useLanguage'
 
 interface MessageFormProps {
   onMessageCreated: () => void
@@ -20,6 +21,7 @@ export default function MessageForm({ onMessageCreated }: MessageFormProps) {
   const [isError, setIsError] = useState(false)
   const [dragOver, setDragOver] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const { t } = useLanguage()
 
   const addImages = (files: File[]) => {
     setImages((prev) => {
@@ -27,7 +29,7 @@ export default function MessageForm({ onMessageCreated }: MessageFormProps) {
       const validFiles = files.slice(0, remaining).filter((f) => f.size <= MAX_FILE_SIZE)
 
       if (validFiles.length < files.length && files.length > remaining) {
-        setMessage(`最多上传 ${MAX_IMAGES} 张图片`)
+        setMessage(t.guestbook.maxImagesError.replace('{max}', String(MAX_IMAGES)))
         setIsError(true)
         setTimeout(() => setMessage(''), 3000)
       }
@@ -61,7 +63,7 @@ export default function MessageForm({ onMessageCreated }: MessageFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!content.trim()) {
-      setMessage('请输入留言内容')
+      setMessage(t.guestbook.contentRequired)
       setIsError(true)
       setTimeout(() => setMessage(''), 3000)
       return
@@ -72,7 +74,7 @@ export default function MessageForm({ onMessageCreated }: MessageFormProps) {
 
     try {
       const formData = new FormData()
-      formData.append('nickname', nickname.trim() || 'Anonymous')
+      formData.append('nickname', nickname.trim() || t.guestbook.anonymous)
       formData.append('content', content.trim())
       formData.append('type', images.length > 0 ? 'photo_share' : 'comment')
       images.forEach((img) => formData.append('images', img))
@@ -83,18 +85,18 @@ export default function MessageForm({ onMessageCreated }: MessageFormProps) {
       })
 
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Failed to submit')
+      if (!res.ok) throw new Error(data.error || t.guestbook.submitFailed)
 
       setNickname('')
       setContent('')
       setImages([])
       setPreviews([])
       setIsError(false)
-      setMessage('留言已提交！等待审核。')
+      setMessage(t.guestbook.submitted)
       setTimeout(() => setMessage(''), 3000)
       onMessageCreated()
     } catch (err) {
-      setMessage(err instanceof Error ? err.message : '提交失败')
+      setMessage(err instanceof Error ? err.message : t.guestbook.submitFailed)
       setIsError(true)
       setTimeout(() => setMessage(''), 3000)
     } finally {
@@ -109,7 +111,7 @@ export default function MessageForm({ onMessageCreated }: MessageFormProps) {
           type="text"
           value={nickname}
           onChange={(e) => setNickname(e.target.value)}
-          placeholder="你的昵称（选填，默认为匿名）"
+          placeholder={t.guestbook.nicknamePlaceholder}
           className="w-full bg-transparent border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-white/30 transition-colors"
           maxLength={50}
         />
@@ -119,7 +121,7 @@ export default function MessageForm({ onMessageCreated }: MessageFormProps) {
         <textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          placeholder="分享你的想法或照片..."
+          placeholder={t.guestbook.contentPlaceholder}
           rows={4}
           required
           className="w-full bg-transparent border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-white/30 transition-colors resize-none"
@@ -152,10 +154,10 @@ export default function MessageForm({ onMessageCreated }: MessageFormProps) {
           }}
         />
         <p className="text-xs text-white/30">
-          拖拽照片到此处，或点击浏览
+          {t.guestbook.uploadHint}
         </p>
         <p className="text-[10px] text-white/10 mt-1">
-          最多 {MAX_IMAGES} 张图片，每张不超过 10MB
+          {t.guestbook.uploadLimit.replace('{max}', String(MAX_IMAGES))}
         </p>
       </div>
 
@@ -215,10 +217,10 @@ export default function MessageForm({ onMessageCreated }: MessageFormProps) {
           {submitting ? (
             <>
               <span className="w-3 h-3 border border-white/20 border-t-white/60 rounded-full animate-spin" />
-              提交中...
+              {t.guestbook.submitting}
             </>
           ) : (
-            '发布留言'
+            t.guestbook.submit
           )}
         </button>
       </div>

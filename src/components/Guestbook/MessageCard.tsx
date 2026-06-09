@@ -2,6 +2,7 @@
 
 import { useRef, useState, type MouseEvent } from 'react'
 import { motion } from 'framer-motion'
+import { useLanguage } from '@/i18n/useLanguage'
 import type { MessageType } from '@/types'
 
 interface MessageCardProps {
@@ -14,6 +15,7 @@ export default function MessageCard({ message, index }: MessageCardProps) {
   const [tilt, setTilt] = useState({ x: 0, y: 0 })
   const [isHovered, setIsHovered] = useState(false)
   const [expandedImage, setExpandedImage] = useState<string | null>(null)
+  const { lang } = useLanguage()
 
   const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return
@@ -71,7 +73,7 @@ export default function MessageCard({ message, index }: MessageCardProps) {
               <span className="text-sm font-medium">{message.nickname}</span>
             </div>
             <span className="text-[10px] text-white/20">
-              {new Date(message.createdAt).toLocaleDateString('zh-CN', {
+              {new Date(message.createdAt).toLocaleDateString(lang === 'en' ? 'en-US' : 'zh-CN', {
                 month: 'short',
                 day: 'numeric',
               })}

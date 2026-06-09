@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import BlurImage from './BlurImage'
+import { useLanguage } from '@/i18n/useLanguage'
 import type { PhotoType } from '@/types'
 
 interface PhotoCardProps {
@@ -13,6 +14,7 @@ interface PhotoCardProps {
 export default function PhotoCard({ photo, index, onOpen }: PhotoCardProps) {
   const w = photo.width || 800
   const h = photo.height || 600
+  const { t } = useLanguage()
 
   return (
     <motion.div
@@ -38,7 +40,7 @@ export default function PhotoCard({ photo, index, onOpen }: PhotoCardProps) {
         <div className="absolute inset-0 bg-black/0 transition-colors duration-500 group-hover:bg-black/22" />
         <div className="absolute bottom-3 left-3 right-3 flex translate-y-2 items-center justify-between opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
           <span className="text-[10px] uppercase tracking-[0.24em] text-foreground/82">
-            View
+            {t.common.view}
           </span>
           <span className="h-px flex-1 mx-3 bg-accent/45" />
           <span className="text-[10px] text-foreground/64">{photo.category}</span>

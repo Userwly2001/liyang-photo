@@ -39,7 +39,7 @@ export default async function HomePage() {
   const heroPhoto = profile?.heroImage
     ? {
         imageUrl: profile.heroImage,
-        title: '首页封面',
+        title: '',
       }
     : featuredPhotos[0]
   const journalPhoto = latestPost?.coverImage
@@ -48,8 +48,8 @@ export default async function HomePage() {
 
   return (
     <HomePortal
-      name={profile?.name || 'Leon Wang'}
-      title={profile?.title || '摄影与生活记录者'}
+      name={profile?.name || ''}
+      title={profile?.title || ''}
       bio={profile?.bio || ''}
       location={profile?.location}
       heroPhoto={heroPhoto}

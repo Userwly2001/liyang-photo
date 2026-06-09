@@ -2,6 +2,7 @@
 
 import { useEffect, useCallback, useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useLanguage } from '@/i18n/useLanguage'
 import type { PhotoType, MessageType } from '@/types'
 
 interface LightboxProps {
@@ -26,6 +27,7 @@ export default function Lightbox({
   const [submitting, setSubmitting] = useState(false)
   const [commentError, setCommentError] = useState('')
   const commentListRef = useRef<HTMLDivElement>(null)
+  const { t, lang } = useLanguage()
   const photo = photos[currentIndex]
 
   useEffect(() => {
@@ -89,7 +91,7 @@ export default function Lightbox({
 
     try {
       const formData = new FormData()
-      formData.append('nickname', nickname.trim() || 'Anonymous')
+      formData.append('nickname', nickname.trim() || t.lightbox.anonymous)
       formData.append('content', content.trim())
       formData.append('type', 'comment')
       formData.append('photoId', photo.id)
@@ -99,7 +101,7 @@ export default function Lightbox({
         body: formData,
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error || '提交失败')
+      if (!res.ok) throw new Error(data.error || t.lightbox.submitFailed)
 
       setContent('')
       // Refetch comments
@@ -111,7 +113,7 @@ export default function Lightbox({
       // Scroll to top of comment list
       commentListRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
     } catch (err) {
-      setCommentError(err instanceof Error ? err.message : '提交失败')
+      setCommentError(err instanceof Error ? err.message : t.lightbox.submitFailed)
     } finally {
       setSubmitting(false)
     }
@@ -135,7 +137,7 @@ export default function Lightbox({
           <button
             onClick={onClose}
             className="absolute top-6 right-6 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 transition-colors"
-            aria-label="Close"
+            aria-label={t.lightbox.close}
           >
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
               <path d="M1 1L17 17M17 1L1 17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -155,7 +157,7 @@ export default function Lightbox({
               onNavigate(currentIndex > 0 ? currentIndex - 1 : photos.length - 1)
             }}
             className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 transition-colors z-10"
-            aria-label="Previous"
+            aria-label={t.lightbox.previous}
           >
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
               <path d="M14 4L8 10L14 16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -205,7 +207,7 @@ export default function Lightbox({
                       onClick={(e) => e.stopPropagation()}
                       className="shrink-0 rounded-full border border-white/15 px-3 py-1.5 text-xs text-white/70 transition-colors hover:border-white/35 hover:text-white"
                     >
-                      下载原图
+                      {t.lightbox.download}
                     </a>
                   )}
                 </div>
@@ -229,7 +231,7 @@ export default function Lightbox({
               onNavigate(currentIndex < photos.length - 1 ? currentIndex + 1 : 0)
             }}
             className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 transition-colors z-10"
-            aria-label="Next"
+            aria-label={t.lightbox.next}
           >
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
               <path d="M6 4L12 10L6 16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -243,12 +245,12 @@ export default function Lightbox({
               setShowComments(!showComments)
             }}
             className="absolute bottom-6 right-6 z-10 flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-colors group"
-            aria-label="Comments"
+            aria-label={t.lightbox.comments}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
             </svg>
-            <span className="text-sm text-white/80 group-hover:text-white transition-colors">评论</span>
+            <span className="text-sm text-white/80 group-hover:text-white transition-colors">{t.lightbox.comments}</span>
           </button>
         </div>
 
@@ -266,8 +268,7 @@ export default function Lightbox({
                 {/* Header */}
                 <div className="px-5 py-4 border-b border-white/10 flex items-center justify-between">
                   <h4 className="text-sm font-medium">
-                    评论
-                    <span className="text-white/30 ml-2">({comments.length})</span>
+                    {t.lightbox.commentHeader.replace('{count}', String(comments.length))}
                   </h4>
                   <button
                     onClick={() => setShowComments(false)}
@@ -290,7 +291,7 @@ export default function Lightbox({
                     </div>
                   ) : comments.length === 0 ? (
                     <p className="text-xs text-white/20 text-center py-8">
-                      还没有评论，来说点什么吧
+                      {t.lightbox.noComments}
                     </p>
                   ) : (
                     comments.map((comment) => (
@@ -301,7 +302,7 @@ export default function Lightbox({
                           </div>
                           <span className="text-xs font-medium">{comment.nickname}</span>
                           <span className="text-[10px] text-white/20 ml-auto">
-                            {new Date(comment.createdAt).toLocaleDateString('zh-CN', {
+                            {new Date(comment.createdAt).toLocaleDateString(lang === 'en' ? 'en-US' : 'zh-CN', {
                               month: 'short',
                               day: 'numeric',
                             })}
@@ -325,7 +326,7 @@ export default function Lightbox({
                       type="text"
                       value={nickname}
                       onChange={(e) => setNickname(e.target.value)}
-                      placeholder="昵称（选填）"
+                      placeholder={t.lightbox.nicknamePlaceholder}
                       maxLength={50}
                       className="w-full bg-transparent border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder:text-white/20 focus:outline-none focus:border-white/30 transition-colors"
                     />
@@ -334,7 +335,7 @@ export default function Lightbox({
                         type="text"
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
-                        placeholder="写评论..."
+                        placeholder={t.lightbox.commentPlaceholder}
                         required
                         maxLength={500}
                         className="flex-1 bg-transparent border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder:text-white/20 focus:outline-none focus:border-white/30 transition-colors"
@@ -347,7 +348,7 @@ export default function Lightbox({
                         {submitting ? (
                           <span className="w-3 h-3 border border-white/20 border-t-white/60 rounded-full animate-spin" />
                         ) : (
-                          '发送'
+                          t.lightbox.send
                         )}
                       </button>
                     </div>
