@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { useLanguage } from '@/i18n/useLanguage'
@@ -38,6 +38,7 @@ export default function HomePortal({
   const portalRef = useRef<HTMLElement>(null)
   const { t } = useLanguage()
   const year = new Date().getFullYear()
+  const [scrollProgress, setScrollProgress] = useState(0)
 
   useEffect(() => {
     const intro = introRef.current
@@ -48,8 +49,20 @@ export default function HomePortal({
       intro.style.setProperty('--pointer-y', `${event.clientY}px`)
     }
 
+    const onScroll = () => {
+      const heroHeight = window.innerHeight
+      const scrolled = window.scrollY
+      const progress = Math.min(scrolled / (heroHeight * 0.8), 1)
+      setScrollProgress(progress)
+    }
+
     window.addEventListener('pointermove', onPointerMove, { passive: true })
-    return () => window.removeEventListener('pointermove', onPointerMove)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    onScroll()
+    return () => {
+      window.removeEventListener('pointermove', onPointerMove)
+      window.removeEventListener('scroll', onScroll)
+    }
   }, [])
 
   const enter = () => {
@@ -136,14 +149,29 @@ export default function HomePortal({
             type="button"
             onClick={enter}
             aria-label={t.home.hero.enterAriaLabel}
-            className="absolute right-0 bottom-0 flex items-end gap-5 pr-6 pb-10 sm:pr-10 sm:pb-12 lg:pr-14 group"
+            className="absolute right-0 bottom-0 flex items-end gap-6 pr-8 pb-12 sm:pr-12 sm:pb-14 lg:pr-16 group"
           >
-            {/* Vertical metallic line with pulsing dot */}
-            <span className="relative flex w-px items-start h-28 sm:h-32" style={{ background: 'linear-gradient(to bottom, #d4a84b 0%, transparent 100%)' }}>
-              <span className="absolute top-0 left-1/2 -translate-x-1/2 h-2.5 w-2.5 rounded-full bg-accent animate-pulse" style={{ boxShadow: '0 0 16px rgba(212,168,75,0.7)' }} />
+            {/* Scroll progress line */}
+            <span className="relative flex w-px items-start h-36 sm:h-40" style={{ background: 'rgba(212,168,75,0.12)' }}>
+              {/* Filled gold progress */}
+              <span
+                className="absolute top-0 left-0 w-full bg-accent transition-[height] duration-75 ease-linear"
+                style={{
+                  height: `${scrollProgress * 100}%`,
+                  boxShadow: '0 0 8px rgba(212,168,75,0.4)',
+                }}
+              />
+              {/* Glowing dot at progress point */}
+              <span
+                className="absolute left-1/2 -translate-x-1/2 h-3 w-3 rounded-full bg-accent transition-[top] duration-75 ease-linear"
+                style={{
+                  top: `${scrollProgress * 100}%`,
+                  boxShadow: '0 0 20px rgba(212,168,75,0.8), 0 0 40px rgba(212,168,75,0.3)',
+                }}
+              />
             </span>
             {/* Rotated scroll text */}
-            <span className="text-[11px] uppercase tracking-[0.4em] text-accent/45 group-hover:text-accent/75 transition-colors [writing-mode:vertical-rl] pb-0.5">
+            <span className="text-xs uppercase tracking-[0.45em] text-accent/50 group-hover:text-accent/80 transition-colors [writing-mode:vertical-rl]">
               Scroll
             </span>
           </button>
