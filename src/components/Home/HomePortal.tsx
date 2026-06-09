@@ -85,7 +85,7 @@ export default function HomePortal({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1 }}
-            className="flex items-center justify-between text-[10px] uppercase tracking-[0.28em] text-foreground/72"
+            className="flex items-center justify-between text-xs uppercase tracking-[0.2em] text-foreground/72"
           >
             <span>{t.home.hero.topLeft}</span>
             <span className="flex items-center gap-4">

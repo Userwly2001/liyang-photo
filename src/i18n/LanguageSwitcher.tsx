@@ -10,7 +10,7 @@ export function LanguageSwitcher() {
       type="button"
       onClick={() => setLang(lang === 'zh' ? 'en' : 'zh')}
       aria-label={t.header.langSwitchAriaLabel}
-      className="rounded-full border border-white/20 bg-white/5 backdrop-blur-md px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-foreground/72 transition-all hover:border-accent/70 hover:bg-accent/15 hover:text-foreground"
+      className="rounded-full border border-white/20 bg-white/5 backdrop-blur-md px-3.5 py-1.5 text-xs uppercase tracking-[0.15em] text-foreground/72 transition-all hover:border-accent/70 hover:bg-accent/15 hover:text-foreground"
     >
       {lang === 'zh' ? 'EN' : '中'}
     </button>
