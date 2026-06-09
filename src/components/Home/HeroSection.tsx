@@ -47,7 +47,7 @@ export default function HeroSection({ photo }: HeroSectionProps) {
       ref={containerRef}
       className="relative min-h-[100svh] flex flex-col items-center justify-center overflow-hidden border-b border-accent/10"
     >
-      <div className="absolute inset-0 bg-[#080706]">
+      <div className="absolute inset-0 bg-background">
         {photo ? (
           <>
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -56,8 +56,8 @@ export default function HeroSection({ photo }: HeroSectionProps) {
               alt={photo.title}
               className="h-full w-full object-cover opacity-70 saturate-[0.88] contrast-[1.04]"
             />
-            <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,7,6,0.92),rgba(8,7,6,0.45)_42%,rgba(8,7,6,0.78))]" />
-            <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(8,7,6,0.92),transparent_36%,rgba(8,7,6,0.72))]" />
+            <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(13,11,8,0.78),rgba(13,11,8,0.35)_42%,rgba(13,11,8,0.58))]" />
+            <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(13,11,8,0.8),transparent_38%,rgba(13,11,8,0.55))]" />
           </>
         ) : (
           <div className="absolute inset-8 border border-accent/10 bg-[linear-gradient(135deg,rgba(198,161,91,0.10),transparent_38%,rgba(244,239,230,0.04))]" />

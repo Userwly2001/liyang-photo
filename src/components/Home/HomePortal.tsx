@@ -68,17 +68,17 @@ export default function HomePortal({
         ref={introRef}
         className="home-portal-intro relative flex h-[100svh] overflow-hidden"
       >
-        <div className="absolute inset-0 bg-[#080706]">
+        <div className="absolute inset-0 bg-background">
           {heroPhoto && (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={heroPhoto.imageUrl}
               alt={heroTitle}
-              className="h-full w-full object-cover opacity-72 saturate-[0.82] contrast-[1.06]"
+              className="h-full w-full object-cover opacity-82 saturate-[0.92] contrast-[1.04]"
             />
           )}
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,7,6,0.88),rgba(8,7,6,0.26)_58%,rgba(8,7,6,0.62))]" />
-          <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(8,7,6,0.9),transparent_48%,rgba(8,7,6,0.58))]" />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(13,11,8,0.78),rgba(13,11,8,0.22)_58%,rgba(13,11,8,0.52))]" />
+          <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(13,11,8,0.82),transparent_48%,rgba(13,11,8,0.5))]" />
           <div className="home-portal-light absolute inset-0" />
         </div>
 
@@ -230,10 +230,10 @@ function PortalLink({
         <img
           src={photo.imageUrl}
           alt={photo.title}
-          className="absolute inset-0 h-full w-full object-cover opacity-56 saturate-[0.72] transition-all duration-1000 group-hover:scale-[1.025] group-hover:opacity-72 group-hover:saturate-[0.9]"
+          className="absolute inset-0 h-full w-full object-cover opacity-66 saturate-[0.85] transition-all duration-1000 group-hover:scale-[1.025] group-hover:opacity-80 group-hover:saturate-[0.95]"
         />
       )}
-      <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(8,7,6,0.92),rgba(8,7,6,0.08)_65%,rgba(8,7,6,0.3))]" />
+      <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(13,11,8,0.78),rgba(13,11,8,0.06)_65%,rgba(13,11,8,0.25))]" />
       <div className="absolute inset-0 flex flex-col justify-between p-5 sm:p-7">
         <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.28em] text-foreground/48">
           <span>{index}</span>

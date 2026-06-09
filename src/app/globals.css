@@ -3,16 +3,16 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --color-background: #080706;
-  --color-foreground: #f4efe6;
-  --color-surface: #12100d;
-  --color-surface-elevated: #1b1712;
-  --color-surface-hover: #242018;
-  --color-border: #2f2a22;
-  --color-border-light: #453c2f;
-  --color-accent: #c6a15b;
-  --color-muted: #8f887b;
-  --color-muted-light: #b8ad9c;
+  --color-background: #0d0b08;
+  --color-foreground: #f5f0e8;
+  --color-surface: #161310;
+  --color-surface-elevated: #201c16;
+  --color-surface-hover: #2a251d;
+  --color-border: #332e26;
+  --color-border-light: #4a4032;
+  --color-accent: #d4a84b;
+  --color-muted: #9d9485;
+  --color-muted-light: #c4b69e;
   --color-danger: #ff4444;
   --color-success: #44ff88;
   --color-glass: rgba(244, 239, 230, 0.06);
@@ -87,8 +87,8 @@ body::before {
 .home-portal-light {
   background:
     radial-gradient(
-      circle 24rem at var(--pointer-x) var(--pointer-y),
-      rgba(198, 161, 91, 0.13),
+      circle 28rem at var(--pointer-x) var(--pointer-y),
+      rgba(212, 168, 75, 0.18),
       transparent 70%
     );
   mix-blend-mode: screen;
