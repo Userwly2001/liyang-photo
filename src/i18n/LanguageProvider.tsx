@@ -3,7 +3,7 @@
 import { createContext, useState, useCallback, useEffect } from 'react'
 import type { ReactNode } from 'react'
 import type { Language } from './settings'
-import { COOKIE_NAME, DEFAULT_LANG } from './settings'
+import { COOKIE_NAME } from './settings'
 import { getDictionary } from './dictionaries'
 import type { Dictionary } from './types'
 
@@ -59,15 +59,14 @@ export function LanguageProvider({
       const stored = localStorage.getItem(COOKIE_NAME)
       if (stored === 'zh' || stored === 'en') {
         const storedLang = stored as Language
-        if (storedLang !== lang) {
+        queueMicrotask(() => {
           setLangState(storedLang)
           setT(getDictionary(storedLang))
-        }
+        })
       }
     } catch {
       // localStorage unavailable
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (

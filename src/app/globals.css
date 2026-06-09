@@ -103,6 +103,79 @@ body::before {
   transition: opacity 300ms ease;
 }
 
+.home-scroll-cue {
+  filter: drop-shadow(0 8px 22px rgba(0, 0, 0, 0.55));
+}
+
+.home-scroll-orbit {
+  box-shadow:
+    0 0 0 1px rgba(212, 168, 75, 0.08),
+    0 0 28px rgba(212, 168, 75, 0.12),
+    inset 0 0 24px rgba(212, 168, 75, 0.05);
+  transition:
+    border-color 300ms ease,
+    background-color 300ms ease,
+    transform 300ms ease;
+}
+
+.home-scroll-orbit::before {
+  content: "";
+  position: absolute;
+  inset: -8px;
+  border: 1px solid rgba(212, 168, 75, 0.28);
+  border-radius: 999px;
+  animation: home-scroll-pulse 2.6s ease-out infinite;
+}
+
+.home-scroll-orbit-inner {
+  border-top-color: rgba(212, 168, 75, 0.85);
+  animation: home-scroll-spin 6s linear infinite;
+}
+
+.home-scroll-arrow {
+  animation: home-scroll-arrow 1.8s ease-in-out infinite;
+}
+
+.home-scroll-dot {
+  box-shadow:
+    0 0 12px rgba(212, 168, 75, 0.95),
+    0 0 28px rgba(212, 168, 75, 0.5);
+}
+
+.home-scroll-cue:hover .home-scroll-orbit {
+  transform: scale(1.06);
+  border-color: rgba(212, 168, 75, 0.95);
+  background: rgba(212, 168, 75, 0.12);
+}
+
+@keyframes home-scroll-pulse {
+  0% {
+    opacity: 0.8;
+    transform: scale(0.9);
+  }
+  75%,
+  100% {
+    opacity: 0;
+    transform: scale(1.28);
+  }
+}
+
+@keyframes home-scroll-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes home-scroll-arrow {
+  0%,
+  100% {
+    transform: translateY(-3px);
+  }
+  50% {
+    transform: translateY(4px);
+  }
+}
+
 @media (pointer: coarse), (prefers-reduced-motion: reduce) {
   .home-portal-light {
     display: none;
@@ -110,6 +183,14 @@ body::before {
   .animate-scroll-line {
     animation: none;
     opacity: 0.6;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-scroll-orbit::before,
+  .home-scroll-orbit-inner,
+  .home-scroll-arrow {
+    animation: none;
   }
 }
 

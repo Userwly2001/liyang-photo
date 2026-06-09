@@ -149,30 +149,36 @@ export default function HomePortal({
             type="button"
             onClick={enter}
             aria-label={t.home.hero.enterAriaLabel}
-            className="absolute right-0 bottom-0 flex items-end gap-6 pr-8 pb-12 sm:pr-12 sm:pb-14 lg:pr-16 group"
+            className="home-scroll-cue absolute bottom-7 right-5 flex items-end gap-4 sm:bottom-10 sm:right-8 sm:gap-5 lg:right-12"
           >
-            {/* Scroll progress line */}
-            <span className="relative flex w-px items-start h-36 sm:h-40" style={{ background: 'rgba(212,168,75,0.12)' }}>
-              {/* Filled gold progress */}
-              <span
-                className="absolute top-0 left-0 w-full bg-accent transition-[height] duration-75 ease-linear"
-                style={{
-                  height: `${scrollProgress * 100}%`,
-                  boxShadow: '0 0 8px rgba(212,168,75,0.4)',
-                }}
-              />
-              {/* Glowing dot at progress point */}
-              <span
-                className="absolute left-1/2 -translate-x-1/2 h-3 w-3 rounded-full bg-accent transition-[top] duration-75 ease-linear"
-                style={{
-                  top: `${scrollProgress * 100}%`,
-                  boxShadow: '0 0 20px rgba(212,168,75,0.8), 0 0 40px rgba(212,168,75,0.3)',
-                }}
-              />
+            <span className="flex flex-col items-end gap-1.5 pb-1 text-right">
+              <span className="text-[10px] uppercase tracking-[0.36em] text-accent">
+                Scroll
+              </span>
+              <span className="text-[10px] tracking-[0.18em] text-foreground/72 sm:text-xs">
+                {t.home.hero.enter}
+              </span>
             </span>
-            {/* Rotated scroll text */}
-            <span className="text-xs uppercase tracking-[0.45em] text-accent/50 group-hover:text-accent/80 transition-colors [writing-mode:vertical-rl]">
-              Scroll
+
+            <span className="home-scroll-orbit relative flex h-16 w-16 items-center justify-center rounded-full border border-accent/60 bg-background/42 backdrop-blur-md sm:h-[4.5rem] sm:w-[4.5rem]">
+              <span className="home-scroll-orbit-inner absolute inset-[7px] rounded-full border border-accent/20" />
+              <span className="home-scroll-arrow text-lg text-accent">↓</span>
+            </span>
+
+            <span className="relative hidden h-28 w-px overflow-visible bg-accent/18 sm:flex">
+              <span
+                className="absolute left-0 top-0 w-full bg-accent transition-[height] duration-75 ease-linear"
+                style={{
+                  height: `${Math.max(scrollProgress * 100, 18)}%`,
+                  boxShadow: '0 0 10px rgba(212,168,75,0.65)',
+                }}
+              />
+              <span
+                className="home-scroll-dot absolute left-1/2 h-2.5 w-2.5 -translate-x-1/2 rounded-full bg-accent transition-[top] duration-75 ease-linear"
+                style={{
+                  top: `${Math.max(scrollProgress * 100, 18)}%`,
+                }}
+              />
             </span>
           </button>
         </div>

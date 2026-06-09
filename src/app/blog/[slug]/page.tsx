@@ -2,7 +2,6 @@ import { cookies } from 'next/headers'
 import { prisma } from '@/lib/prisma'
 import BlogPostContent from '@/components/Blog/BlogPostContent'
 import { notFound } from 'next/navigation'
-import { getDictionary } from '@/i18n/dictionaries'
 import { COOKIE_NAME, DEFAULT_LANG, type Language } from '@/i18n/settings'
 import type { Metadata } from 'next'
 
