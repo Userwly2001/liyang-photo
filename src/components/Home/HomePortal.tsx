@@ -136,14 +136,14 @@ export default function HomePortal({
             type="button"
             onClick={enter}
             aria-label={t.home.hero.enterAriaLabel}
-            className="absolute right-0 bottom-0 flex items-end gap-4 pr-5 pb-8 sm:pr-8 sm:pb-10 lg:pr-12 group"
+            className="absolute right-0 bottom-0 flex items-end gap-5 pr-6 pb-10 sm:pr-10 sm:pb-12 lg:pr-14 group"
           >
             {/* Vertical metallic line with pulsing dot */}
-            <span className="relative flex w-px items-start h-20 sm:h-24" style={{ background: 'linear-gradient(to bottom, #d4a84b 0%, transparent 100%)' }}>
-              <span className="absolute top-0 left-1/2 -translate-x-1/2 h-2 w-2 rounded-full bg-accent animate-pulse" style={{ boxShadow: '0 0 12px rgba(212,168,75,0.6)' }} />
+            <span className="relative flex w-px items-start h-28 sm:h-32" style={{ background: 'linear-gradient(to bottom, #d4a84b 0%, transparent 100%)' }}>
+              <span className="absolute top-0 left-1/2 -translate-x-1/2 h-2.5 w-2.5 rounded-full bg-accent animate-pulse" style={{ boxShadow: '0 0 16px rgba(212,168,75,0.7)' }} />
             </span>
             {/* Rotated scroll text */}
-            <span className="text-[9px] uppercase tracking-[0.4em] text-accent/40 group-hover:text-accent/70 transition-colors [writing-mode:vertical-rl] pb-0.5">
+            <span className="text-[11px] uppercase tracking-[0.4em] text-accent/45 group-hover:text-accent/75 transition-colors [writing-mode:vertical-rl] pb-0.5">
               Scroll
             </span>
           </button>
