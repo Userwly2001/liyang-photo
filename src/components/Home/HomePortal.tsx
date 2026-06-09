@@ -139,10 +139,10 @@ export default function HomePortal({
               aria-label={t.home.hero.enterAriaLabel}
               className="group flex min-h-11 items-center gap-4 text-left text-xs uppercase tracking-[0.3em] text-foreground/68 transition-colors hover:text-foreground"
             >
-              <span className="flex h-10 w-10 items-center justify-center rounded-full border border-accent/35 transition-all group-hover:border-accent/75 group-hover:bg-accent/10">
+              <span className="flex h-10 w-10 items-center justify-center rounded-full border border-white/25 bg-white/5 backdrop-blur-md transition-all group-hover:border-accent group-hover:bg-accent/25">
                 ↓
               </span>
-              <span className="hidden sm:inline">{t.home.hero.enter}</span>
+              <span className="hidden rounded-full px-4 py-2 border border-white/15 bg-white/5 backdrop-blur-md sm:inline">{t.home.hero.enter}</span>
             </button>
           </div>
         </div>
@@ -254,7 +254,7 @@ function PortalLink({
             >
               {label}
             </h3>
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-foreground/40 text-lg transition-all duration-500 group-hover:border-accent group-hover:bg-accent group-hover:text-black">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/25 bg-white/5 backdrop-blur-md text-lg transition-all duration-500 group-hover:border-accent group-hover:bg-accent group-hover:text-black">
               ↗
             </span>
           </div>
