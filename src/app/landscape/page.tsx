@@ -38,6 +38,7 @@ async function getLandscapes() {
       tags: p.tags,
       featured: p.featured,
       sortOrder: p.sortOrder,
+      likeCount: p.likeCount,
       createdAt: p.createdAt.toISOString(),
     }))
   } catch {

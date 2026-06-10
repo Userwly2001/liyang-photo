@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import PhotoCard from './PhotoCard'
 import Lightbox from './Lightbox'
 import { useLanguage } from '@/i18n/useLanguage'
@@ -14,20 +15,43 @@ export default function PhotoGrid({ photos }: PhotoGridProps) {
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(0)
   const { t } = useLanguage()
+  const searchParams = useSearchParams()
+
+  const updatePhotoParam = useCallback((photoId?: string) => {
+    const url = new URL(window.location.href)
+    if (photoId) url.searchParams.set('photo', photoId)
+    else url.searchParams.delete('photo')
+    window.history.replaceState({}, '', url)
+  }, [])
+
+  useEffect(() => {
+    const photoId = searchParams.get('photo')
+    if (!photoId) return
+    const index = photos.findIndex((photo) => photo.id === photoId)
+    if (index >= 0) {
+      queueMicrotask(() => {
+        setCurrentIndex(index)
+        setLightboxOpen(true)
+      })
+    }
+  }, [photos, searchParams])
 
   const openLightbox = useCallback((photo: PhotoType) => {
     const index = photos.findIndex((p) => p.id === photo.id)
     setCurrentIndex(index)
     setLightboxOpen(true)
-  }, [photos])
+    updatePhotoParam(photo.id)
+  }, [photos, updatePhotoParam])
 
   const closeLightbox = useCallback(() => {
     setLightboxOpen(false)
-  }, [])
+    updatePhotoParam()
+  }, [updatePhotoParam])
 
   const navigate = useCallback((index: number) => {
     setCurrentIndex(index)
-  }, [])
+    updatePhotoParam(photos[index]?.id)
+  }, [photos, updatePhotoParam])
 
   if (!photos.length) {
     return (

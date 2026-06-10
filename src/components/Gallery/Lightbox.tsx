@@ -26,6 +26,10 @@ export default function Lightbox({
   const [content, setContent] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [commentError, setCommentError] = useState('')
+  const [likeCount, setLikeCount] = useState(0)
+  const [liked, setLiked] = useState(false)
+  const [liking, setLiking] = useState(false)
+  const [shareNotice, setShareNotice] = useState('')
   const commentListRef = useRef<HTMLDivElement>(null)
   const { t, lang } = useLanguage()
   const photo = photos[currentIndex]
@@ -54,6 +58,25 @@ export default function Lightbox({
       }
     }
     fetchComments()
+  }, [photo])
+
+  useEffect(() => {
+    if (!photo) return
+    queueMicrotask(() => {
+      setLikeCount(photo.likeCount || 0)
+      setLiked(false)
+      setShareNotice('')
+    })
+
+    fetch(`/api/photos/${photo.id}/like`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setLiked(Boolean(data.data.liked))
+          setLikeCount(data.data.likeCount || 0)
+        }
+      })
+      .catch(() => {})
   }, [photo])
 
   const handleKeyDown = useCallback(
@@ -116,6 +139,60 @@ export default function Lightbox({
       setCommentError(err instanceof Error ? err.message : t.lightbox.submitFailed)
     } finally {
       setSubmitting(false)
+    }
+  }
+
+  const handleLike = async () => {
+    if (!photo || liking) return
+    setLiking(true)
+    try {
+      const res = await fetch(`/api/photos/${photo.id}/like`, { method: 'POST' })
+      const data = await res.json()
+      if (res.ok && data.success) {
+        setLiked(Boolean(data.data.liked))
+        setLikeCount(data.data.likeCount || 0)
+      }
+    } finally {
+      setLiking(false)
+    }
+  }
+
+  const handleShare = async () => {
+    if (!photo) return
+    const url = new URL(window.location.href)
+    url.searchParams.set('photo', photo.id)
+    const shareData = { title: photo.title, text: photo.description || photo.title, url: url.toString() }
+
+    const copyLink = async () => {
+      try {
+        await navigator.clipboard.writeText(shareData.url)
+      } catch {
+        const textarea = document.createElement('textarea')
+        textarea.value = shareData.url
+        textarea.style.position = 'fixed'
+        textarea.style.opacity = '0'
+        document.body.appendChild(textarea)
+        textarea.select()
+        document.execCommand('copy')
+        textarea.remove()
+      }
+      setShareNotice(t.lightbox.copied)
+    }
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData)
+        return
+      }
+      await copyLink()
+    } catch (error) {
+      if ((error as DOMException)?.name !== 'AbortError') {
+        try {
+          await copyLink()
+        } catch {
+          setShareNotice(t.lightbox.shareFailed)
+        }
+      }
     }
   }
 
@@ -238,20 +315,65 @@ export default function Lightbox({
             </svg>
           </button>
 
-          {/* Comments button - bottom right */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              setShowComments(!showComments)
-            }}
-            className="absolute bottom-6 right-6 z-10 flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-colors group"
-            aria-label={t.lightbox.comments}
+          <div
+            className="absolute bottom-5 right-5 z-10 flex items-center gap-2 sm:bottom-6 sm:right-6"
+            onClick={(e) => e.stopPropagation()}
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-            </svg>
-            <span className="text-sm text-white/80 group-hover:text-white transition-colors">{t.lightbox.comments}</span>
-          </button>
+            {shareNotice && (
+              <span className="absolute bottom-full right-0 mb-2 whitespace-nowrap rounded-full bg-white/12 px-3 py-1.5 text-[11px] text-white/75 backdrop-blur-md">
+                {shareNotice}
+              </span>
+            )}
+            <button
+              type="button"
+              onClick={handleLike}
+              disabled={liking}
+              className={`group flex h-11 items-center gap-2 rounded-full border px-3.5 backdrop-blur-md transition-all ${
+                liked
+                  ? 'border-red-400/45 bg-red-500/16 text-red-400'
+                  : 'border-white/10 bg-white/8 text-white/65 hover:border-red-400/35 hover:text-red-400'
+              }`}
+              aria-label={liked ? t.lightbox.unlike : t.lightbox.like}
+            >
+              <motion.svg
+                animate={liked ? { scale: [1, 1.28, 1] } : { scale: 1 }}
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill={liked ? 'currentColor' : 'none'}
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z" />
+              </motion.svg>
+              <span className="text-xs tabular-nums">{likeCount}</span>
+            </button>
+            <button
+              type="button"
+              onClick={handleShare}
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/8 text-white/65 backdrop-blur-md transition-all hover:border-accent/40 hover:text-accent"
+              aria-label={t.lightbox.share}
+            >
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="18" cy="5" r="3" />
+                <circle cx="6" cy="12" r="3" />
+                <circle cx="18" cy="19" r="3" />
+                <path d="m8.59 13.51 6.83 3.98M15.41 6.51 8.59 10.49" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowComments(!showComments)}
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/8 text-white/65 backdrop-blur-md transition-all hover:border-white/25 hover:text-white"
+              aria-label={t.lightbox.comments}
+            >
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+              </svg>
+            </button>
+          </div>
         </div>
 
         {/* Comments side panel - fullscreen on mobile, side panel on desktop */}

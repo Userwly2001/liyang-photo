@@ -54,12 +54,23 @@ async function init() {
       focal_length TEXT, aperture TEXT, iso TEXT, shutter_speed TEXT,
       camera TEXT, lens TEXT, tags TEXT[] DEFAULT '{}',
       featured BOOLEAN DEFAULT false, sort_order INTEGER DEFAULT 0,
-      published BOOLEAN DEFAULT true,
+      published BOOLEAN DEFAULT true, like_count INTEGER DEFAULT 0,
       created_at TIMESTAMP DEFAULT NOW(), updated_at TIMESTAMP DEFAULT NOW()
     )
   `);
   await prisma.$executeRawUnsafe(`
     ALTER TABLE photos ADD COLUMN IF NOT EXISTS original_url TEXT
+  `);
+  await prisma.$executeRawUnsafe(`
+    ALTER TABLE photos ADD COLUMN IF NOT EXISTS like_count INTEGER DEFAULT 0
+  `);
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS photo_likes (
+      photo_id TEXT NOT NULL REFERENCES photos(id) ON DELETE CASCADE,
+      visitor_hash TEXT NOT NULL,
+      created_at TIMESTAMP DEFAULT NOW(),
+      PRIMARY KEY (photo_id, visitor_hash)
+    )
   `);
   await prisma.$executeRawUnsafe(`
     CREATE TABLE IF NOT EXISTS blog_posts (

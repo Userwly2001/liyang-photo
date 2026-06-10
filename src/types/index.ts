@@ -18,6 +18,7 @@ export interface PhotoType {
   tags: string[]
   featured: boolean
   sortOrder: number
+  likeCount: number
   createdAt: string
 }
 

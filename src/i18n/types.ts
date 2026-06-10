@@ -125,6 +125,11 @@ export interface Dictionary {
     send: string
     submitFailed: string
     anonymous: string
+    like: string
+    unlike: string
+    share: string
+    copied: string
+    shareFailed: string
   }
   common: {
     view: string

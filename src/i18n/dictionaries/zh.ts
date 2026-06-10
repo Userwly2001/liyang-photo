@@ -132,6 +132,11 @@ export const zh: Dictionary = {
     send: '发送',
     submitFailed: '提交失败',
     anonymous: '匿名',
+    like: '点赞',
+    unlike: '取消点赞',
+    share: '分享照片',
+    copied: '链接已复制',
+    shareFailed: '分享失败',
   },
   common: {
     view: '查看',

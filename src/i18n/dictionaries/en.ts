@@ -132,6 +132,11 @@ export const en: Dictionary = {
     send: 'Send',
     submitFailed: 'Failed to submit',
     anonymous: 'Anonymous',
+    like: 'Like',
+    unlike: 'Unlike',
+    share: 'Share photo',
+    copied: 'Link copied',
+    shareFailed: 'Unable to share',
   },
   common: {
     view: 'View',
