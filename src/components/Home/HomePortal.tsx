@@ -98,11 +98,27 @@ export default function HomePortal({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1 }}
-            className="flex items-center justify-between text-xs uppercase tracking-[0.2em] text-foreground/72"
+            className="flex items-start justify-between gap-5"
           >
-            <span>{t.home.hero.topLeft}</span>
-            <span className="flex items-center gap-4">
-              <span>{displayLocation}</span>
+            <span className="flex flex-col">
+              <span
+                className="text-xl font-semibold uppercase text-foreground sm:text-2xl"
+                style={{ textShadow: '0 2px 16px rgba(0,0,0,0.75)' }}
+              >
+                {t.home.hero.topLeft}
+              </span>
+              <span
+                className="mt-1.5 text-[9px] uppercase tracking-[0.18em] text-accent/85 sm:text-[10px]"
+                style={{ textShadow: '0 1px 8px rgba(0,0,0,0.8)' }}
+              >
+                {t.home.hero.identity}
+              </span>
+            </span>
+            <span className="flex items-center gap-3 text-[10px] uppercase tracking-[0.18em] text-foreground/72 sm:gap-5 sm:text-xs">
+              <span className="hidden sm:inline">{displayLocation}</span>
+              <Link href="/about" className="border-b border-accent/45 pb-1 transition-colors hover:border-accent hover:text-accent">
+                {t.home.hero.about}
+              </Link>
               <LanguageSwitcher />
             </span>
           </motion.div>
@@ -138,7 +154,7 @@ export default function HomePortal({
               </motion.span>
             </h1>
             <p
-              className="mt-6 max-w-[17rem] text-sm leading-7 text-foreground/78 sm:max-w-md"
+              className="mt-7 max-w-[20rem] text-base leading-8 text-foreground/88 sm:max-w-xl sm:text-lg sm:leading-9"
               style={{ textShadow: '0 1px 8px rgba(0,0,0,0.6)' }}
             >
               {t.home.hero.subtitle}

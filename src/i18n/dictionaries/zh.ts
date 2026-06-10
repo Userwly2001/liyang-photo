@@ -30,6 +30,8 @@ export const zh: Dictionary = {
     hero: {
       topLeft: 'Leon Wang',
       topRight: 'Photography / Notes',
+      identity: 'Photographer · Engineer · Writer',
+      about: 'About',
       archiveLabel: 'Personal archive · {year}',
       line1: 'Where light',
       line2: 'meets words.',
@@ -121,8 +123,11 @@ export const zh: Dictionary = {
   about: {
     pageLabel: '关于',
     nameFallback: 'Leon Wang',
-    titleFallback: '摄影师',
-    bioFallback: '个人介绍即将更新...',
+    titleFallback: '摄影师 · 工程师 · 写作者',
+    bioFallback: '记录影像，也记录技术、旅行与生活里缓慢发生的变化。',
+    identity: 'Photographer · Engineer · Writer',
+    intro: '一名生活在深圳的 IT 工程师，也是一位摄影与文字记录者。',
+    introSecond: '我拍摄城市、人物与普通时刻，也写下关于生活、技术和旅行的笔记。',
     contactHeading: '联系方式',
     email: '邮箱',
     city: '城市',

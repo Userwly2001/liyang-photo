@@ -10,6 +10,7 @@ import { COOKIE_NAME, DEFAULT_LANG, type Language } from '@/i18n/settings'
 export const metadata: Metadata = {
   title: '人像作品 | LEONPHOTO',
   description: 'Leon Wang 的人像摄影作品集',
+  alternates: { canonical: '/portrait' },
 }
 
 export default async function PortraitPage() {

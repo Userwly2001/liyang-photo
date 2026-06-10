@@ -90,8 +90,13 @@ JWT_SECRET=<your-secret>
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=<your-password>
 POSTGRES_PASSWORD=<your-db-password>
-NEXT_PUBLIC_SITE_URL=https://your-domain.com
+NEXT_PUBLIC_SITE_URL=https://www.leonwang.cc
+GOOGLE_SITE_VERIFICATION=<Google Search Console 验证码>
+BING_SITE_VERIFICATION=<Bing Webmaster 验证码>
+BAIDU_SITE_VERIFICATION=<百度搜索资源平台验证码>
 ```
+
+站点上线后，将 `https://www.leonwang.cc/sitemap.xml` 分别提交到 Google Search Console、Bing Webmaster Tools 和百度搜索资源平台。
 
 ## 图片处理策略
 

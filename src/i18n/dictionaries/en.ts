@@ -30,6 +30,8 @@ export const en: Dictionary = {
     hero: {
       topLeft: 'Leon Wang',
       topRight: 'Photography / Notes',
+      identity: 'Photographer · Engineer · Writer',
+      about: 'About',
       archiveLabel: 'Personal archive · {year}',
       line1: 'Where light',
       line2: 'meets words.',
@@ -121,8 +123,11 @@ export const en: Dictionary = {
   about: {
     pageLabel: 'About',
     nameFallback: 'Leon Wang',
-    titleFallback: 'Photographer',
-    bioFallback: 'Bio coming soon...',
+    titleFallback: 'Photographer · Engineer · Writer',
+    bioFallback: 'Recording images, technology, travel, and the slow changes of everyday life.',
+    identity: 'Photographer · Engineer · Writer',
+    intro: 'IT Engineer based in Shenzhen, also working through photography and words.',
+    introSecond: 'I photograph places, people and ordinary moments, and write notes about life, technology and travel.',
     contactHeading: 'Contact',
     email: 'Email',
     city: 'City',

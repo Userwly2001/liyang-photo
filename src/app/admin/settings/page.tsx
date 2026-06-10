@@ -10,6 +10,8 @@ interface Profile {
   bio: string
   avatar: string
   heroImage: string
+  galleryImage: string
+  journalImage: string
   email: string
   instagram: string
   wechat: string
@@ -21,10 +23,13 @@ export default function AdminSettingsPage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [uploadingHero, setUploadingHero] = useState(false)
+  const [uploadingEntry, setUploadingEntry] = useState<'galleryImage' | 'journalImage' | null>(null)
   const [message, setMessage] = useState('')
   const [messageType, setMessageType] = useState<'success' | 'error'>('success')
   const [isAuth, setIsAuth] = useState(false)
   const heroInputRef = useRef<HTMLInputElement>(null)
+  const galleryInputRef = useRef<HTMLInputElement>(null)
+  const journalInputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
 
   const getToken = useCallback(() => {
@@ -115,6 +120,33 @@ export default function AdminSettingsPage() {
     }
   }
 
+  const handleEntryUpload = async (field: 'galleryImage' | 'journalImage', file?: File) => {
+    if (!file) return
+    setUploadingEntry(field)
+    setMessage('')
+    try {
+      const formData = new FormData()
+      formData.append('files', file)
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${getToken()}` },
+        body: formData,
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || '上传失败')
+      const uploaded = data.data?.[0]
+      if (!uploaded?.url) throw new Error('上传失败')
+      setForm((prev) => ({ ...prev, [field]: uploaded.url }))
+      setMessage('入口图片已上传，记得点击保存')
+      setMessageType('success')
+    } catch (err) {
+      setMessage(err instanceof Error ? err.message : '上传失败')
+      setMessageType('error')
+    } finally {
+      setUploadingEntry(null)
+    }
+  }
+
   const handleLogout = () => {
     localStorage.removeItem('admin_token')
     router.push('/admin/login')
@@ -148,7 +180,7 @@ export default function AdminSettingsPage() {
               <div>
                 <h2 className="text-sm font-medium">首页封面图</h2>
                 <p className="text-xs text-white/30 mt-1">
-                  建议使用横图，主体靠右或居中偏右，左侧留给首页标题。
+                  首屏会随机展示已发布的精选照片；这里的图片仅在没有精选照片时作为兜底。
                 </p>
               </div>
               <button
@@ -187,7 +219,7 @@ export default function AdminSettingsPage() {
                     onClick={() => setForm({ ...form, heroImage: '' })}
                     className="text-xs text-white/35 hover:text-white/65 transition-colors"
                   >
-                    清空，使用精选第一张
+                    清空，仅使用随机精选照片
                   </button>
                 </div>
               </div>
@@ -206,6 +238,33 @@ export default function AdminSettingsPage() {
                   </div>
                 )}
               </div>
+            </div>
+          </div>
+
+          <div className="h-px bg-white/10" />
+
+          <div>
+            <div className="mb-4">
+              <h2 className="text-sm font-medium">首页内容入口图</h2>
+              <p className="mt-1 text-xs text-white/30">相册与随笔入口不会随机切换，只使用你在这里设置的图片。</p>
+            </div>
+            <div className="grid gap-5 sm:grid-cols-2">
+              <EntryImageSetting
+                label="相册入口图"
+                value={form.galleryImage || ''}
+                uploading={uploadingEntry === 'galleryImage'}
+                inputRef={galleryInputRef}
+                onUpload={(file) => handleEntryUpload('galleryImage', file)}
+                onClear={() => setForm({ ...form, galleryImage: '' })}
+              />
+              <EntryImageSetting
+                label="随笔入口图"
+                value={form.journalImage || ''}
+                uploading={uploadingEntry === 'journalImage'}
+                inputRef={journalInputRef}
+                onUpload={(file) => handleEntryUpload('journalImage', file)}
+                onClear={() => setForm({ ...form, journalImage: '' })}
+              />
             </div>
           </div>
 
@@ -285,6 +344,49 @@ export default function AdminSettingsPage() {
             </button>
           </div>
         </div>
+      </div>
+    </div>
+  )
+}
+
+function EntryImageSetting({
+  label,
+  value,
+  uploading,
+  inputRef,
+  onUpload,
+  onClear,
+}: {
+  label: string
+  value: string
+  uploading: boolean
+  inputRef: React.RefObject<HTMLInputElement | null>
+  onUpload: (file?: File) => void
+  onClear: () => void
+}) {
+  return (
+    <div>
+      <div className="mb-2 flex items-center justify-between gap-3">
+        <span className="text-xs text-white/45">{label}</span>
+        <button type="button" onClick={() => inputRef.current?.click()} disabled={uploading} className="text-xs text-accent/70 hover:text-accent disabled:opacity-30">
+          {uploading ? '上传中...' : '上传'}
+        </button>
+      </div>
+      <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={(event) => {
+        onUpload(event.target.files?.[0])
+        event.target.value = ''
+      }} />
+      <div className="aspect-[16/10] overflow-hidden rounded-lg border border-white/10 bg-black/30">
+        {value ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={value} alt={`${label}预览`} className="h-full w-full object-cover" />
+        ) : (
+          <div className="flex h-full items-center justify-center text-xs text-white/20">未设置，首页显示纯色底</div>
+        )}
+      </div>
+      <div className="mt-2 flex items-center gap-3">
+        <input value={value} onChange={() => {}} readOnly className="min-w-0 flex-1 truncate bg-transparent text-[10px] text-white/25 outline-none" />
+        {value && <button type="button" onClick={onClear} className="text-[10px] text-white/30 hover:text-danger">清空</button>}
       </div>
     </div>
   )

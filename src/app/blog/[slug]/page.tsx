@@ -4,6 +4,7 @@ import BlogPostContent from '@/components/Blog/BlogPostContent'
 import { notFound } from 'next/navigation'
 import { COOKIE_NAME, DEFAULT_LANG, type Language } from '@/i18n/settings'
 import type { Metadata } from 'next'
+import { absoluteUrl } from '@/lib/site'
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -27,6 +28,23 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${post.title} | LEONPHOTO 随笔`,
     description: post.excerpt || post.title,
+    keywords: [...post.tags, 'Leon Wang', '生活随笔'],
+    alternates: { canonical: `/blog/${post.slug}` },
+    openGraph: {
+      title: post.title,
+      description: post.excerpt || post.title,
+      type: 'article',
+      url: `/blog/${post.slug}`,
+      publishedTime: post.createdAt.toISOString(),
+      modifiedTime: post.updatedAt.toISOString(),
+      images: post.coverImage ? [absoluteUrl(post.coverImage)] : undefined,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: post.title,
+      description: post.excerpt || post.title,
+      images: post.coverImage ? [absoluteUrl(post.coverImage)] : undefined,
+    },
   }
 }
 

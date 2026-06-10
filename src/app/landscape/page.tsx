@@ -10,6 +10,7 @@ import { COOKIE_NAME, DEFAULT_LANG, type Language } from '@/i18n/settings'
 export const metadata: Metadata = {
   title: '风光作品 | LEONPHOTO',
   description: 'Leon Wang 的风光摄影作品集',
+  alternates: { canonical: '/landscape' },
 }
 
 export default async function LandscapePage() {

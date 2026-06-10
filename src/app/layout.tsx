@@ -7,16 +7,29 @@ import ScrollProgress from "@/components/ui/ScrollProgress";
 import VisitTracker from "@/components/ui/VisitTracker";
 import { LanguageProvider } from "@/i18n/LanguageProvider";
 import { COOKIE_NAME, DEFAULT_LANG, type Language } from "@/i18n/settings";
+import { SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "LEONPHOTO | Leon Wang - 摄影与生活随笔",
+  metadataBase: new URL(SITE_URL),
+  title: "LEON WANG | Photographer · Engineer · Writer",
   description:
-    "Leon Wang 的个人摄影作品集与随笔，记录人像、风光、美食、生活片段和成长感受。",
-  keywords: ["摄影", "人像", "风光", "美食", "作品集", "生活随笔", "成长", "Leon Wang"],
+    "Leon Wang 的个人网站，记录摄影、技术、旅行、生活片段与成长感受。",
+  keywords: ["摄影", "工程师", "技术", "旅行", "作品集", "生活随笔", "成长", "Leon Wang"],
+  alternates: { canonical: "/" },
+  robots: { index: true, follow: true },
+  verification: {
+    google: process.env.GOOGLE_SITE_VERIFICATION || undefined,
+    other: {
+      ...(process.env.BING_SITE_VERIFICATION ? { 'msvalidate.01': process.env.BING_SITE_VERIFICATION } : {}),
+      ...(process.env.BAIDU_SITE_VERIFICATION ? { 'baidu-site-verification': process.env.BAIDU_SITE_VERIFICATION } : {}),
+    },
+  },
   openGraph: {
     title: "LEONPHOTO | Leon Wang",
     description: "Leon Wang 的个人摄影作品集与生活随笔",
     type: "website",
+    url: "/",
+    siteName: "LEON WANG",
   },
 };
 

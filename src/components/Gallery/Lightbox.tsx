@@ -254,7 +254,7 @@ export default function Lightbox({
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={photo.imageUrl}
-                alt={photo.title}
+                alt={photo.description ? `${photo.title} - ${photo.description}` : `${photo.title} - Leon Wang 摄影作品`}
                 className="max-w-full max-h-[85vh] object-contain"
                 onLoad={() => setImageLoaded(true)}
               />

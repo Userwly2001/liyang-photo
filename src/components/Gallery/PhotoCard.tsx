@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import Link from 'next/link'
 import BlurImage from './BlurImage'
 import { useLanguage } from '@/i18n/useLanguage'
 import type { PhotoType } from '@/types'
@@ -32,7 +33,7 @@ export default function PhotoCard({ photo, index, onOpen }: PhotoCardProps) {
       >
         <BlurImage
           src={photo.thumbnailUrl || photo.imageUrl}
-          alt={photo.title}
+          alt={photo.description ? `${photo.title} - ${photo.description}` : `${photo.title} - Leon Wang 摄影作品`}
           width={w}
           height={h}
           className="w-full h-full transition-transform duration-700 group-hover:scale-[1.025]"
@@ -49,7 +50,9 @@ export default function PhotoCard({ photo, index, onOpen }: PhotoCardProps) {
       <div className="flex items-start justify-between gap-4">
         <div>
           <h3 className="text-sm font-medium text-foreground/78 transition-colors group-hover:text-foreground">
-            {photo.title}
+            <Link href={`/gallery/photo/${photo.id}`} onClick={(event) => event.stopPropagation()} className="hover:text-accent">
+              {photo.title}
+            </Link>
           </h3>
           {photo.description && (
             <p className="mt-1 line-clamp-1 text-xs text-foreground/32">{photo.description}</p>

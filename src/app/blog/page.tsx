@@ -13,6 +13,7 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
   title: '随笔 | LEONPHOTO',
   description: 'Leon Wang 记录生活片段、成长感受和摄影思考的个人随笔',
+  alternates: { canonical: '/blog' },
 }
 
 interface BlogPageProps {

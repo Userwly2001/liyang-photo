@@ -5,29 +5,24 @@ import HomePortal from '@/components/Home/HomePortal'
 
 async function getHomeData() {
   try {
-    const [profile, featuredPhotos, latestPost, photoCount, postCount] = await Promise.all([
+    const [profile, featuredPhotos, photoCount, postCount] = await Promise.all([
       prisma.profile.findUnique({ where: { id: 'default' } }),
-      prisma.photo.findMany({
-        where: { featured: true, published: true },
-        orderBy: { sortOrder: 'asc' },
-        take: 3,
-        select: { imageUrl: true, title: true },
-      }),
-      prisma.blogPost.findFirst({
-        where: { published: true, coverImage: { not: null } },
-        orderBy: { createdAt: 'desc' },
-        select: { coverImage: true, title: true },
-      }),
+      prisma.$queryRaw<Array<{ imageUrl: string; title: string }>>`
+        SELECT image_url AS "imageUrl", title
+        FROM photos
+        WHERE featured = true AND published = true
+        ORDER BY RANDOM()
+        LIMIT 3
+      `,
       prisma.photo.count({ where: { published: true } }),
       prisma.blogPost.count({ where: { published: true } }),
     ])
 
-    return { profile, featuredPhotos, latestPost, photoCount, postCount }
+    return { profile, featuredPhotos, photoCount, postCount }
   } catch {
     return {
       profile: null,
       featuredPhotos: [],
-      latestPost: null,
       photoCount: 0,
       postCount: 0,
     }
@@ -35,16 +30,15 @@ async function getHomeData() {
 }
 
 export default async function HomePage() {
-  const { profile, featuredPhotos, latestPost, photoCount, postCount } = await getHomeData()
-  const heroPhoto = profile?.heroImage
+  const { profile, featuredPhotos, photoCount, postCount } = await getHomeData()
+  const heroPhoto = featuredPhotos[0] || (profile?.heroImage
     ? {
         imageUrl: profile.heroImage,
         title: '',
       }
-    : featuredPhotos[0]
-  const journalPhoto = latestPost?.coverImage
-    ? { imageUrl: latestPost.coverImage, title: latestPost.title }
-    : featuredPhotos[2]
+    : undefined)
+  const galleryPhoto = profile?.galleryImage ? { imageUrl: profile.galleryImage, title: 'Gallery' } : undefined
+  const journalPhoto = profile?.journalImage ? { imageUrl: profile.journalImage, title: 'Notes' } : undefined
 
   return (
     <HomePortal
@@ -53,7 +47,7 @@ export default async function HomePage() {
       bio={profile?.bio || ''}
       location={profile?.location}
       heroPhoto={heroPhoto}
-      galleryPhoto={featuredPhotos[1] || featuredPhotos[0]}
+      galleryPhoto={galleryPhoto}
       journalPhoto={journalPhoto}
       photoCount={photoCount}
       postCount={postCount}

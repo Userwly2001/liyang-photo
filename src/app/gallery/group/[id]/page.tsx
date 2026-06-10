@@ -10,6 +10,7 @@ import PhotoGrid from '@/components/Gallery/PhotoGrid'
 import GroupShareButton from '@/components/Gallery/GroupShareButton'
 import { getDictionary } from '@/i18n/dictionaries'
 import { COOKIE_NAME, DEFAULT_LANG, type Language } from '@/i18n/settings'
+import { absoluteUrl } from '@/lib/site'
 
 async function getGroup(id: string) {
   try {
@@ -35,7 +36,14 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   return {
     title: `${group.title} | LEONPHOTO`,
     description: group.description || `${group.title} 摄影作品组`,
-    openGraph: cover ? { images: [cover.imageUrl] } : undefined,
+    alternates: { canonical: `/gallery/group/${group.id}` },
+    openGraph: {
+      title: group.title,
+      description: group.description || `${group.title} 摄影作品组`,
+      url: `/gallery/group/${group.id}`,
+      images: cover ? [absoluteUrl(cover.imageUrl)] : undefined,
+    },
+    twitter: cover ? { card: 'summary_large_image', images: [absoluteUrl(cover.imageUrl)] } : undefined,
   }
 }
 

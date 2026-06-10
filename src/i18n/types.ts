@@ -28,6 +28,8 @@ export interface Dictionary {
     hero: {
       topLeft: string
       topRight: string
+      identity: string
+      about: string
       archiveLabel: string
       line1: string
       line2: string
@@ -116,6 +118,9 @@ export interface Dictionary {
     nameFallback: string
     titleFallback: string
     bioFallback: string
+    identity: string
+    intro: string
+    introSecond: string
     contactHeading: string
     email: string
     city: string

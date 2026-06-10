@@ -38,13 +38,19 @@ async function init() {
     CREATE TABLE IF NOT EXISTS profile (
       id TEXT PRIMARY KEY DEFAULT 'default', name TEXT DEFAULT 'Leon Wang',
       title TEXT DEFAULT '摄影师', bio TEXT DEFAULT '', avatar TEXT DEFAULT '',
-      hero_image TEXT DEFAULT '',
+      hero_image TEXT DEFAULT '', gallery_image TEXT DEFAULT '', journal_image TEXT DEFAULT '',
       email TEXT DEFAULT '', instagram TEXT DEFAULT '', wechat TEXT DEFAULT '',
       location TEXT DEFAULT '', updated_at TIMESTAMP DEFAULT NOW()
     )
   `);
   await prisma.$executeRawUnsafe(`
     ALTER TABLE profile ADD COLUMN IF NOT EXISTS hero_image TEXT DEFAULT ''
+  `);
+  await prisma.$executeRawUnsafe(`
+    ALTER TABLE profile ADD COLUMN IF NOT EXISTS gallery_image TEXT DEFAULT ''
+  `);
+  await prisma.$executeRawUnsafe(`
+    ALTER TABLE profile ADD COLUMN IF NOT EXISTS journal_image TEXT DEFAULT ''
   `);
   await prisma.$executeRawUnsafe(`
     CREATE TABLE IF NOT EXISTS photos (

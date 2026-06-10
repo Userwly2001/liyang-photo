@@ -10,6 +10,7 @@ import { COOKIE_NAME, DEFAULT_LANG, type Language } from '@/i18n/settings'
 export const metadata: Metadata = {
   title: '美食作品 | LEONPHOTO',
   description: 'Leon Wang 的美食摄影作品集',
+  alternates: { canonical: '/food' },
 }
 
 export default async function FoodPage() {
