@@ -20,8 +20,8 @@ RUN npx prisma generate
 # Copy source
 COPY . .
 
-# Build Next.js
-RUN npm run build
+# Webpack keeps production image builds compatible with Alpine linux/arm64.
+RUN npm run build -- --webpack
 
 # ---- Production Stage ----
 FROM node:23-alpine AS runner
