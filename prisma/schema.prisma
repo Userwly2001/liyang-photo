@@ -55,13 +55,34 @@ model Photo {
   sortOrder   Int       @default(0) @map("sort_order")
   published   Boolean   @default(true)
   likeCount   Int       @default(0) @map("like_count")
+  groupId     String?   @map("group_id")
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
 
   comments    Message[] @relation("PhotoComments")
   likes       PhotoLike[]
+  group       PhotoGroup? @relation(fields: [groupId], references: [id], onDelete: SetNull)
 
+  @@index([groupId])
   @@map("photos")
+}
+
+model PhotoGroup {
+  id           String   @id @default(cuid())
+  title        String
+  description  String?
+  category     String
+  coverPhotoId String?  @map("cover_photo_id")
+  location     String?
+  shotAt       DateTime? @map("shot_at")
+  sortOrder    Int      @default(0) @map("sort_order")
+  published    Boolean  @default(true)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  photos       Photo[]
+
+  @@index([category])
+  @@map("photo_groups")
 }
 
 model PhotoLike {

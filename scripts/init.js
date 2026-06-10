@@ -65,6 +65,24 @@ async function init() {
     ALTER TABLE photos ADD COLUMN IF NOT EXISTS like_count INTEGER DEFAULT 0
   `);
   await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS photo_groups (
+      id TEXT PRIMARY KEY, title TEXT NOT NULL, description TEXT,
+      category TEXT NOT NULL, cover_photo_id TEXT, location TEXT,
+      shot_at TIMESTAMP, sort_order INTEGER DEFAULT 0,
+      published BOOLEAN DEFAULT true,
+      created_at TIMESTAMP DEFAULT NOW(), updated_at TIMESTAMP DEFAULT NOW()
+    )
+  `);
+  await prisma.$executeRawUnsafe(`
+    ALTER TABLE photos ADD COLUMN IF NOT EXISTS group_id TEXT
+  `);
+  await prisma.$executeRawUnsafe(`
+    CREATE INDEX IF NOT EXISTS photos_group_id_idx ON photos(group_id)
+  `);
+  await prisma.$executeRawUnsafe(`
+    CREATE INDEX IF NOT EXISTS photo_groups_category_idx ON photo_groups(category)
+  `);
+  await prisma.$executeRawUnsafe(`
     CREATE TABLE IF NOT EXISTS photo_likes (
       photo_id TEXT NOT NULL REFERENCES photos(id) ON DELETE CASCADE,
       visitor_hash TEXT NOT NULL,

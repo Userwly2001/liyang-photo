@@ -128,6 +128,7 @@ export default function AdminSettingsPage() {
         <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <h1 className="text-2xl font-bold">个人资料</h1>
           <div className="flex flex-wrap items-center gap-3">
+            <a href="/admin/groups" className="text-sm text-white/40 hover:text-white/70 transition-colors">作品组管理</a>
             <a href="/admin" className="text-sm text-white/40 hover:text-white/70 transition-colors">返回管理</a>
             <button onClick={handleLogout} className="text-sm text-white/40 hover:text-white/70 transition-colors">退出登录</button>
           </div>

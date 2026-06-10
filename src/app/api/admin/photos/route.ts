@@ -24,12 +24,14 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const category = searchParams.get('category')
+    const groupId = searchParams.get('groupId')
     const page = parseInt(searchParams.get('page') || '1')
     const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 100)
     const skip = (page - 1) * limit
 
     const where: Record<string, unknown> = {}
     if (category) where.category = category
+    if (groupId) where.groupId = groupId
 
     const [photos, total] = await Promise.all([
       prisma.photo.findMany({
@@ -92,12 +94,20 @@ export async function POST(request: NextRequest) {
 
     const title = (formData.get('title') as string)?.trim()
     const category = (formData.get('category') as string)?.trim()
+    const requestedGroupId = (formData.get('groupId') as string)?.trim() || null
     if (!category) {
       return NextResponse.json({ success: false, error: 'Category is required' }, { status: 400 })
     }
 
     if (files.length === 1 && !title) {
       return NextResponse.json({ success: false, error: 'Title is required' }, { status: 400 })
+    }
+
+    const group = requestedGroupId
+      ? await prisma.photoGroup.findFirst({ where: { id: requestedGroupId, category } })
+      : null
+    if (requestedGroupId && !group) {
+      return NextResponse.json({ success: false, error: '所选作品组与照片分类不一致' }, { status: 400 })
     }
 
     const baseSortOrder = parseInt(formData.get('sortOrder') as string) || 0
@@ -128,6 +138,7 @@ export async function POST(request: NextRequest) {
           featured: formData.get('featured') === 'true',
           sortOrder: baseSortOrder + index,
           published: formData.get('published') !== 'false',
+          groupId: group?.id || null,
         },
       })
     }

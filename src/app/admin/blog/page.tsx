@@ -208,6 +208,12 @@ export default function AdminBlogPage() {
               照片管理
             </a>
             <a
+              href="/admin/groups"
+              className="px-4 py-2.5 text-sm rounded-lg bg-white/5 hover:bg-white/10 text-white/50 hover:text-white/70 transition-colors sm:px-5"
+            >
+              作品组管理
+            </a>
+            <a
               href="/admin/settings"
               className="px-4 py-2.5 text-sm rounded-lg bg-white/5 hover:bg-white/10 text-white/50 hover:text-white/70 transition-colors sm:px-5"
             >

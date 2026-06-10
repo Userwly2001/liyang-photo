@@ -1,16 +1,20 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import PhotoGrid from './PhotoGrid'
+import GroupGrid from './GroupGrid'
 import AnimatedSection from '@/components/ui/AnimatedSection'
 import { useLanguage } from '@/i18n/useLanguage'
-import type { PhotoType } from '@/types'
+import type { PhotoGroupType, PhotoType } from '@/types'
 
 interface GalleryPageContentProps {
   title: string
   subtitle: string
   photos: PhotoType[]
+  groups?: PhotoGroupType[]
   emptyMessage?: string
 }
 
@@ -18,9 +22,12 @@ export default function GalleryPageContent({
   title,
   subtitle,
   photos,
+  groups = [],
   emptyMessage,
 }: GalleryPageContentProps) {
   const { t } = useLanguage()
+  const searchParams = useSearchParams()
+  const [view, setView] = useState<'groups' | 'photos'>(searchParams.get('photo') || groups.length === 0 ? 'photos' : 'groups')
   const defaultEmpty = emptyMessage || t.gallery.emptyDefault
 
   return (
@@ -74,10 +81,37 @@ export default function GalleryPageContent({
                 </Link>
               ))}
             </motion.nav>
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.48 }}
+              className="mt-8 flex items-center gap-1 border-b border-white/10"
+            >
+              <button
+                onClick={() => setView('groups')}
+                disabled={!groups.length}
+                className={`relative px-4 py-3 text-xs transition-colors disabled:opacity-25 ${view === 'groups' ? 'text-accent' : 'text-foreground/38 hover:text-foreground/70'}`}
+              >
+                {t.gallery.viewGroups}
+                {view === 'groups' && <span className="absolute inset-x-0 bottom-[-1px] h-px bg-accent" />}
+              </button>
+              <button
+                onClick={() => setView('photos')}
+                className={`relative px-4 py-3 text-xs transition-colors ${view === 'photos' ? 'text-accent' : 'text-foreground/38 hover:text-foreground/70'}`}
+              >
+                {t.gallery.viewPhotos}
+                {view === 'photos' && <span className="absolute inset-x-0 bottom-[-1px] h-px bg-accent" />}
+              </button>
+              <span className="ml-auto text-[10px] uppercase tracking-[0.18em] text-foreground/20">
+                {view === 'groups' ? `${groups.length} ${t.gallery.groups}` : `${photos.length} ${t.gallery.frames}`}
+              </span>
+            </motion.div>
           </div>
         </AnimatedSection>
 
-        {photos.length === 0 ? (
+        {view === 'groups' ? (
+          <GroupGrid groups={groups} />
+        ) : photos.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-32 text-center">
             <div className="text-6xl mb-6 text-accent/20">◻</div>
             <p className="text-foreground/32 text-sm">{defaultEmpty}</p>

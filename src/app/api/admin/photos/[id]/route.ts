@@ -36,6 +36,22 @@ export async function PUT(
     if (description !== undefined) data.description = description || null
     const category = (formData.get('category') as string)?.trim()
     if (category) data.category = category
+    const requestedGroupId = (formData.get('groupId') as string)?.trim() || null
+    if (formData.has('groupId')) {
+      if (requestedGroupId) {
+        const photoCategory = category || (await prisma.photo.findUnique({ where: { id }, select: { category: true } }))?.category
+        const group = await prisma.photoGroup.findFirst({ where: { id: requestedGroupId, category: photoCategory } })
+        if (!group) {
+          return NextResponse.json({ success: false, error: '所选作品组与照片分类不一致' }, { status: 400 })
+        }
+        data.groupId = group.id
+      } else {
+        data.groupId = null
+      }
+    } else if (category) {
+      const current = await prisma.photo.findUnique({ where: { id }, select: { group: { select: { category: true } } } })
+      if (current?.group && current.group.category !== category) data.groupId = null
+    }
     const focalLength = (formData.get('focalLength') as string)?.trim()
     if (focalLength !== undefined) data.focalLength = focalLength || null
     const aperture = (formData.get('aperture') as string)?.trim()
@@ -99,7 +115,10 @@ export async function DELETE(
       }
     }
 
-    await prisma.photo.delete({ where: { id } })
+    await prisma.$transaction([
+      prisma.photoGroup.updateMany({ where: { coverPhotoId: id }, data: { coverPhotoId: null } }),
+      prisma.photo.delete({ where: { id } }),
+    ])
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('DELETE /api/admin/photos/[id] error:', error)

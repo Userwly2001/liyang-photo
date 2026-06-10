@@ -10,17 +10,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }))
 
   try {
-    const posts = await prisma.blogPost.findMany({
-      where: { published: true },
-      select: { slug: true, updatedAt: true },
-      orderBy: { updatedAt: 'desc' },
-    })
+    const [posts, groups] = await Promise.all([
+      prisma.blogPost.findMany({
+        where: { published: true },
+        select: { slug: true, updatedAt: true },
+        orderBy: { updatedAt: 'desc' },
+      }),
+      prisma.photoGroup.findMany({
+        where: { published: true },
+        select: { id: true, updatedAt: true },
+        orderBy: { updatedAt: 'desc' },
+      }),
+    ])
 
     return [
       ...staticRoutes,
       ...posts.map((post) => ({
         url: `${siteUrl}/blog/${post.slug}`,
         lastModified: post.updatedAt,
+      })),
+      ...groups.map((group) => ({
+        url: `${siteUrl}/gallery/group/${group.id}`,
+        lastModified: group.updatedAt,
       })),
     ]
   } catch {

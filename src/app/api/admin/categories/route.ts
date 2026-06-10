@@ -62,9 +62,10 @@ export async function DELETE(request: NextRequest) {
     }
 
     const usedByPhotos = await prisma.photo.count({ where: { category: slug } })
-    if (usedByPhotos > 0) {
+    const usedByGroups = await prisma.photoGroup.count({ where: { category: slug } })
+    if (usedByPhotos > 0 || usedByGroups > 0) {
       return NextResponse.json(
-        { success: false, error: `分类下还有 ${usedByPhotos} 张照片，请先移动或删除这些照片` },
+        { success: false, error: `分类下还有 ${usedByPhotos} 张照片、${usedByGroups} 个作品组，请先移动或删除` },
         { status: 409 }
       )
     }

@@ -24,6 +24,7 @@ interface PhotoItem {
   featured: boolean
   sortOrder: number
   published: boolean
+  groupId: string | null
   createdAt: string
 }
 
@@ -42,6 +43,7 @@ interface PhotoForm {
   preserveOriginal: boolean
   sortOrder: number
   published: boolean
+  groupId: string
 }
 
 const emptyForm: PhotoForm = {
@@ -59,6 +61,7 @@ const emptyForm: PhotoForm = {
   preserveOriginal: true,
   sortOrder: 0,
   published: true,
+  groupId: '',
 }
 
 export default function AdminPhotosPage() {
@@ -77,6 +80,7 @@ export default function AdminPhotosPage() {
   const [messageType, setMessageType] = useState<'success' | 'error'>('success')
   const [categoryFilter, setCategoryFilter] = useState('')
   const [categories, setCategories] = useState<{ slug: string; label: string }[]>([])
+  const [groups, setGroups] = useState<{ id: string; title: string; category: string }[]>([])
   const [newCatSlug, setNewCatSlug] = useState('')
   const [newCatLabel, setNewCatLabel] = useState('')
   const [showCatManager, setShowCatManager] = useState(false)
@@ -134,6 +138,7 @@ export default function AdminPhotosPage() {
       preserveOriginal: !!photo.originalUrl,
       sortOrder: photo.sortOrder,
       published: photo.published,
+      groupId: photo.groupId || '',
     })
     setEditingId(photo.id)
     setFiles([])
@@ -164,6 +169,7 @@ export default function AdminPhotosPage() {
       formData.append('preserveOriginal', String(form.preserveOriginal))
       formData.append('sortOrder', String(form.sortOrder))
       formData.append('published', String(form.published))
+      formData.append('groupId', form.groupId)
 
       if (editingId) {
         // Update existing
@@ -246,6 +252,18 @@ export default function AdminPhotosPage() {
     } catch { /* ignore */ }
   }, [])
 
+  const fetchGroups = useCallback(async () => {
+    const token = getToken()
+    if (!token) return
+    try {
+      const res = await fetch('/api/admin/groups', { headers: { Authorization: `Bearer ${token}` } })
+      if (res.ok) {
+        const data = await res.json()
+        setGroups(data.data || [])
+      }
+    } catch { /* ignore */ }
+  }, [getToken])
+
   useEffect(() => {
     const init = async () => {
       const token = getToken()
@@ -253,11 +271,11 @@ export default function AdminPhotosPage() {
         router.push('/admin/login')
         return
       }
-      await Promise.all([fetchPhotos(), fetchCategories()])
+      await Promise.all([fetchPhotos(), fetchCategories(), fetchGroups()])
       setIsAuth(true)
     }
     init()
-  }, [fetchCategories, fetchPhotos, getToken, router])
+  }, [fetchCategories, fetchGroups, fetchPhotos, getToken, router])
 
   const addCategory = async () => {
     const token = getToken()
@@ -398,6 +416,12 @@ export default function AdminPhotosPage() {
             >
               + 上传照片
             </button>
+            <a
+              href="/admin/groups"
+              className="px-4 py-2.5 text-sm rounded-lg bg-white/5 hover:bg-white/10 text-white/50 hover:text-white/70 transition-colors sm:px-5"
+            >
+              作品组管理
+            </a>
             <a
               href="/admin"
               className="px-4 py-2.5 text-sm rounded-lg bg-white/5 hover:bg-white/10 text-white/50 hover:text-white/70 transition-colors sm:px-5"
@@ -541,7 +565,7 @@ export default function AdminPhotosPage() {
                   {/* File input (only for new photos) */}
                   {!editingId && (
                     <div>
-                      <label className="text-xs text-white/40 block mb-1">图片文件 *（最多 30 张，同批进入同一分类）</label>
+                      <label className="text-xs text-white/40 block mb-1">图片文件 *（最多 30 张，同批进入同一分类与作品组）</label>
                       <div
                         onClick={() => fileInputRef.current?.click()}
                         className="border-2 border-dashed border-white/10 rounded-lg p-4 text-center cursor-pointer hover:border-white/20 transition-colors"
@@ -608,7 +632,7 @@ export default function AdminPhotosPage() {
                       <label className="text-xs text-white/40 block mb-1">分类 *</label>
                       <select
                         value={form.category}
-                        onChange={(e) => setForm({ ...form, category: e.target.value })}
+                        onChange={(e) => setForm({ ...form, category: e.target.value, groupId: '' })}
                         className="w-full bg-transparent border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30"
                       >
                         <option value="" className="bg-surface" disabled>选择分类</option>
@@ -616,6 +640,20 @@ export default function AdminPhotosPage() {
                           <option key={cat.slug} value={cat.slug} className="bg-surface">
                             {cat.label}
                           </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-xs text-white/40 block mb-1">作品组</label>
+                      <select
+                        value={form.groupId}
+                        onChange={(e) => setForm({ ...form, groupId: e.target.value })}
+                        disabled={!form.category}
+                        className="w-full bg-transparent border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30 disabled:opacity-35"
+                      >
+                        <option value="" className="bg-surface">未分组</option>
+                        {groups.filter((group) => group.category === form.category).map((group) => (
+                          <option key={group.id} value={group.id} className="bg-surface">{group.title}</option>
                         ))}
                       </select>
                     </div>
@@ -825,6 +863,11 @@ export default function AdminPhotosPage() {
                   <p className="text-[10px] text-white/30 mt-1">
                     {photo.category} · {photo.focalLength || '-'} · f/{photo.aperture || '-'}
                   </p>
+                  {photo.groupId && (
+                    <p className="mt-1 truncate text-[10px] text-accent/60">
+                      {groups.find((group) => group.id === photo.groupId)?.title || '已分组'}
+                    </p>
+                  )}
                   <div className="flex gap-2 mt-3">
                     <button
                       onClick={() => movePhoto(photo.id, -1)}

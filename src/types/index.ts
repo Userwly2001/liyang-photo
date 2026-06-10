@@ -19,6 +19,22 @@ export interface PhotoType {
   featured: boolean
   sortOrder: number
   likeCount: number
+  groupId?: string
+  createdAt: string
+}
+
+export interface PhotoGroupType {
+  id: string
+  title: string
+  description?: string
+  category: string
+  coverPhotoId?: string
+  coverImage?: string
+  location?: string
+  shotAt?: string
+  sortOrder: number
+  published: boolean
+  photoCount: number
   createdAt: string
 }
 

@@ -134,6 +134,12 @@ export default function AdminDashboard() {
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <a
+              href="/admin/groups"
+              className="px-4 py-2.5 text-sm rounded-lg bg-white/10 hover:bg-white/20 text-white/70 hover:text-white transition-colors sm:px-5"
+            >
+              作品组管理
+            </a>
+            <a
               href="/admin/photos"
               className="px-4 py-2.5 text-sm rounded-lg bg-white/10 hover:bg-white/20 text-white/70 hover:text-white transition-colors sm:px-5"
             >

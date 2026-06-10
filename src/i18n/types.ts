@@ -71,6 +71,16 @@ export interface Dictionary {
     emptyFood: string
     noPhotos: string
     noPhotosHint: string
+    viewGroups: string
+    viewPhotos: string
+    groups: string
+    frames: string
+    noGroups: string
+    awaitingPhotos: string
+    openGroup: string
+    backToGallery: string
+    shareGroup: string
+    groupLinkCopied: string
   }
   blog: {
     pageLabel: string

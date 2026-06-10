@@ -1,8 +1,8 @@
 export const dynamic = 'force-dynamic'
 
 import { cookies } from 'next/headers'
-import { prisma } from '@/lib/prisma'
 import GalleryPageContent from '@/components/Gallery/GalleryPageContent'
+import { getPublishedGroups, getPublishedPhotos } from '@/lib/gallery-data'
 import type { Metadata } from 'next'
 import { getDictionary } from '@/i18n/dictionaries'
 import { COOKIE_NAME, DEFAULT_LANG, type Language } from '@/i18n/settings'
@@ -12,51 +12,18 @@ export const metadata: Metadata = {
   description: 'Leon Wang 的人像摄影作品集',
 }
 
-async function getPortraits() {
-  try {
-    const photos = await prisma.photo.findMany({
-      where: { category: 'portrait', published: true },
-      orderBy: { sortOrder: 'asc' },
-    })
-    return photos.map((p) => ({
-      id: p.id,
-      title: p.title,
-      description: p.description ?? undefined,
-      category: p.category,
-      imageUrl: p.imageUrl,
-      thumbnailUrl: p.thumbnailUrl ?? undefined,
-      originalUrl: p.originalUrl ?? undefined,
-      blurHash: p.blurHash ?? undefined,
-      width: p.width ?? undefined,
-      height: p.height ?? undefined,
-      focalLength: p.focalLength ?? undefined,
-      aperture: p.aperture ?? undefined,
-      iso: p.iso ?? undefined,
-      shutterSpeed: p.shutterSpeed ?? undefined,
-      camera: p.camera ?? undefined,
-      lens: p.lens ?? undefined,
-      tags: p.tags,
-      featured: p.featured,
-      sortOrder: p.sortOrder,
-      likeCount: p.likeCount,
-      createdAt: p.createdAt.toISOString(),
-    }))
-  } catch {
-    return []
-  }
-}
-
 export default async function PortraitPage() {
   const cookieStore = await cookies()
   const lang: Language = (cookieStore.get(COOKIE_NAME)?.value === 'en' ? 'en' : DEFAULT_LANG)
   const t = getDictionary(lang)
 
-  const photos = await getPortraits()
+  const [photos, groups] = await Promise.all([getPublishedPhotos('portrait'), getPublishedGroups('portrait')])
   return (
     <GalleryPageContent
       title={t.gallery.navPortrait}
       subtitle={t.home.featured.portrait.desc}
       photos={photos}
+      groups={groups}
       emptyMessage={t.gallery.emptyPortrait}
     />
   )
