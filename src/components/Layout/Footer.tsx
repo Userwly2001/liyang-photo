@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useLanguage } from '@/i18n/useLanguage'
+import PublicSecurityRecord from './PublicSecurityRecord'
 
 function VisitCounter({ label }: { label: string }) {
   const [count, setCount] = useState<number | null>(null)
@@ -81,8 +82,9 @@ export default function Footer() {
             </ul>
           </div>
         </div>
-        <div className="mt-16 pt-8 border-t border-accent/8 text-center text-xs text-foreground/24 flex items-center justify-center gap-6">
+        <div className="mt-16 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 border-t border-accent/8 pt-8 text-center text-xs text-foreground/24">
           <span>{t.footer.copyright.replace('{year}', String(year))}</span>
+          <PublicSecurityRecord />
           <VisitCounter label={t.footer.visits} />
         </div>
       </div>

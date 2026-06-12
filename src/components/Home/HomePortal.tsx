@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { useLanguage } from '@/i18n/useLanguage'
 import { LanguageSwitcher } from '@/i18n/LanguageSwitcher'
+import PublicSecurityRecord from '@/components/Layout/PublicSecurityRecord'
 
 interface PortalPhoto {
   imageUrl: string
@@ -240,8 +241,11 @@ export default function HomePortal({
             />
           </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-4 border-t border-accent/15 pt-5 text-[10px] uppercase tracking-[0.24em] text-foreground/32">
-            <span>© {year} Leon Wang</span>
+          <div className="flex flex-wrap items-center justify-between gap-4 border-t border-accent/15 pt-5 text-[10px] tracking-[0.12em] text-foreground/32">
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+              <span className="uppercase tracking-[0.24em]">© {year} Leon Wang</span>
+              <PublicSecurityRecord className="tracking-normal" />
+            </div>
             <nav className="flex gap-5 sm:gap-7">
               <Link href="/about" className="transition-colors hover:text-foreground/75">
                 {t.home.portal.aboutNav}
