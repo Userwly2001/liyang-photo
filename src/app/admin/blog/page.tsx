@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
+import MarkdownEditor from '@/components/Admin/MarkdownEditor'
 
 interface BlogPost {
   id: string
@@ -250,7 +251,7 @@ export default function AdminBlogPage() {
                 initial={{ opacity: 0, y: 20, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 20, scale: 0.95 }}
-                className="my-4 flex max-h-[92vh] w-full max-w-3xl flex-col rounded-xl border border-white/10 bg-surface sm:my-8"
+                className="my-4 flex max-h-[94vh] w-full max-w-6xl flex-col rounded-xl border border-white/10 bg-surface sm:my-6"
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="border-b border-white/10 px-4 pb-2 pt-5 shrink-0 sm:px-6 sm:pt-6">
@@ -308,16 +309,14 @@ export default function AdminBlogPage() {
                       />
                     </div>
 
-                    <div className="flex-1 flex flex-col min-h-[300px]">
+                    <div className="flex-1 flex flex-col min-h-[430px]">
                       <label className="text-xs text-white/40 block mb-1">
                         内容 *（Markdown 格式）
                       </label>
-                      <textarea
+                      <MarkdownEditor
                         value={form.content}
-                        onChange={(e) => setForm({ ...form, content: e.target.value })}
-                        required
-                        className="flex-1 w-full bg-transparent border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-white/30 resize-none font-mono"
-                        placeholder={`# 标题\n\n正文内容...\n\n## 二级标题\n\n- 列表项 1\n- 列表项 2\n\n> 引用文字`}
+                        onChange={(content) => setForm((current) => ({ ...current, content }))}
+                        getToken={getToken}
                       />
                     </div>
 
