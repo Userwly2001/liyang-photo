@@ -133,6 +133,9 @@ export interface Dictionary {
     next: string
     comments: string
     download: string
+    downloadHighRes: string
+    viewOriginal: string
+    viewHighRes: string
     commentHeader: string
     noComments: string
     nicknamePlaceholder: string
@@ -145,6 +148,16 @@ export interface Dictionary {
     share: string
     copied: string
     shareFailed: string
+  }
+  photoDetail: {
+    notFound: string
+    description: string
+    backToGallery: string
+    camera: string
+    lens: string
+    focalLength: string
+    aperture: string
+    shutterSpeed: string
   }
   common: {
     view: string

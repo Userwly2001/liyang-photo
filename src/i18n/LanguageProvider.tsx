@@ -53,22 +53,6 @@ export function LanguageProvider({
     return () => window.removeEventListener('storage', handleStorage)
   }, [])
 
-  // Hydrate from localStorage on mount (handles SSR/client mismatch edge case)
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(COOKIE_NAME)
-      if (stored === 'zh' || stored === 'en') {
-        const storedLang = stored as Language
-        queueMicrotask(() => {
-          setLangState(storedLang)
-          setT(getDictionary(storedLang))
-        })
-      }
-    } catch {
-      // localStorage unavailable
-    }
-  }, [])
-
   return (
     <LanguageContext.Provider value={{ lang, setLang, t }}>
       {children}

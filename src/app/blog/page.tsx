@@ -1,19 +1,17 @@
 export const dynamic = 'force-dynamic'
 
-import { cookies } from 'next/headers'
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import BlogList from '@/components/Blog/BlogList'
 import AnimatedSection from '@/components/ui/AnimatedSection'
 import { filterPostsByCategory, getBlogCategory, getTranslatedCategories } from '@/lib/blog-categories'
 import { getDictionary } from '@/i18n/dictionaries'
-import { COOKIE_NAME, DEFAULT_LANG, type Language } from '@/i18n/settings'
+import { localizedMetadata } from '@/i18n/metadata'
+import { getRequestLanguage } from '@/i18n/server'
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = {
-  title: '随笔 | LEONPHOTO',
-  description: 'Leon Wang 记录生活片段、成长感受和摄影思考的个人随笔',
-  alternates: { canonical: '/blog' },
+export async function generateMetadata(): Promise<Metadata> {
+  return localizedMetadata(await getRequestLanguage(), 'blog', '/blog')
 }
 
 interface BlogPageProps {
@@ -39,8 +37,7 @@ async function getPosts() {
 }
 
 export default async function BlogPage({ searchParams }: BlogPageProps) {
-  const cookieStore = await cookies()
-  const lang: Language = (cookieStore.get(COOKIE_NAME)?.value === 'en' ? 'en' : DEFAULT_LANG)
+  const lang = await getRequestLanguage()
   const t = getDictionary(lang)
 
   const params = await searchParams

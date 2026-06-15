@@ -1,7 +1,6 @@
 export const dynamic = 'force-dynamic'
 
 import Link from 'next/link'
-import { cookies } from 'next/headers'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { prisma } from '@/lib/prisma'
@@ -9,7 +8,7 @@ import { mapPhoto } from '@/lib/gallery-data'
 import PhotoGrid from '@/components/Gallery/PhotoGrid'
 import GroupShareButton from '@/components/Gallery/GroupShareButton'
 import { getDictionary } from '@/i18n/dictionaries'
-import { COOKIE_NAME, DEFAULT_LANG, type Language } from '@/i18n/settings'
+import { getRequestLanguage } from '@/i18n/server'
 import { absoluteUrl } from '@/lib/site'
 
 async function getGroup(id: string) {
@@ -52,8 +51,7 @@ export default async function GroupPage({ params }: { params: Promise<{ id: stri
   const group = await getGroup(id)
   if (!group) notFound()
 
-  const cookieStore = await cookies()
-  const lang: Language = cookieStore.get(COOKIE_NAME)?.value === 'en' ? 'en' : DEFAULT_LANG
+  const lang = await getRequestLanguage()
   const t = getDictionary(lang)
   const cover = group.photos.find((photo) => photo.id === group.coverPhotoId) || group.photos[0]
   const photos = group.photos.map(mapPhoto)

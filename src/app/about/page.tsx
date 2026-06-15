@@ -1,16 +1,14 @@
 export const dynamic = 'force-dynamic'
 
-import { cookies } from 'next/headers'
 import { prisma } from '@/lib/prisma'
 import AnimatedSection from '@/components/ui/AnimatedSection'
 import { getDictionary } from '@/i18n/dictionaries'
-import { COOKIE_NAME, DEFAULT_LANG, type Language } from '@/i18n/settings'
+import { localizedMetadata } from '@/i18n/metadata'
+import { getRequestLanguage } from '@/i18n/server'
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = {
-  title: '关于 | LEONPHOTO',
-  description: 'Leon Wang，生活在深圳的工程师、摄影者与写作者。',
-  alternates: { canonical: '/about' },
+export async function generateMetadata(): Promise<Metadata> {
+  return localizedMetadata(await getRequestLanguage(), 'about', '/about')
 }
 
 async function getProfile() {
@@ -23,8 +21,7 @@ async function getProfile() {
 }
 
 export default async function AboutPage() {
-  const cookieStore = await cookies()
-  const lang: Language = (cookieStore.get(COOKIE_NAME)?.value === 'en' ? 'en' : DEFAULT_LANG)
+  const lang = await getRequestLanguage()
   const t = getDictionary(lang)
   const profile = await getProfile()
 

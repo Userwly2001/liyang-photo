@@ -1,8 +1,7 @@
-import { cookies } from 'next/headers'
 import { prisma } from '@/lib/prisma'
 import BlogPostContent from '@/components/Blog/BlogPostContent'
 import { notFound } from 'next/navigation'
-import { COOKIE_NAME, DEFAULT_LANG, type Language } from '@/i18n/settings'
+import { getRequestLanguage } from '@/i18n/server'
 import type { Metadata } from 'next'
 import { absoluteUrl } from '@/lib/site'
 
@@ -49,8 +48,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function BlogPostPage({ params }: Props) {
-  const cookieStore = await cookies()
-  const lang: Language = (cookieStore.get(COOKIE_NAME)?.value === 'en' ? 'en' : DEFAULT_LANG)
+  const lang = await getRequestLanguage()
 
   const { slug } = await params
   const post = await getPost(slug)

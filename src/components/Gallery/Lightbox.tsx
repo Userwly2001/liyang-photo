@@ -277,16 +277,6 @@ export default function Lightbox({
               >
                 <div className="flex items-center justify-between gap-4">
                   <h3 className="text-sm font-medium">{photo.title}</h3>
-                  {photo.originalUrl && (
-                    <a
-                      href={photo.originalUrl}
-                      download
-                      onClick={(e) => e.stopPropagation()}
-                      className="shrink-0 rounded-full border border-white/15 px-3 py-1.5 text-xs text-white/70 transition-colors hover:border-white/35 hover:text-white"
-                    >
-                      {t.lightbox.download}
-                    </a>
-                  )}
                 </div>
                 {photo.description && (
                   <p className="text-xs text-white/50 mt-1">{photo.description}</p>
@@ -324,6 +314,34 @@ export default function Lightbox({
                 {shareNotice}
               </span>
             )}
+            <a
+              href={photo.originalUrl || photo.imageUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="flex h-11 items-center gap-2 rounded-full border border-accent/35 bg-black/45 px-3.5 text-accent backdrop-blur-md transition-all hover:border-accent/70 hover:bg-accent/12"
+              aria-label={photo.originalUrl ? t.lightbox.viewOriginal : t.lightbox.viewHighRes}
+              title={photo.originalUrl ? t.lightbox.viewOriginal : t.lightbox.viewHighRes}
+            >
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z" />
+                <circle cx="12" cy="12" r="2.5" />
+              </svg>
+              <span className="whitespace-nowrap text-xs">
+                {photo.originalUrl ? t.lightbox.viewOriginal : t.lightbox.viewHighRes}
+              </span>
+            </a>
+            <a
+              href={`/api/photos/${photo.id}/download`}
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/8 text-white/65 backdrop-blur-md transition-all hover:border-accent/40 hover:text-accent"
+              aria-label={photo.originalUrl ? t.lightbox.download : t.lightbox.downloadHighRes}
+              title={photo.originalUrl ? t.lightbox.download : t.lightbox.downloadHighRes}
+            >
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 3v12" />
+                <path d="m7 10 5 5 5-5" />
+                <path d="M5 21h14" />
+              </svg>
+            </a>
             <button
               type="button"
               onClick={handleLike}

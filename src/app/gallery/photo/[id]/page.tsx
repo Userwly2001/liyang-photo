@@ -5,6 +5,8 @@ import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { prisma } from '@/lib/prisma'
 import { absoluteUrl } from '@/lib/site'
+import { getDictionary } from '@/i18n/dictionaries'
+import { getRequestLanguage } from '@/i18n/server'
 
 async function getPhoto(id: string) {
   try {
@@ -20,14 +22,18 @@ async function getPhoto(id: string) {
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params
   const photo = await getPhoto(id)
-  if (!photo) return { title: '照片未找到 | LEONPHOTO', robots: { index: false } }
-  const description = photo.description || `${photo.title}，Leon Wang 拍摄的${photo.category}摄影作品。`
+  const lang = await getRequestLanguage()
+  const t = getDictionary(lang)
+  if (!photo) return { title: t.photoDetail.notFound, robots: { index: false } }
+  const description = photo.description || t.photoDetail.description
+    .replace('{title}', photo.title)
+    .replace('{category}', photo.category)
   const image = absoluteUrl(photo.imageUrl)
 
   return {
-    title: `${photo.title} | Leon Wang 摄影作品`,
+    title: `${photo.title} | ${lang === 'zh' ? 'Leon Wang 摄影作品' : 'Leon Wang Photography'}`,
     description,
-    keywords: [photo.title, photo.category, ...photo.tags, 'Leon Wang', '摄影'],
+    keywords: [photo.title, photo.category, ...photo.tags, 'Leon Wang', lang === 'zh' ? '摄影' : 'Photography'],
     alternates: { canonical: `/gallery/photo/${photo.id}` },
     openGraph: {
       title: photo.title,
@@ -44,13 +50,17 @@ export default async function PhotoDetailPage({ params }: { params: Promise<{ id
   const { id } = await params
   const photo = await getPhoto(id)
   if (!photo) notFound()
-  const description = photo.description || `${photo.title}，一张关于${photo.category}的摄影作品。`
+  const lang = await getRequestLanguage()
+  const t = getDictionary(lang)
+  const description = photo.description || t.photoDetail.description
+    .replace('{title}', photo.title)
+    .replace('{category}', photo.category)
   const detailItems = [
-    photo.camera && ['相机', photo.camera],
-    photo.lens && ['镜头', photo.lens],
-    photo.focalLength && ['焦距', photo.focalLength],
-    photo.aperture && ['光圈', `f/${photo.aperture}`],
-    photo.shutterSpeed && ['快门', photo.shutterSpeed],
+    photo.camera && [t.photoDetail.camera, photo.camera],
+    photo.lens && [t.photoDetail.lens, photo.lens],
+    photo.focalLength && [t.photoDetail.focalLength, photo.focalLength],
+    photo.aperture && [t.photoDetail.aperture, `f/${photo.aperture}`],
+    photo.shutterSpeed && [t.photoDetail.shutterSpeed, photo.shutterSpeed],
     photo.iso && ['ISO', photo.iso],
   ].filter(Boolean) as string[][]
 
@@ -72,11 +82,26 @@ export default async function PhotoDetailPage({ params }: { params: Promise<{ id
       <article className="mx-auto max-w-6xl">
         <div className="mb-8 flex flex-wrap items-center justify-between gap-4 text-xs">
           <Link href={photo.group?.published ? `/gallery/group/${photo.group.id}` : '/gallery'} className="text-foreground/40 transition-colors hover:text-accent">
-            ← {photo.group?.published ? photo.group.title : '返回相册'}
+            ← {photo.group?.published ? photo.group.title : t.photoDetail.backToGallery}
           </Link>
-          <a href={photo.originalUrl || photo.imageUrl} className="border-b border-accent/35 pb-1 text-accent/70 hover:text-accent">
-            {photo.originalUrl ? '查看原图' : '查看高清图'}
-          </a>
+          <div className="flex items-center gap-2">
+            <a
+              href={photo.originalUrl || photo.imageUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 border border-accent/25 px-3 py-2 text-accent/70 transition-colors hover:border-accent/55 hover:text-accent"
+            >
+              <span aria-hidden="true">↗</span>
+              {photo.originalUrl ? t.lightbox.viewOriginal : t.lightbox.viewHighRes}
+            </a>
+            <a
+              href={`/api/photos/${photo.id}/download`}
+              className="inline-flex items-center gap-2 bg-accent px-3 py-2 text-black transition-colors hover:bg-accent/85"
+            >
+              <span aria-hidden="true">↓</span>
+              {photo.originalUrl ? t.lightbox.download : t.lightbox.downloadHighRes}
+            </a>
+          </div>
         </div>
 
         <figure>
