@@ -1,0 +1,19 @@
+{
+  "name": "雅思词汇刷词工具",
+  "short_name": "雅思刷词",
+  "description": "用于练习雅思词汇拼写、错题和生词复习的离线刷词工具。",
+  "start_url": "/ielts-vocab/index.html",
+  "scope": "/ielts-vocab/",
+  "display": "standalone",
+  "background_color": "#f5f7fa",
+  "theme_color": "#3b82f6",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/ielts-vocab/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

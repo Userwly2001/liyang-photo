@@ -17,6 +17,7 @@ export default function Header() {
     { href: '/', label: t.header.home },
     { href: '/gallery', label: t.header.gallery },
     { href: '/blog', label: t.header.blog },
+    { href: '/ielts-vocab/index.html', label: '雅思刷词' },
     { href: '/guestbook', label: t.header.guestbook },
     { href: '/about', label: t.header.about },
   ]
@@ -55,16 +56,25 @@ export default function Header() {
           <ul className="flex items-center gap-8">
             {navLinks.map((link) => (
               <li key={link.href}>
-                <Link
-                  href={link.href}
-                  className={`text-sm tracking-wide transition-colors duration-300 ${
-                    pathname === link.href
-                      ? 'text-foreground'
-                      : 'text-foreground/46 hover:text-foreground/80'
-                  }`}
-                >
-                  {link.label}
-                </Link>
+                {link.href.endsWith('.html') ? (
+                  <a
+                    href={link.href}
+                    className="text-sm tracking-wide transition-colors duration-300 text-foreground/46 hover:text-foreground/80"
+                  >
+                    {link.label}
+                  </a>
+                ) : (
+                  <Link
+                    href={link.href}
+                    className={`text-sm tracking-wide transition-colors duration-300 ${
+                      pathname === link.href
+                        ? 'text-foreground'
+                        : 'text-foreground/46 hover:text-foreground/80'
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                )}
               </li>
             ))}
           </ul>
@@ -111,17 +121,27 @@ export default function Header() {
             <ul className="px-6 py-4 space-y-2">
               {navLinks.map((link) => (
                 <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    onClick={handleNavClick}
-                    className={`block py-3 text-lg transition-colors ${
-                      pathname === link.href
-                        ? 'text-white'
-                        : 'text-foreground/50 hover:text-foreground/80'
-                    }`}
-                  >
-                    {link.label}
-                  </Link>
+                  {link.href.endsWith('.html') ? (
+                    <a
+                      href={link.href}
+                      onClick={handleNavClick}
+                      className="block py-3 text-lg transition-colors text-foreground/50 hover:text-foreground/80"
+                    >
+                      {link.label}
+                    </a>
+                  ) : (
+                    <Link
+                      href={link.href}
+                      onClick={handleNavClick}
+                      className={`block py-3 text-lg transition-colors ${
+                        pathname === link.href
+                          ? 'text-white'
+                          : 'text-foreground/50 hover:text-foreground/80'
+                      }`}
+                    >
+                      {link.label}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>

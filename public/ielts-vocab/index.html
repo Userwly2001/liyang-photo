@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <base href="/ielts-vocab/">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#3b82f6">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="雅思刷词">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <title>Lexxxi✨ 真经刷词神器（词汇带背课程B站@lexi学姐教雅思）</title>
+  <style>
+    :root {
+      --bg: #f5f7fa;
+      --panel-bg: rgba(255,255,255,0.75);
+      --text: #0f172a;
+      --text-secondary: #475569;
+      --border: #e2e8f0;
+      --slot-border: #cbd5e1;
+      --accent: #3b82f6;
+      --accent-light: #eff6ff;
+      --correct: #10b981;
+      --wrong: #ef4444;
+      --card-bg: white;
+      --shadow: 0 25px 45px rgba(0,0,0,0.1);
+      --sidebar-bg: rgba(255,255,255,0.95);
+    }
+    body.dark {
+      --bg: #0f172a;
+      --panel-bg: rgba(30,41,59,0.85);
+      --text: #f1f5f9;
+      --text-secondary: #cbd5e1;
+      --border: #334155;
+      --slot-border: #475569;
+      --accent: #818cf8;
+      --accent-light: #312e81;
+      --correct: #34d399;
+      --wrong: #f87171;
+      --card-bg: #1e293b;
+      --shadow: 0 25px 45px rgba(0,0,0,0.5);
+      --sidebar-bg: rgba(30,41,59,0.95);
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Segoe UI', 'PingFang SC', Roboto, sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      transition: background 0.3s;
+      color: var(--text);
+    }
+    .container {
+      width: 100%;
+      max-width: 1000px;
+      background: var(--panel-bg);
+      backdrop-filter: blur(20px);
+      border-radius: 32px;
+      box-shadow: var(--shadow), 0 0 0 1px rgba(255,255,255,0.15);
+      padding: 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      transition: background 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    h1 {
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 5px;
+    }
+    .top-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+    .select-style {
+      padding: 10px 15px;
+      border-radius: 25px;
+      border: 1px solid var(--border);
+      background: var(--card-bg);
+      color: var(--text);
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    .mode-group, .tool-group {
+      display: flex;
+      gap: 5px;
+      background: var(--card-bg);
+      border-radius: 30px;
+      padding: 4px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .mode-btn, .tool-btn {
+      border: none;
+      background: transparent;
+      padding: 8px 14px;
+      border-radius: 25px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .mode-btn.active, .tool-btn.active {
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 4px 10px rgba(59,130,246,0.3);
+    }
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+      border-radius: 10px;
+      transition: width 0.3s ease;
+    }
+    .stats {
+      display: flex;
+      justify-content: space-around;
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+    .mode-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 8px 20px;
+      align-self: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      color: var(--text-secondary);
+      flex-wrap: wrap;
+    }
+    .timer-display { font-weight: 700; color: var(--accent); margin-left: 8px; }
+    .chinese-meaning {
+      font-size: 2.2rem;
+      font-weight: 600;
+      text-align: center;
+      color: var(--text);
+      min-height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .letter-slots {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 10px 0;
+    }
+    .slot {
+      width: 45px;
+      height: 55px;
+      border-bottom: 3px solid var(--slot-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text);
+      transition: all 0.2s;
+      text-transform: lowercase;
+      animation: fadeInLetter 0.15s ease;
+    }
+    @keyframes fadeInLetter { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+    .slot.active-slot {
+      border-bottom-color: var(--accent);
+      animation: pulse 1s infinite;
+    }
+    @keyframes pulse { 0% { border-bottom-color: var(--accent); } 50% { border-bottom-color: #93c5fd; } 100% { border-bottom-color: var(--accent); } }
+    .slot.hint { color: #6b7280; font-style: italic; }
+    .slot.correct {
+      border-bottom-color: var(--correct);
+      color: var(--correct);
+      animation: bounceCorrect 0.4s ease;
+    }
+    .slot.wrong {
+      border-bottom-color: var(--wrong);
+      color: var(--wrong);
+      animation: shakeWrong 0.4s ease;
+    }
+    @keyframes bounceCorrect { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+    @keyframes shakeWrong { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+    .result-area { text-align: center; font-weight: 500; min-height: 28px; }
+    .example-box {
+      background: var(--card-bg);
+      border-left: 4px solid var(--accent);
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-style: italic;
+      color: var(--text);
+      display: none;
+    }
+    .actions {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    button {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 10px 18px;
+      border-radius: 30px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    button.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+      font-weight: 600;
+    }
+    .book-panel {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    }
+    .book-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      margin-bottom: 8px;
+    }
+    .book-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      max-height: 180px;
+      overflow-y: auto;
+    }
+    .word-chip {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .word-chip.new-word { background: #ecfdf5; border-color: #a7f3d0; }
+    .footer-note { text-align: center; color: #94a3b8; font-size: 0.75rem; }
+    .mobile-keyboard {
+      display: none;
+      gap: 6px;
+      justify-content: center;
+      flex-wrap: wrap;
+      padding: 8px 0 2px;
+    }
+    .key-btn {
+      width: 34px;
+      height: 38px;
+      justify-content: center;
+      padding: 0;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text);
+      touch-action: manipulation;
+      user-select: none;
+    }
+    .key-btn.wide {
+      width: 76px;
+      color: var(--text-secondary);
+      font-size: 0.82rem;
+    }
+    .goal-progress {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 6px 15px;
+      font-size: 0.85rem;
+    }
+    .goal-bar {
+      width: 80px;
+      height: 6px;
+      background: #e2e8f0;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .goal-fill {
+      height: 100%;
+      background: #f59e0b;
+      border-radius: 10px;
+      transition: width 0.3s;
+    }
+    .user-panel {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 6px 12px;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+    }
+    .user-panel select {
+      min-width: 96px;
+      padding: 6px 10px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      font-weight: 600;
+      outline: none;
+    }
+    .user-panel button {
+      min-height: 30px;
+      padding: 4px 10px;
+      border-radius: 16px;
+      font-size: 0.78rem;
+    }
+    .modal {
+      position: fixed; top:0; left:0; width:100%; height:100%;
+      background: rgba(0,0,0,0.5); backdrop-filter: blur(5px);
+      display: flex; align-items:center; justify-content:center; z-index:1000;
+    }
+    .modal-content {
+      background: var(--card-bg); border-radius: 24px; padding: 30px;
+      max-width: 500px; width: 90%; box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      color: var(--text);
+    }
+    .dark-toggle { cursor:pointer; background:none; border:none; font-size:1.5rem; padding:5px; }
+
+    /* 侧边栏 */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      right: -350px;
+      width: 340px;
+      height: 100vh;
+      background: var(--sidebar-bg);
+      backdrop-filter: blur(20px);
+      box-shadow: -5px 0 25px rgba(0,0,0,0.2);
+      z-index: 1002;
+      transition: right 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      padding: 20px 15px;
+      gap: 12px;
+    }
+    .sidebar.open { right: 0; }
+    .sidebar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .sidebar-header h3 { font-size: 1.2rem; color: var(--text); }
+    .sidebar-search {
+      width: 100%;
+      padding: 10px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: var(--card-bg);
+      color: var(--text);
+      font-size: 0.9rem;
+      outline: none;
+    }
+    .sidebar-list {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: 12px;
+      background: var(--card-bg);
+      cursor: pointer;
+      transition: background 0.2s;
+      border: 1px solid var(--border);
+      font-size: 0.9rem;
+      color: var(--text);
+    }
+    .sidebar-item:hover { background: var(--accent-light); }
+    .sidebar-item .word-text { font-weight: 600; flex: 1; }
+    .sidebar-overlay {
+      position: fixed; top:0; left:0; width:100%; height:100%;
+      background: rgba(0,0,0,0.3); z-index: 1001; display: none;
+    }
+    .sidebar-overlay.active { display: block; }
+
+    .sidebar-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1003;
+      background: var(--accent);
+      color: white;
+      border: none;
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      font-size: 1.3rem;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .page-switch {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1004;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0 16px;
+      border-radius: 999px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 700;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.14);
+    }
+    .page-switch:hover { color: var(--accent); }
+    @media (max-width: 600px) {
+      .sidebar { width: 100%; right: -100%; }
+      .page-switch {
+        top: 12px;
+        left: 12px;
+        min-height: 38px;
+        padding: 0 12px;
+        font-size: 0.8rem;
+      }
+      body {
+        align-items: flex-start;
+        padding: 10px;
+      }
+      .container {
+        border-radius: 18px;
+        padding: 14px;
+        gap: 10px;
+      }
+      .container > div:first-child {
+        align-items: flex-start !important;
+        gap: 8px;
+      }
+      h1 {
+        text-align: left;
+        font-size: 1.08rem;
+        line-height: 1.35;
+      }
+      .sidebar-toggle {
+        top: auto;
+        right: 14px;
+        bottom: 14px;
+        width: 48px;
+        height: 48px;
+      }
+      .top-controls,
+      .stats,
+      .mode-indicator,
+      .actions {
+        width: 100%;
+      }
+      .mode-group,
+      .tool-group {
+        width: 100%;
+        justify-content: center;
+      }
+      .mode-btn,
+      .tool-btn,
+      button {
+        min-height: 42px;
+      }
+      .goal-progress {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .user-panel {
+        width: 100%;
+      }
+      .chinese-meaning {
+        min-height: 58px;
+        font-size: 1.55rem;
+        line-height: 1.35;
+      }
+      .letter-slots {
+        gap: 5px;
+        margin: 4px 0;
+      }
+      .slot {
+        width: clamp(22px, 8vw, 36px);
+        height: 44px;
+        font-size: clamp(1.15rem, 6vw, 1.75rem);
+      }
+      .example-box {
+        max-height: 116px;
+        overflow-y: auto;
+        font-size: 0.9rem;
+      }
+      .mobile-keyboard {
+        display: flex;
+      }
+      .book-panel {
+        min-width: 100%;
+      }
+      .book-list {
+        max-height: 118px;
+      }
+      .footer-note {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+<a class="page-switch" href="/ielts-vocab/handout.html">课程讲义</a>
+<button class="sidebar-toggle" id="sidebarToggle" title="词汇总览">📋</button>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- 侧边栏 -->
+<div class="sidebar" id="vocabSidebar">
+  <div class="sidebar-header">
+    <h3>📋 词汇总览</h3>
+    <button id="closeSidebarBtn" style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--text);">✕</button>
+  </div>
+  <input type="text" class="sidebar-search" id="sidebarSearch" placeholder="搜索单词或释义...">
+  <div class="sidebar-list" id="sidebarList"></div>
+</div>
+
+<div class="container">
+  <div style="display:flex; justify-content:space-between; align-items:center;">
+    <h1>Lexxxi✨ 真经刷词神器（词汇带背课程B站@lexi学姐教雅思）</h1>
+    <button id="darkModeToggle" class="dark-toggle" title="切换深色模式">🌓</button>
+  </div>
+
+  <div class="top-controls">
+    <select id="chapterSelect" class="select-style"></select>
+    <div class="mode-group" id="modeGroup">
+      <button class="mode-btn" data-mode="chinese">📖 看中文</button>
+      <button class="mode-btn" data-mode="audio">🔊 听音</button>
+      <button class="mode-btn active" data-mode="random">🎲 随机</button>
+    </div>
+    <div class="user-panel">
+      <span>👤 用户</span>
+      <select id="userSelect" title="切换用户"></select>
+      <button id="addUserBtn" type="button">新增</button>
+    </div>
+  </div>
+
+  <div class="top-controls" style="margin-top:4px;">
+    <div class="tool-group">
+      <button id="hintToggle" class="tool-btn">💡 提示</button>
+      <button id="timerToggle" class="tool-btn">⏱️ 计时</button>
+    </div>
+    <div class="goal-progress" id="goalDisplay">
+      <span>🎯 每日目标</span>
+      <span id="goalCount">0/50</span>
+      <div class="goal-bar"><div class="goal-fill" id="goalFill" style="width:0%"></div></div>
+      <button id="setGoalBtn" style="font-size:0.75rem; padding:3px 8px; border-radius:15px;">⚙️</button>
+    </div>
+  </div>
+  <div id="timerDisplay" class="mode-indicator" style="display:none;">
+    <span>⏳ 剩余时间：</span>
+    <span class="timer-display" id="timerSeconds">10</span><span>秒</span>
+  </div>
+
+  <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  <div class="stats">
+    <span>📊 进度 <strong id="progressText">0/0</strong></span>
+    <span>✅ 正确 <strong id="correctCount">0</strong></span>
+    <span>❌ 错误 <strong id="wrongCount">0</strong></span>
+  </div>
+
+  <div class="mode-indicator">
+    <span id="modeIcon">📖</span> <span id="modeText">准备开始</span>
+    <span class="speech-status" id="speechStatus"></span>
+  </div>
+
+  <div class="chinese-meaning" id="chineseDisplay"></div>
+  <div class="letter-slots" id="letterSlots"></div>
+  <div class="result-area" id="resultArea"></div>
+  <div class="example-box" id="exampleBox">
+    <span id="exampleEN"></span>
+    <span class="cn" id="exampleCN"></span>
+  </div>
+
+  <div class="mobile-keyboard" id="mobileKeyboard" aria-label="手机输入键盘"></div>
+
+  <div class="actions">
+    <button id="addNewWordBtn" title="加入生词本">📌 生词</button>
+    <button id="skipBtn">⏭️ 跳过</button>
+    <button id="restartBtn">🔄 重新开始</button>
+    <button id="repeatBtn">🔊 再读一次</button>
+    <button id="nextBtn" class="primary">⏎ 提交 / 下一题</button>
+  </div>
+  <div class="footer-note">💡 按回车判断，再按回车下一题 | 支持连字符单词 (例如 high-tech)</div>
+
+  <div style="display:flex; gap:12px; flex-wrap:wrap;">
+    <div class="book-panel" style="flex:1;">
+      <div class="book-header" id="wrongBookToggle"><h3>📕 错题本 (<span id="wrongBookCount">0</span>)</h3><span>▼</span></div>
+      <div class="book-list" id="wrongList"></div>
+      <button id="clearWrongBtn" style="margin-top:6px; font-size:0.8rem;">清空</button>
+    </div>
+    <div class="book-panel" style="flex:1;">
+      <div class="book-header" id="newWordBookToggle"><h3>📗 生词本 (<span id="newWordCount">0</span>)</h3><span>▼</span></div>
+      <div class="book-list" id="newWordList"></div>
+      <button id="clearNewWordsBtn" style="margin-top:6px; font-size:0.8rem;">清空</button>
+    </div>
+  </div>
+  <button id="reviewBookBtn" class="primary" style="align-self:center;">📚 复习错题+生词</button>
+</div>
+
+<script>
+(function() {
+  // 音效
+  let audioCtx = null;
+  function getCtx(){ if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)(); return audioCtx; }
+  function playTone(freq,dur,type='sine'){ const c=getCtx(); const o=c.createOscillator(); const g=c.createGain(); o.type=type; o.frequency.value=freq; g.gain.setValueAtTime(0.2,c.currentTime); g.gain.exponentialRampToValueAtTime(0.01,c.currentTime+dur); o.connect(g); g.connect(c.destination); o.start(); o.stop(c.currentTime+dur); }
+  function playCorrect(){ playTone(880,0.1); setTimeout(()=>playTone(1100,0.1),100); }
+  function playWrong(){ playTone(300,0.15,'square'); setTimeout(()=>playTone(200,0.2,'square'),150); }
+
+  const CHAPTER_COUNT = 22;
+  const chapterList = Array.from({length:CHAPTER_COUNT},(_,i)=>({id:i+1,title:`第${i+1}章`}));
+
+  let currentVocabulary=[], shuffledWords=[], currentIndex=0, currentWord=null;
+  let currentMode='chinese', globalMode='random';
+  let userInput=[], isAnswered=false;
+  let correctTotal=0, wrongTotal=0, completedCount=0;
+  let wrongBook=[], newWordBook=[];
+  let startTime=0;
+  let hintEnabled = false;
+  let timerEnabled = false;
+  let timerDuration = 10;
+  let timerInterval = null;
+  let dailyGoal = 50;
+  let dailyCount = 0;
+  let todayStr = new Date().toISOString().slice(0,10);
+
+  // 语音
+  let voices=[], speechReady=false;
+  function loadVoices(){ return new Promise(resolve => { voices=speechSynthesis.getVoices(); if(voices.length) resolve(voices); else speechSynthesis.addEventListener('voiceschanged',()=>{ voices=speechSynthesis.getVoices(); resolve(voices); },{once:true}); }); }
+  async function initSpeech(){ if(speechReady) return true; try{ await loadVoices(); speechSynthesis.resume(); speechReady=true; return true; }catch(e){ return false; } }
+  async function speakWord(word){
+    if(!speechSynthesis) return;
+    if(!speechReady) await initSpeech();
+    speechSynthesis.cancel();
+    await new Promise(r=>setTimeout(r,50));
+    if(voices.length===0) voices = speechSynthesis.getVoices();
+    const u = new SpeechSynthesisUtterance(word); u.lang='en-US'; u.rate=0.9; u.volume=1;
+    const pref = voices.find(v=>v.lang==='en-US')||voices.find(v=>v.lang.startsWith('en'));
+    if(pref) u.voice=pref;
+    const statusEl = document.getElementById('speechStatus');
+    u.onstart = ()=> statusEl.textContent='🔊';
+    u.onend = ()=> statusEl.textContent='';
+    u.onerror = ()=>{ statusEl.textContent='⚠️'; };
+    speechSynthesis.speak(u);
+  }
+  document.addEventListener('click', ()=>initSpeech(), {once:true});
+  document.addEventListener('keydown', ()=>initSpeech(), {once:true});
+
+  // DOM
+  const chapterSelect = document.getElementById('chapterSelect');
+  const progressFill = document.getElementById('progressFill');
+  const progressText = document.getElementById('progressText');
+  const correctCountEl = document.getElementById('correctCount');
+  const wrongCountEl = document.getElementById('wrongCount');
+  const modeIcon = document.getElementById('modeIcon'), modeText = document.getElementById('modeText');
+  const chineseDisplay = document.getElementById('chineseDisplay');
+  const letterSlots = document.getElementById('letterSlots');
+  const resultArea = document.getElementById('resultArea');
+  const exampleBox = document.getElementById('exampleBox');
+  const exampleEN = document.getElementById('exampleEN'), exampleCN = document.getElementById('exampleCN');
+  const nextBtn = document.getElementById('nextBtn'), skipBtn = document.getElementById('skipBtn');
+  const restartBtn = document.getElementById('restartBtn'), repeatBtn = document.getElementById('repeatBtn');
+  const addNewWordBtn = document.getElementById('addNewWordBtn');
+  const wrongList = document.getElementById('wrongList'), wrongBookCount = document.getElementById('wrongBookCount');
+  const newWordList = document.getElementById('newWordList'), newWordCount = document.getElementById('newWordCount');
+  const hintToggle = document.getElementById('hintToggle');
+  const timerToggle = document.getElementById('timerToggle');
+  const timerDisplay = document.getElementById('timerDisplay');
+  const timerSeconds = document.getElementById('timerSeconds');
+  const goalCount = document.getElementById('goalCount'), goalFill = document.getElementById('goalFill');
+  const setGoalBtn = document.getElementById('setGoalBtn');
+  const userSelect = document.getElementById('userSelect');
+  const addUserBtn = document.getElementById('addUserBtn');
+  const sidebar = document.getElementById('vocabSidebar');
+  const sidebarList = document.getElementById('sidebarList');
+  const sidebarSearch = document.getElementById('sidebarSearch');
+  const sidebarToggleBtn = document.getElementById('sidebarToggle');
+  const closeSidebarBtn = document.getElementById('closeSidebarBtn');
+  const sidebarOverlay = document.getElementById('sidebarOverlay');
+  const mobileKeyboard = document.getElementById('mobileKeyboard');
+
+  const USERS_KEY = 'vocab-tool-users';
+  const ACTIVE_USER_KEY = 'vocab-tool-active-user';
+  const LEGACY_STATE_KEY = 'vocab-tool-state';
+  let users = [];
+  let activeUserId = '';
+
+  function normalizeUserId(name){
+    return name.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\u4e00-\u9fa5_-]/g, '') || 'user';
+  }
+
+  function stateKey(){
+    return `vocab-tool-state:${activeUserId}`;
+  }
+
+  function loadUsers(){
+    try{
+      users = JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
+    }catch(e){
+      users = [];
+    }
+    if(!Array.isArray(users) || users.length === 0){
+      users = [{ id: 'me', name: '我' }];
+      localStorage.setItem(USERS_KEY, JSON.stringify(users));
+    }
+    activeUserId = localStorage.getItem(ACTIVE_USER_KEY) || users[0].id;
+    if(!users.some(user => user.id === activeUserId)) activeUserId = users[0].id;
+    localStorage.setItem(ACTIVE_USER_KEY, activeUserId);
+  }
+
+  function renderUserSelect(){
+    userSelect.innerHTML = users.map(user => `<option value="${user.id}">${user.name}</option>`).join('');
+    userSelect.value = activeUserId;
+  }
+
+  function migrateLegacyState(){
+    const currentKey = stateKey();
+    if(localStorage.getItem(currentKey)) return;
+    const legacy = localStorage.getItem(LEGACY_STATE_KEY);
+    if(legacy && activeUserId === 'me'){
+      localStorage.setItem(currentKey, legacy);
+    }
+  }
+
+  function resetRuntimeState(){
+    clearInterval(timerInterval);
+    currentVocabulary=[]; shuffledWords=[]; currentIndex=0; currentWord=null;
+    currentMode='chinese'; globalMode='random';
+    userInput=[]; isAnswered=false;
+    correctTotal=0; wrongTotal=0; completedCount=0;
+    wrongBook=[]; newWordBook=[];
+    hintEnabled = false; timerEnabled = false; timerDuration = 10;
+    dailyGoal = 50; dailyCount = 0; todayStr = new Date().toISOString().slice(0,10);
+    resultArea.textContent = '';
+    exampleBox.style.display = 'none';
+    chineseDisplay.textContent = '';
+    letterSlots.innerHTML = '';
+  }
+
+  async function loadActiveUserState(){
+    resetRuntimeState();
+    const restored = await loadState();
+    if(!restored) {
+      chapterSelect.value = 1;
+      await switchChapter(1);
+      resetAndStart();
+    }
+    updateModeIndicator();
+    updateGoalDisplay();
+  }
+
+  loadUsers();
+  renderUserSelect();
+  migrateLegacyState();
+
+  // 下拉章节
+  chapterList.forEach(ch=>{ const o=document.createElement('option'); o.value=ch.id; o.textContent=ch.title; chapterSelect.appendChild(o); });
+  chapterSelect.addEventListener('change', ()=> switchChapter(parseInt(chapterSelect.value)));
+
+  // 模式
+  document.querySelectorAll('.mode-btn').forEach(b=>b.addEventListener('click',function(){
+    document.querySelectorAll('.mode-btn').forEach(x=>x.classList.remove('active'));
+    this.classList.add('active');
+    globalMode = this.dataset.mode;
+    updateModeIndicator();
+    saveState();
+  }));
+
+  // 提示/计时
+  hintToggle.addEventListener('click', ()=>{ hintEnabled=!hintEnabled; hintToggle.classList.toggle('active',hintEnabled); if(currentWord) renderSlots(); saveState(); });
+  timerToggle.addEventListener('click', ()=>{ timerEnabled=!timerEnabled; timerToggle.classList.toggle('active',timerEnabled); timerDisplay.style.display=timerEnabled?'flex':'none'; if(!timerEnabled) clearInterval(timerInterval); saveState(); });
+
+  function updateModeIndicator(){
+    if(globalMode==='chinese'){ modeIcon.textContent='📖'; modeText.textContent='看中文拼写'; }
+    else if(globalMode==='audio'){ modeIcon.textContent='🔊'; modeText.textContent='听音拼写'; }
+    else { modeIcon.textContent='🎲'; modeText.textContent='随机模式'; }
+  }
+
+  // ========== 存储与恢复 (优化版) ==========
+  function saveState(){
+    const state = {
+      chapter: parseInt(chapterSelect.value) || 1,
+      globalMode,
+      correctTotal, wrongTotal, completedCount,
+      currentIndex,
+      wrongBookIds: wrongBook.map(w=>w.id),
+      newWordBookIds: newWordBook.map(w=>w.id),
+      shuffledIds: shuffledWords.map(w=>w.id),
+      hintEnabled, timerEnabled, timerDuration,
+      dailyGoal, dailyCount, today: todayStr
+    };
+    localStorage.setItem(stateKey(), JSON.stringify(state));
+  }
+
+  function loadState(){
+    const raw = localStorage.getItem(stateKey());
+    if(!raw) return Promise.resolve(false);
+    try{
+      const state = JSON.parse(raw);
+      chapterSelect.value = state.chapter || 1;
+      globalMode = state.globalMode || 'random';
+      hintEnabled = state.hintEnabled || false;
+      timerEnabled = state.timerEnabled || false;
+      dailyGoal = state.dailyGoal || 50;
+      timerDuration = state.timerDuration || 10;
+      todayStr = new Date().toISOString().slice(0,10);
+      dailyCount = (state.today === todayStr) ? (state.dailyCount || 0) : 0;
+
+      document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active', b.dataset.mode === globalMode));
+      hintToggle.classList.toggle('active', hintEnabled);
+      timerToggle.classList.toggle('active', timerEnabled);
+      timerDisplay.style.display = timerEnabled ? 'flex' : 'none';
+      updateGoalDisplay();
+      updateModeIndicator();
+
+      return switchChapter(state.chapter).then(()=>{
+        correctTotal = state.correctTotal || 0;
+        wrongTotal = state.wrongTotal || 0;
+        completedCount = state.completedCount || 0;
+        currentIndex = state.currentIndex || 0;
+        wrongBook = (state.wrongBookIds || []).map(id=>currentVocabulary.find(w=>w.id===id)).filter(Boolean);
+        newWordBook = (state.newWordBookIds || []).map(id=>currentVocabulary.find(w=>w.id===id)).filter(Boolean);
+        if(state.shuffledIds && state.shuffledIds.length){
+          const idMap = new Map(currentVocabulary.map(w=>[w.id, w]));
+          shuffledWords = state.shuffledIds.map(id=>idMap.get(id)).filter(Boolean);
+          if(currentIndex >= shuffledWords.length) currentIndex = 0;
+        } else {
+          shuffledWords = [...currentVocabulary].sort(()=>Math.random()-0.5);
+        }
+        updateWrongBookUI(); updateNewWordBookUI(); updateSidebar();
+        if(shuffledWords.length > 0) loadNextWord();
+        updateStats();
+        return true;
+      });
+    }catch(e){
+      console.warn('状态恢复失败', e);
+      return Promise.resolve(false);
+    }
+  }
+
+  function switchChapter(chapterId){
+    return new Promise(resolve=>{
+      const old = document.querySelector('script[data-chapter]');
+      if(old) old.remove();
+      const script = document.createElement('script');
+      script.src = `/ielts-vocab/data-${chapterId}.js`;
+      script.setAttribute('data-chapter', chapterId);
+      script.onload = ()=>{
+        if(typeof vocabulary!=='undefined' && vocabulary.length>0){
+          currentVocabulary = vocabulary;
+          resolve();
+        } else { alert('词汇数据为空，请确保data-{章节}.js存在'); resolve(); }
+      };
+      script.onerror = ()=>{ alert(`加载第${chapterId}章失败, 请检查词汇文件`); resolve(); };
+      document.head.appendChild(script);
+    });
+  }
+
+  function resetAndStart(){
+    shuffledWords = [...currentVocabulary].sort(()=>Math.random()-0.5);
+    currentIndex=0; correctTotal=0; wrongTotal=0; completedCount=0;
+    wrongBook=[]; newWordBook=[];
+    updateWrongBookUI(); updateNewWordBookUI(); updateSidebar();
+    if(shuffledWords.length>0) loadNextWord();
+    updateStats();
+    saveState();
+  }
+
+  function startTimer(){
+    clearInterval(timerInterval);
+    if(!timerEnabled) return;
+    let remaining = timerDuration;
+    timerSeconds.textContent = remaining;
+    timerInterval = setInterval(()=>{
+      remaining--;
+      timerSeconds.textContent = remaining;
+      if(remaining <= 0){ clearInterval(timerInterval); if(!isAnswered) handleTimeout(); }
+    }, 1000);
+  }
+
+  function handleTimeout(){
+    if(isAnswered) return;
+    isAnswered = true;
+    wrongTotal++; playWrong();
+    resultArea.innerHTML = `<span style="color:#ef4444;">⏰ 时间到！正确单词：<strong>${currentWord.word}</strong></span>`;
+    if(!wrongBook.some(w=>w.id===currentWord.id)) wrongBook.push(currentWord);
+    completedCount++;
+    renderSlots();
+    if(currentWord.exampleEN){ exampleEN.textContent=`“${currentWord.exampleEN}”`; exampleCN.textContent=currentWord.exampleCN||''; exampleBox.style.display='block'; }
+    speakWord(currentWord.word);
+    updateWrongBookUI(); updateStats(); incrementDaily(); saveState(); updateSidebar();
+  }
+
+  function loadNextWord(){
+    if(shuffledWords.length===0) return;
+    clearInterval(timerInterval);
+    currentIndex = currentIndex % shuffledWords.length;
+    currentWord = shuffledWords[currentIndex];
+    userInput = []; isAnswered = false;
+    resultArea.textContent = ''; exampleBox.style.display = 'none';
+    startTime = Date.now();
+    if(globalMode==='random') currentMode = Math.random()<0.5?'chinese':'audio';
+    else currentMode = globalMode;
+    if(currentMode==='chinese') chineseDisplay.textContent = currentWord.meaningCN;
+    else { chineseDisplay.textContent = ''; speakWord(currentWord.word); }
+    if(hintEnabled && currentWord.word.length>0) userInput = [currentWord.word[0].toLowerCase()];
+    renderSlots();
+    if(timerEnabled) startTimer();
+    updateStats(); saveState();
+  }
+
+  function renderSlots(){
+    const len = currentWord.word.length;
+    let html = '';
+    for(let i=0; i<len; i++){
+      const letter = userInput[i] || '';
+      let cls = 'slot';
+      if(hintEnabled && i===0) cls += ' hint';
+      if(!isAnswered && i===userInput.length) cls += ' active-slot';
+      if(isAnswered){
+        const correct = currentWord.word[i].toLowerCase();
+        cls += letter===correct ? ' correct' : ' wrong';
+      }
+      html += `<div class="${cls}">${letter}</div>`;
+    }
+    letterSlots.innerHTML = html;
+  }
+
+  function updateStats(){
+    const total = shuffledWords.length;
+    progressText.textContent = `${completedCount}/${total}`;
+    correctCountEl.textContent = correctTotal; wrongCountEl.textContent = wrongTotal;
+    progressFill.style.width = `${total>0?(completedCount/total)*100:0}%`;
+  }
+
+  function incrementDaily(){
+    dailyCount++;
+    if(dailyCount >= dailyGoal){ showReward(); dailyCount = 0; }
+    updateGoalDisplay(); saveState();
+  }
+  function updateGoalDisplay(){
+    goalCount.textContent = `${dailyCount}/${dailyGoal}`;
+    goalFill.style.width = `${Math.min(100,(dailyCount/dailyGoal)*100)}%`;
+  }
+  function showReward(){
+    const modal = document.createElement('div'); modal.className='modal';
+    modal.innerHTML = `<div class="modal-content" style="text-align:center;"><h2>🎉 恭喜！</h2><p>你已完成今日目标 ${dailyGoal} 词！</p><button class="primary" id="closeRewardBtn">太棒了</button></div>`;
+    document.body.appendChild(modal);
+    document.getElementById('closeRewardBtn').addEventListener('click', ()=>modal.remove());
+  }
+
+  function submitAnswer(){
+    if(!currentWord || isAnswered) return;
+    if(userInput.length < currentWord.word.length){ resultArea.innerHTML='<span style="color:#f59e0b;">请完成单词再提交</span>'; return; }
+    clearInterval(timerInterval);
+    isAnswered = true;
+    const inputWord = userInput.join('').toLowerCase().replace(/\s/g,'');
+    const correct = inputWord === currentWord.word.toLowerCase();
+    if(correct){ correctTotal++; playCorrect(); resultArea.innerHTML='<span style="color:#10b981;">✔️ 正确！</span>'; }
+    else {
+      wrongTotal++; playWrong();
+      resultArea.innerHTML = `<span style="color:#ef4444;">❌ 错误！正确单词：<strong>${currentWord.word}</strong></span>`;
+      if(!wrongBook.some(w=>w.id===currentWord.id)) wrongBook.push(currentWord);
+    }
+    completedCount++;
+    renderSlots();
+    if(currentWord.exampleEN){ exampleEN.textContent=`“${currentWord.exampleEN}”`; exampleCN.textContent=currentWord.exampleCN||''; exampleBox.style.display='block'; }
+    speakWord(currentWord.word);
+    updateWrongBookUI(); updateStats(); incrementDaily(); saveState(); updateSidebar();
+    if(completedCount >= shuffledWords.length) showReport();
+  }
+
+  function moveToNextWord(){
+    if(!isAnswered) return;
+    currentIndex++;
+    if(currentIndex >= shuffledWords.length){ shuffledWords = [...currentVocabulary].sort(()=>Math.random()-0.5); currentIndex=0; completedCount=0; }
+    loadNextWord();
+  }
+
+  function skipWord(){
+    if(!currentWord) return;
+    currentIndex++;
+    if(currentIndex >= shuffledWords.length){ shuffledWords = [...currentVocabulary].sort(()=>Math.random()-0.5); currentIndex=0; completedCount=0; }
+    loadNextWord();
+  }
+
+  addNewWordBtn.addEventListener('click', ()=>{
+    if(!currentWord) return;
+    if(!newWordBook.some(w=>w.id===currentWord.id)){ newWordBook.push(currentWord); updateNewWordBookUI(); saveState(); updateSidebar(); }
+  });
+
+  function updateWrongBookUI(){
+    wrongBookCount.textContent = wrongBook.length;
+    wrongList.innerHTML = wrongBook.map(w=>`<div class="word-chip"><span>${w.word}</span> ${w.meaningCN} <span data-remove-wrong data-id="${w.id}" style="margin-left:4px;cursor:pointer;">✕</span></div>`).join('') || '<span style="color:#94a3b8;">暂无错题</span>';
+    document.querySelectorAll('[data-remove-wrong]').forEach(el=>el.addEventListener('click', e=>{ e.stopPropagation(); wrongBook = wrongBook.filter(w=>w.id!==parseInt(el.dataset.id)); updateWrongBookUI(); saveState(); updateSidebar(); }));
+    document.querySelectorAll('#wrongList .word-chip').forEach(chip=>chip.addEventListener('click', function(){ speakWord(this.querySelector('span').textContent); }));
+  }
+  function updateNewWordBookUI(){
+    newWordCount.textContent = newWordBook.length;
+    newWordList.innerHTML = newWordBook.map(w=>`<div class="word-chip new-word"><span>${w.word}</span> ${w.meaningCN} <span data-remove-new data-id="${w.id}" style="margin-left:4px;cursor:pointer;">✕</span></div>`).join('') || '<span style="color:#94a3b8;">暂无生词</span>';
+    document.querySelectorAll('[data-remove-new]').forEach(el=>el.addEventListener('click', e=>{ e.stopPropagation(); newWordBook = newWordBook.filter(w=>w.id!==parseInt(el.dataset.id)); updateNewWordBookUI(); saveState(); updateSidebar(); }));
+    document.querySelectorAll('#newWordList .word-chip').forEach(chip=>chip.addEventListener('click', function(){ speakWord(this.querySelector('span').textContent); }));
+  }
+
+  document.getElementById('reviewBookBtn').addEventListener('click', ()=>{
+    const all = [...wrongBook, ...newWordBook.filter(w=>!wrongBook.some(wb=>wb.id===w.id))];
+    if(all.length===0){ alert('错题本和生词本均为空'); return; }
+    currentVocabulary = all; shuffledWords = [...all].sort(()=>Math.random()-0.5);
+    currentIndex=0; correctTotal=0; wrongTotal=0; completedCount=0;
+    updateStats(); loadNextWord(); alert('已进入错题+生词复习模式');
+  });
+
+  function showReport(){
+    const total = shuffledWords.length;
+    const accuracy = total ? Math.round((correctTotal/total)*100) : 0;
+    const weakWords = wrongBook.map(w=>w.word).join(', ') || '无';
+    const modal = document.createElement('div'); modal.className='modal';
+    modal.innerHTML = `<div class="modal-content"><h2>📊 学习报告</h2><p>总词数：<strong>${total}</strong></p><p>正确率：<strong>${accuracy}%</strong></p><p>薄弱词：<strong>${weakWords}</strong></p><button id="closeReportBtn" class="primary" style="margin-top:10px;">关闭</button></div>`;
+    document.body.appendChild(modal);
+    document.getElementById('closeReportBtn').addEventListener('click', ()=>modal.remove());
+  }
+
+  setGoalBtn.addEventListener('click', ()=>{
+    const newGoal = prompt('设置每日词汇目标数量：', dailyGoal);
+    if(newGoal && !isNaN(newGoal) && newGoal>0){ dailyGoal = parseInt(newGoal); updateGoalDisplay(); saveState(); }
+  });
+
+  document.getElementById('darkModeToggle').addEventListener('click', ()=>{
+    document.body.classList.toggle('dark');
+    localStorage.setItem('darkMode', document.body.classList.contains('dark'));
+  });
+  if(localStorage.getItem('darkMode')==='true') document.body.classList.add('dark');
+
+  userSelect.addEventListener('change', async () => {
+    saveState();
+    activeUserId = userSelect.value;
+    localStorage.setItem(ACTIVE_USER_KEY, activeUserId);
+    await loadActiveUserState();
+  });
+
+  addUserBtn.addEventListener('click', async () => {
+    const name = prompt('输入用户名称：');
+    if(!name || !name.trim()) return;
+    const baseId = normalizeUserId(name);
+    let id = baseId;
+    let suffix = 2;
+    while(users.some(user => user.id === id)){
+      id = `${baseId}-${suffix++}`;
+    }
+    users.push({ id, name: name.trim() });
+    localStorage.setItem(USERS_KEY, JSON.stringify(users));
+    activeUserId = id;
+    localStorage.setItem(ACTIVE_USER_KEY, activeUserId);
+    renderUserSelect();
+    await loadActiveUserState();
+  });
+
+  function inputLetter(letter){
+    if(!currentWord || isAnswered) return;
+    if(userInput.length < currentWord.word.length){
+      userInput.push(letter.toLowerCase());
+      renderSlots();
+    }
+  }
+
+  function deleteLetter(){
+    if(!currentWord || isAnswered) return;
+    if(hintEnabled && userInput.length <= 1) return;
+    if(userInput.length>0){
+      userInput.pop();
+      renderSlots();
+    }
+  }
+
+  function renderMobileKeyboard(){
+    const letters = 'abcdefghijklmnopqrstuvwxyz'.split('');
+    mobileKeyboard.innerHTML = [
+      ...letters.map(letter => `<button type="button" class="key-btn" data-key="${letter}">${letter}</button>`),
+      '<button type="button" class="key-btn wide" data-key="-">-</button>',
+      '<button type="button" class="key-btn wide" data-action="backspace">删除</button>'
+    ].join('');
+    mobileKeyboard.querySelectorAll('[data-key]').forEach(btn => {
+      btn.addEventListener('click', () => inputLetter(btn.dataset.key));
+    });
+    mobileKeyboard.querySelector('[data-action="backspace"]').addEventListener('click', deleteLetter);
+  }
+  renderMobileKeyboard();
+
+  // ✅ 修复连字符输入 (原正则只允许字母，现允许字母和连字符)
+  document.addEventListener('keydown', e=>{
+    if(!currentWord) return;
+    if(e.key==='Enter'){ e.preventDefault(); if(!isAnswered) submitAnswer(); else moveToNextWord(); return; }
+    if(isAnswered) return;
+    // 允许字母 (a-z, A-Z) 以及连字符 '-'
+    if(/^[a-zA-Z\-]$/.test(e.key)){
+      e.preventDefault();
+      inputLetter(e.key);
+    }
+    else if(e.key==='Backspace'){
+      e.preventDefault();
+      deleteLetter();
+    }
+  });
+
+  nextBtn.addEventListener('click', ()=>{ if(!isAnswered) submitAnswer(); else moveToNextWord(); });
+  skipBtn.addEventListener('click', skipWord);
+  restartBtn.addEventListener('click', ()=>{ resetAndStart(); });
+  repeatBtn.addEventListener('click', ()=>{ if(currentWord) speakWord(currentWord.word); });
+  document.getElementById('clearWrongBtn').addEventListener('click', ()=>{ wrongBook=[]; updateWrongBookUI(); saveState(); updateSidebar(); });
+  document.getElementById('clearNewWordsBtn').addEventListener('click', ()=>{ newWordBook=[]; updateNewWordBookUI(); saveState(); updateSidebar(); });
+
+  document.getElementById('wrongBookToggle').addEventListener('click', function(){
+    const list = document.getElementById('wrongList');
+    const hidden = list.style.display === 'none';
+    list.style.display = hidden ? 'flex' : 'none';
+    this.querySelector('span').textContent = hidden ? '▼' : '▶';
+  });
+  document.getElementById('newWordBookToggle').addEventListener('click', function(){
+    const list = document.getElementById('newWordList');
+    const hidden = list.style.display === 'none';
+    list.style.display = hidden ? 'flex' : 'none';
+    this.querySelector('span').textContent = hidden ? '▼' : '▶';
+  });
+
+  // 侧边栏
+  function openSidebar() {
+    sidebar.classList.add('open');
+    sidebarOverlay.classList.add('active');
+    updateSidebar();
+  }
+  function closeSidebar() {
+    sidebar.classList.remove('open');
+    sidebarOverlay.classList.remove('active');
+  }
+  sidebarToggleBtn.addEventListener('click', ()=>{
+    if (sidebar.classList.contains('open')) closeSidebar();
+    else openSidebar();
+  });
+  sidebarOverlay.addEventListener('click', closeSidebar);
+  closeSidebarBtn.addEventListener('click', closeSidebar);
+  sidebarSearch.addEventListener('input', updateSidebar);
+
+  function updateSidebar(){
+    if(!currentVocabulary.length || !sidebar.classList.contains('open')) return;
+    const query = sidebarSearch.value.toLowerCase();
+    const filtered = currentVocabulary.filter(w => w.word.toLowerCase().includes(query) || w.meaningCN.includes(query));
+    sidebarList.innerHTML = filtered.map(w => {
+      let statusIcon = '';
+      if(wrongBook.some(wb=>wb.id===w.id)) statusIcon = '<span class="status-icon" style="color:var(--wrong);">✗</span>';
+      else if(newWordBook.some(nw=>nw.id===w.id)) statusIcon = '<span class="status-icon" style="color:#f59e0b;">★</span>';
+      else statusIcon = '<span class="status-icon" style="color:var(--correct);">○</span>';
+      return `<div class="sidebar-item" data-id="${w.id}">
+        <span class="word-text">${w.word}</span>
+        <span style="color:var(--text-secondary);font-size:0.8rem;">${w.meaningCN}</span>
+        ${statusIcon}
+      </div>`;
+    }).join('');
+    document.querySelectorAll('.sidebar-item').forEach(item => {
+      item.addEventListener('click', function(){
+        const wordId = parseInt(this.dataset.id);
+        jumpToWord(wordId);
+      });
+    });
+  }
+
+  function jumpToWord(wordId){
+    const targetWord = currentVocabulary.find(w => w.id === wordId);
+    if(!targetWord) return;
+    let idx = shuffledWords.findIndex(w => w.id === wordId);
+    if(idx === -1) shuffledWords[currentIndex] = targetWord;
+    else [shuffledWords[currentIndex], shuffledWords[idx]] = [shuffledWords[idx], shuffledWords[currentIndex]];
+    currentWord = shuffledWords[currentIndex];
+    loadNextWord();
+    closeSidebar();
+  }
+
+  // 初始化：先尝试恢复当前用户状态，若无则加载第一章
+  loadActiveUserState();
+
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/ielts-vocab/service-worker.js').catch(() => {});
+    });
+  }
+})();
+</script>
+</body>
+</html>

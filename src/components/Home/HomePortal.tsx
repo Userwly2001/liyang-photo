@@ -117,6 +117,9 @@ export default function HomePortal({
             </span>
             <span className="flex items-center gap-3 text-[10px] uppercase tracking-[0.18em] text-foreground/72 sm:gap-5 sm:text-xs">
               <span className="hidden sm:inline">{displayLocation}</span>
+              <a href="/ielts-vocab/index.html" className="border-b border-accent/45 pb-1 transition-colors hover:border-accent hover:text-accent">
+                雅思刷词
+              </a>
               <Link href="/about" className="border-b border-accent/45 pb-1 transition-colors hover:border-accent hover:text-accent">
                 {t.home.hero.about}
               </Link>

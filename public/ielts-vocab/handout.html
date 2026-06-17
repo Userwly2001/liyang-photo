@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <base href="/ielts-vocab/">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自然地理 · 核心词汇</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #3498db;
+            --bg: #f5f7fa;
+            --card-bg: #ffffff;
+            --text: #2d3436;
+            --shadow: 0 2px 8px rgba(0,0,0,0.06);
+            --radius: 12px;
+            --transition: all 0.2s ease;
+            --tag-core: #e74c3c;
+            --tag-high: #f39c12;
+            --tag-low: #7f8c8d;
+            --tag-recog: #27ae60;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .main::-webkit-scrollbar,
+        .sidebar::-webkit-scrollbar,
+        .overlay-scroll::-webkit-scrollbar {
+            width: 8px;
+        }
+        .main::-webkit-scrollbar-track,
+        .sidebar::-webkit-scrollbar-track,
+        .overlay-scroll::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        .main::-webkit-scrollbar-thumb,
+        .sidebar::-webkit-scrollbar-thumb,
+        .overlay-scroll::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+        .main::-webkit-scrollbar-thumb:hover,
+        .sidebar::-webkit-scrollbar-thumb:hover,
+        .overlay-scroll::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        .main, .sidebar, .overlay-scroll {
+            scrollbar-width: thin;
+            scrollbar-color: #c1c1c1 #f1f1f1;
+        }
+
+        .sidebar {
+            width: 220px;
+            background: white;
+            box-shadow: 2px 0 12px rgba(0,0,0,0.05);
+            padding: 30px 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 10;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+        .sidebar h2 {
+            font-size: 1.3rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+            flex-shrink: 0;
+        }
+        .sidebar button {
+            border: none;
+            background: #f0f3f5;
+            padding: 10px 12px;
+            border-radius: 10px;
+            text-align: left;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+            color: #333;
+            flex-shrink: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .sidebar button:hover {
+            background: #e0e6ed;
+        }
+        .sidebar button.active {
+            background: var(--accent);
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(52,152,219,0.3);
+        }
+
+        .main {
+            flex: 1;
+            padding: 25px;
+            overflow-y: auto;
+            position: relative;
+        }
+        .main h1 {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+            gap: 15px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            padding: 15px 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid #f1f1f1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+        .card:hover {
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            transform: translateY(-2px);
+        }
+        .card .word {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 2px;
+            word-break: break-word;
+        }
+        .card .phonetic {
+            font-size: 0.75rem;
+            color: #7f8c8d;
+            margin-bottom: 6px;
+        }
+        .card .pos {
+            font-size: 0.7rem;
+            background: #eaf2f8;
+            color: var(--accent);
+            padding: 2px 10px;
+            border-radius: 20px;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+        .card .tag {
+            font-size: 0.65rem;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .tag-core { background: var(--tag-core); color: white; }
+        .tag-high { background: var(--tag-high); color: white; }
+        .tag-low { background: var(--tag-low); color: white; }
+        .tag-recog { background: var(--tag-recog); color: white; }
+
+        .card .meaning {
+            font-size: 0.85rem;
+            color: #2c3e50;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+        .card .card-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-top: auto;
+        }
+        .btn-icon {
+            border: none;
+            background: #f5f5f5;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 4px 8px;
+            border-radius: 50%;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-icon:hover {
+            background: #e0e0e0;
+        }
+        .upload-icon-sm {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #aaa;
+            transition: color 0.2s;
+            background: none;
+            border: none;
+            cursor: pointer;
+            line-height: 1;
+        }
+        .upload-icon-sm:hover {
+            color: #555;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(6px);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+        .overlay.active {
+            display: flex;
+        }
+        .overlay-content {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+            width: 960px;
+            max-width: 90vw;
+            aspect-ratio: 16 / 9;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+        .overlay-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px 30px 10px 30px;
+        }
+        .overlay-note-area {
+            padding: 10px 30px 20px 30px;
+            border-top: 1px solid #eee;
+            background: #fafafa;
+            flex-shrink: 0;
+        }
+        .word-main {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+        .word-main h2 {
+            font-size: 2.2rem;
+            color: var(--primary);
+        }
+        .word-main .phonetic {
+            font-size: 1.1rem;
+            color: #7f8c8d;
+        }
+        .pos-badge {
+            display: inline-block;
+            background: #eaf2f8;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--accent);
+            font-weight: 600;
+            width: fit-content;
+            margin-bottom: 12px;
+        }
+        .tag-badge {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-left: 10px;
+            color: white;
+        }
+        .meaning-large {
+            font-size: 1.3rem;
+            color: #2c3e50;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+        .example-box {
+            background: #f9fbfc;
+            border-left: 4px solid var(--accent);
+            padding: 12px 15px;
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+            color: #333;
+            margin-bottom: 12px;
+        }
+        .example-box .cn {
+            font-style: normal;
+            color: #666;
+            font-size: 0.9rem;
+            display: block;
+            margin-top: 4px;
+        }
+        .root-box {
+            background: #fdf9ed;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: #7d6608;
+            margin-bottom: 10px;
+        }
+        .extra-box {
+            font-size: 0.9rem;
+            color: #444;
+            margin-bottom: 10px;
+        }
+        .image-preview img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 1.8rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #888;
+            z-index: 20;
+        }
+
+        .lecture-note {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #2c3e50;
+            min-height: 42px;
+            resize: none;
+            font-family: inherit;
+            outline: none;
+            overflow: hidden;
+            line-height: 1.4;
+        }
+        .lecture-note:focus {
+            border-color: var(--accent);
+        }
+
+        #globalCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10000;
+            display: none;
+            cursor: crosshair;
+            touch-action: none;
+        }
+        .brush-toggle {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--accent);
+            color: white;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            cursor: pointer;
+            z-index: 9998;
+            border: none;
+            transition: transform 0.2s;
+        }
+        .brush-toggle:hover {
+            transform: scale(1.1);
+        }
+        .brush-toolbar {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            z-index: 10001;
+            background: white;
+            padding: 8px 12px;
+            border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+        }
+        .brush-toolbar.visible {
+            display: flex;
+        }
+        .brush-toolbar input[type="color"] {
+            width: 28px;
+            height: 28px;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .brush-toolbar button {
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 50%;
+            transition: background 0.2s;
+        }
+        .brush-toolbar button:hover {
+            background: #f0f0f0;
+        }
+
+        .overlay-draw-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 15;
+            pointer-events: none;
+            cursor: crosshair;
+            touch-action: none;
+        }
+        .overlay-draw-canvas.active {
+            pointer-events: auto;
+        }
+        .toggle-draw-btn {
+            position: absolute;
+            top: 15px;
+            right: 60px;
+            z-index: 21;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 8px;
+            padding: 4px 12px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .toggle-draw-btn.active {
+            background: #e74c3c;
+            color: white;
+        }
+        .page-switch {
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            z-index: 1000;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 40px;
+            padding: 0 16px;
+            border-radius: 999px;
+            background: #ffffff;
+            border: 1px solid #dfe6e9;
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.88rem;
+            font-weight: 700;
+            box-shadow: 0 8px 22px rgba(44, 62, 80, 0.14);
+        }
+        .page-switch:hover {
+            color: var(--accent);
+        }
+
+        @media (max-width: 768px) {
+            .page-switch {
+                top: 10px;
+                left: 10px;
+                min-height: 36px;
+                padding: 0 12px;
+                font-size: 0.8rem;
+            }
+            .sidebar {
+                width: 100%;
+                flex-direction: row;
+                overflow-x: auto;
+                overflow-y: hidden;
+                padding: 15px;
+                height: auto;
+            }
+            .main {
+                padding: 20px;
+            }
+            .overlay-content {
+                width: 95vw;
+                height: auto;
+                aspect-ratio: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a class="page-switch" href="/ielts-vocab/index.html">背单词</a>
+    <nav class="sidebar" id="sidebar"></nav>
+
+    <div class="main">
+        <h1>🌍 自然地理 · 核心词汇</h1>
+        <div class="card-grid" id="cardGrid"></div>
+    </div>
+
+    <div class="overlay" id="overlay">
+        <div class="overlay-content" id="overlayContent">
+        </div>
+    </div>
+
+    <canvas id="globalCanvas"></canvas>
+    <button class="brush-toggle" id="brushToggle" title="画笔标注">✏️</button>
+    <div class="brush-toolbar" id="brushToolbar">
+        <input type="color" id="brushColorPicker" value="#e74c3c" title="画笔颜色">
+        <button id="clearBrushCanvas" title="清除笔记">🗑️</button>
+        <button id="brushClose" title="退出画笔">✕</button>
+    </div>
+
+    <script>
+        // ===================== 章节列表 =====================
+        const chapterList = [
+            { id: 1, title: "时间与存在" },
+            { id: 2, title: "植物研究" },
+            { id: 3, title: "动物保护" },
+            { id: 4, title: "太空探索" },
+            { id: 5, title: "学校教育" },
+            { id: 6, title: "科技文明" },
+            { id: 7, title: "文化历史" },
+            { id: 8, title: "语言演化" },
+            { id: 9, title: "文化娱乐" },
+            { id: 10, title: "物品材料" },
+            { id: 11, title: "时尚潮流" },
+            { id: 12, title: "饮食健康" },
+            { id: 13, title: "建筑场所" },
+            { id: 14, title: "交通旅行" },
+            { id: 15, title: "国家政府" },
+            { id: 16, title: "社会经济" },
+            { id: 17, title: "法律法规" },
+            { id: 18, title: "沙场争锋" },
+            { id: 19, title: "社会角色" },
+            { id: 20, title: "行为动作" },
+            { id: 21, title: "身心健康" },
+            { id: 22, title: "时间日期" }
+        ];
+
+        // 全局词汇变量（被 data-x.js 覆盖）
+        var vocabulary = [];
+        // 当前展示的词汇数据集
+        let currentVocabulary = [];
+        // 当前选中的章节 ID
+        let currentChapter = 1;
+        // 弹窗等使用的当前词汇ID
+        let currentWordId = null;
+
+        // ===================== 加载章节数据 =====================
+        function loadChapterData(chapterId) {
+            // 移除之前可能已经加载的同名 script 标签
+            const oldScript = document.querySelector('script[data-chapter]');
+            if (oldScript) oldScript.remove();
+
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = `/ielts-vocab/data-${chapterId}.js`;
+                script.setAttribute('data-chapter', chapterId);
+                script.onload = () => {
+                    // data-x.js 执行后，全局 vocabulary 已被更新
+                    if (typeof vocabulary !== 'undefined' && vocabulary.length > 0) {
+                        currentVocabulary = vocabulary;
+                        resolve();
+                    } else {
+                        reject(new Error('词汇数据为空或未定义'));
+                    }
+                };
+                script.onerror = () => reject(new Error('加载 data-' + chapterId + '.js 失败，请检查文件是否存在'));
+                document.head.appendChild(script);
+            });
+        }
+
+        // ===================== 语音 =====================
+        let cachedVoices = [];
+        async function initVoices() {
+            return new Promise(resolve => {
+                const voices = speechSynthesis.getVoices();
+                if (voices.length > 0) {
+                    cachedVoices = voices;
+                    resolve(voices);
+                } else {
+                    speechSynthesis.addEventListener('voiceschanged', () => {
+                        cachedVoices = speechSynthesis.getVoices();
+                        resolve(cachedVoices);
+                    }, { once: true });
+                }
+            });
+        }
+
+        async function speakWord(word) {
+            if (!('speechSynthesis' in window)) {
+                alert('您的浏览器不支持语音朗读功能');
+                return;
+            }
+            if (cachedVoices.length === 0) await initVoices();
+            speechSynthesis.cancel();
+            await new Promise(resolve => setTimeout(resolve, 20));
+
+            const utterance = new SpeechSynthesisUtterance(word);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.9;
+            utterance.volume = 1;
+            const voices = cachedVoices.length ? cachedVoices : speechSynthesis.getVoices();
+            const preferredVoice = voices.find(v => v.lang === 'en-US') || voices.find(v => v.lang.startsWith('en'));
+            if (preferredVoice) utterance.voice = preferredVoice;
+            utterance.onend = () => {};
+            utterance.onerror = (e) => {
+                if (e.error !== 'canceled') console.warn('朗读出错:', e.error);
+            };
+            speechSynthesis.speak(utterance);
+        }
+        initVoices();
+
+        // ===================== 侧边栏 =====================
+        function buildSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            let html = '<h2>章节</h2>';
+            chapterList.forEach(ch => {
+                html += `<button data-chapter="${ch.id}" class="${ch.id === currentChapter ? 'active' : ''}">${ch.id}. ${ch.title}</button>`;
+            });
+            sidebar.innerHTML = html;
+
+            sidebar.querySelectorAll('button').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const chapterId = parseInt(this.dataset.chapter);
+                    switchChapter(chapterId);
+                });
+            });
+        }
+
+        function switchChapter(chapterId) {
+            currentChapter = chapterId;
+            // 更新侧边栏激活样式
+            document.querySelectorAll('.sidebar button').forEach(btn => {
+                btn.classList.remove('active');
+                if (parseInt(btn.dataset.chapter) === chapterId) btn.classList.add('active');
+            });
+            // 加载对应数据
+            loadChapterData(chapterId)
+                .then(() => renderCards())
+                .catch(err => {
+                    console.error(err);
+                    document.getElementById('cardGrid').innerHTML = '<p style="padding:20px;color:#e74c3c;">' + err.message + '</p>';
+                });
+        }
+
+        // ===================== 渲染卡片 =====================
+        function renderCards() {
+            const grid = document.getElementById('cardGrid');
+            if (!currentVocabulary.length) {
+                grid.innerHTML = '<p style="padding:20px;">本单元暂无词汇</p>';
+                return;
+            }
+            grid.innerHTML = currentVocabulary.map(word => `
+                <div class="card" onclick="openOverlay(${word.id})">
+                    <button class="upload-icon-sm" onclick="triggerUpload(${word.id}, event)" title="添加图片">+</button>
+                    <div class="word">${word.word}</div>
+                    <div class="phonetic">${word.phonetic}</div>
+                    <span class="pos">${word.pos}</span>
+                    <span class="tag tag-${word.tag === '核心' ? 'core' : word.tag === '高频' ? 'high' : word.tag === '低频' ? 'low' : 'recog'}">${word.tag}</span>
+                    <div class="meaning">${word.meaningCN}</div>
+                    <div class="card-actions">
+                        <button class="btn-icon" onclick="event.stopPropagation(); speakWord('${word.word}')" title="朗读">🔊</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ===================== 图片上传 =====================
+        const imageStore = new Map();
+        function triggerUpload(wordId, event) {
+            event.stopPropagation();
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    const base64 = ev.target.result;
+                    imageStore.set(wordId, base64);
+                    const word = currentVocabulary.find(w => w.id === wordId);
+                    if (word) word.image = base64;
+                    if (currentWordId === wordId && document.getElementById('overlay').classList.contains('active')) {
+                        updateOverlayImage(base64);
+                    }
+                    renderCards();
+                };
+                reader.readAsDataURL(file);
+            };
+            input.click();
+        }
+
+        // ===================== 弹窗及批注 =====================
+        let overlayDrawCanvas, overlayDrawCtx, overlayDrawEnabled = false;
+
+        function openOverlay(wordId) {
+            currentWordId = wordId;
+            const word = currentVocabulary.find(w => w.id === wordId);
+            if (!word) return;
+            const overlay = document.getElementById('overlay');
+            const content = document.getElementById('overlayContent');
+            const tagClass = `tag-${word.tag === '核心' ? 'core' : word.tag === '高频' ? 'high' : word.tag === '低频' ? 'low' : 'recog'}`;
+
+            content.innerHTML = `
+                <button class="close-btn" id="closeOverlayBtn">✕</button>
+                <button class="toggle-draw-btn" id="toggleDrawBtn">🖌️ 批注</button>
+                <canvas class="overlay-draw-canvas" id="overlayDrawCanvas"></canvas>
+                <div class="overlay-scroll">
+                    <div class="word-main">
+                        <h2>${word.word}</h2>
+                        <span class="phonetic">${word.phonetic}</span>
+                        <button class="btn-icon" onclick="speakWord('${word.word}')">🔊</button>
+                    </div>
+                    <span class="pos-badge">${word.pos}</span>
+                    <span class="tag-badge ${tagClass}">${word.tag}</span>
+                    <div class="meaning-large">${word.meaningCN}</div>
+                    <div class="example-box">
+                        "${word.exampleEN}"
+                        <span class="cn">${word.exampleCN}</span>
+                    </div>
+                    <div class="root-box">📚 ${word.root}</div>
+                    <div class="extra-box">${word.extra || ''}</div>
+                    <div class="image-preview" id="overlayImage">
+                        ${word.image ? `<img src="${word.image}" alt="配图">` : ''}
+                    </div>
+                </div>
+                <div class="overlay-note-area">
+                    <textarea class="lecture-note" placeholder="在此输入讲解备注..." id="lectureNote"></textarea>
+                </div>
+            `;
+
+            overlay.classList.add('active');
+            document.getElementById('closeOverlayBtn').addEventListener('click', closeOverlay);
+            overlay.addEventListener('click', function(e) {
+                if (e.target === overlay) closeOverlay();
+            });
+
+            const note = document.getElementById('lectureNote');
+            note.addEventListener('input', autoResize);
+            autoResize.call(note);
+
+            initOverlayDrawCanvas();
+            document.addEventListener('keydown', handleKeyNav);
+        }
+
+        function closeOverlay() {
+            document.getElementById('overlay').classList.remove('active');
+            document.removeEventListener('keydown', handleKeyNav);
+            overlayDrawEnabled = false;
+            currentWordId = null;
+            overlayDrawCanvas = null;
+            overlayDrawCtx = null;
+        }
+
+        function updateOverlayImage(base64) {
+            const imgDiv = document.getElementById('overlayImage');
+            if (imgDiv) imgDiv.innerHTML = `<img src="${base64}" alt="配图">`;
+        }
+
+        function autoResize() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        }
+
+        function initOverlayDrawCanvas() {
+            const canvas = document.getElementById('overlayDrawCanvas');
+            const toggleBtn = document.getElementById('toggleDrawBtn');
+            overlayDrawCanvas = canvas;
+            overlayDrawCtx = canvas.getContext('2d');
+
+            function resizeOverlayCanvas() {
+                const rect = canvas.parentElement.getBoundingClientRect();
+                canvas.width = rect.width;
+                canvas.height = rect.height;
+                overlayDrawCtx.fillStyle = 'rgba(255,255,255,0)';
+                overlayDrawCtx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+            resizeOverlayCanvas();
+            window.addEventListener('resize', resizeOverlayCanvas);
+
+            let painting = false;
+            let lastX, lastY;
+
+            canvas.addEventListener('pointerdown', (e) => {
+                if (!overlayDrawEnabled) return;
+                if (e.pointerType === 'pen' || e.pointerType === 'touch') e.preventDefault();
+                painting = true;
+                const rect = canvas.getBoundingClientRect();
+                lastX = e.clientX - rect.left;
+                lastY = e.clientY - rect.top;
+                overlayDrawCtx.beginPath();
+            });
+
+            canvas.addEventListener('pointermove', (e) => {
+                if (!painting || !overlayDrawEnabled) return;
+                if (e.pointerType === 'pen' || e.pointerType === 'touch') e.preventDefault();
+                const rect = canvas.getBoundingClientRect();
+                const events = e.getCoalescedEvents();
+                if (events && events.length > 0) {
+                    for (const coalescedEvent of events) {
+                        const x = coalescedEvent.clientX - rect.left;
+                        const y = coalescedEvent.clientY - rect.top;
+                        drawOverlayLine(lastX, lastY, x, y);
+                        lastX = x;
+                        lastY = y;
+                    }
+                } else {
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    drawOverlayLine(lastX, lastY, x, y);
+                    lastX = x;
+                    lastY = y;
+                }
+            });
+
+            canvas.addEventListener('pointerup', () => painting = false);
+            canvas.addEventListener('pointerleave', () => painting = false);
+            canvas.addEventListener('pointercancel', () => painting = false);
+
+            function drawOverlayLine(x0, y0, x1, y1) {
+                overlayDrawCtx.strokeStyle = '#ff0000';
+                overlayDrawCtx.lineWidth = 2;
+                overlayDrawCtx.lineCap = 'round';
+                overlayDrawCtx.lineJoin = 'round';
+                overlayDrawCtx.beginPath();
+                overlayDrawCtx.moveTo(x0, y0);
+                overlayDrawCtx.lineTo(x1, y1);
+                overlayDrawCtx.stroke();
+            }
+
+            toggleBtn.addEventListener('click', () => {
+                overlayDrawEnabled = !overlayDrawEnabled;
+                if (overlayDrawEnabled) {
+                    canvas.classList.add('active');
+                    toggleBtn.classList.add('active');
+                    toggleBtn.textContent = '✕ 关闭批注';
+                } else {
+                    canvas.classList.remove('active');
+                    toggleBtn.classList.remove('active');
+                    toggleBtn.textContent = '🖌️ 批注';
+                }
+            });
+        }
+
+        // 键盘导航
+        function handleKeyNav(e) {
+            if (!document.getElementById('overlay').classList.contains('active')) return;
+            if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
+
+            const currentIndex = currentVocabulary.findIndex(w => w.id === currentWordId);
+            if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+                e.preventDefault();
+                const direction = e.key === 'ArrowRight' ? 1 : -1;
+                const newIndex = (currentIndex + direction + currentVocabulary.length) % currentVocabulary.length;
+                const newWord = currentVocabulary[newIndex];
+                closeOverlay();
+                openOverlay(newWord.id);
+            } else if (e.key === ' ') {
+                e.preventDefault();
+                const word = currentVocabulary.find(w => w.id === currentWordId);
+                if (word) speakWord(word.word);
+            } else if (e.key === 'Escape') {
+                e.preventDefault();
+                closeOverlay();
+            }
+        }
+
+        // ===================== 全局画笔 =====================
+        const canvas = document.getElementById('globalCanvas');
+        const ctx = canvas.getContext('2d');
+        const brushToggle = document.getElementById('brushToggle');
+        const brushToolbar = document.getElementById('brushToolbar');
+        const brushClose = document.getElementById('brushClose');
+        const brushColorPicker = document.getElementById('brushColorPicker');
+        const clearBrushCanvasBtn = document.getElementById('clearBrushCanvas');
+        let painting = false;
+        let lastX, lastY;
+        let brushColor = brushColorPicker.value;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            ctx.fillStyle = 'rgba(255,255,255,0)';
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function startPaintGlobal(e) {
+            if (e.pointerType === 'pen' || e.pointerType === 'touch') e.preventDefault();
+            painting = true;
+            lastX = e.clientX;
+            lastY = e.clientY;
+            ctx.beginPath();
+        }
+
+        function drawGlobal(e) {
+            if (!painting) return;
+            if (e.pointerType === 'pen' || e.pointerType === 'touch') e.preventDefault();
+            const events = e.getCoalescedEvents();
+            if (events && events.length > 0) {
+                for (const coalescedEvent of events) {
+                    const x = coalescedEvent.clientX;
+                    const y = coalescedEvent.clientY;
+                    drawLineGlobal(lastX, lastY, x, y);
+                    lastX = x;
+                    lastY = y;
+                }
+            } else {
+                drawLineGlobal(lastX, lastY, e.clientX, e.clientY);
+                lastX = e.clientX;
+                lastY = e.clientY;
+            }
+        }
+
+        function drawLineGlobal(x0, y0, x1, y1) {
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.strokeStyle = brushColor;
+            ctx.beginPath();
+            ctx.moveTo(x0, y0);
+            ctx.lineTo(x1, y1);
+            ctx.stroke();
+        }
+
+        function endPaintGlobal() {
+            painting = false;
+            lastX = undefined;
+            lastY = undefined;
+        }
+
+        function enterBrushMode() {
+            canvas.style.display = 'block';
+            brushToolbar.classList.add('visible');
+            brushToggle.style.display = 'none';
+            canvas.addEventListener('pointerdown', startPaintGlobal);
+            canvas.addEventListener('pointermove', drawGlobal);
+            canvas.addEventListener('pointerup', endPaintGlobal);
+            canvas.addEventListener('pointerleave', endPaintGlobal);
+            canvas.addEventListener('pointercancel', endPaintGlobal);
+        }
+
+        function exitBrushMode() {
+            canvas.style.display = 'none';
+            brushToolbar.classList.remove('visible');
+            brushToggle.style.display = 'flex';
+            painting = false;
+            lastX = undefined;
+            lastY = undefined;
+            canvas.removeEventListener('pointerdown', startPaintGlobal);
+            canvas.removeEventListener('pointermove', drawGlobal);
+            canvas.removeEventListener('pointerup', endPaintGlobal);
+            canvas.removeEventListener('pointerleave', endPaintGlobal);
+            canvas.removeEventListener('pointercancel', endPaintGlobal);
+        }
+
+        brushToggle.addEventListener('click', enterBrushMode);
+        brushClose.addEventListener('click', exitBrushMode);
+        brushColorPicker.addEventListener('input', (e) => brushColor = e.target.value);
+        clearBrushCanvasBtn.addEventListener('click', () => ctx.clearRect(0, 0, canvas.width, canvas.height));
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && canvas.style.display === 'block') exitBrushMode();
+        });
+
+        // ===================== 启动应用 =====================
+        buildSidebar();
+        // 默认加载第一章
+        switchChapter(1);
+    </script>
+</body>
+</html>
