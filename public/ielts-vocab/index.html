@@ -895,21 +895,41 @@
     }
   }
 
+  const DATA_VERSION = '20260618-1';
+
   function switchChapter(chapterId){
     return new Promise(resolve=>{
       const old = document.querySelector('script[data-chapter]');
       if(old) old.remove();
-      const script = document.createElement('script');
-      script.src = `/ielts-vocab/data-${chapterId}.js`;
-      script.setAttribute('data-chapter', chapterId);
-      script.onload = ()=>{
-        if(typeof vocabulary!=='undefined' && vocabulary.length>0){
-          currentVocabulary = vocabulary;
+
+      const loadScript = (retryCount = 0)=>{
+        const script = document.createElement('script');
+        vocabulary = [];
+        const retrySuffix = retryCount ? `&retry=${Date.now()}` : '';
+        script.src = `/ielts-vocab/data-${chapterId}.js?v=${DATA_VERSION}${retrySuffix}`;
+        script.setAttribute('data-chapter', chapterId);
+        script.onload = ()=>{
+          if(typeof vocabulary!=='undefined' && vocabulary.length>0){
+            currentVocabulary = vocabulary;
+            resolve();
+          } else {
+            alert(`第 ${chapterId} 章词汇数据为空`);
+            resolve();
+          }
+        };
+        script.onerror = ()=>{
+          script.remove();
+          if(retryCount < 1){
+            setTimeout(()=>loadScript(retryCount + 1), 300);
+            return;
+          }
+          alert(`第 ${chapterId} 章加载失败，请检查网络后刷新页面`);
           resolve();
-        } else { alert('词汇数据为空，请确保data-{章节}.js存在'); resolve(); }
+        };
+        document.head.appendChild(script);
       };
-      script.onerror = ()=>{ alert(`加载第${chapterId}章失败, 请检查词汇文件`); resolve(); };
-      document.head.appendChild(script);
+
+      loadScript();
     });
   }
 

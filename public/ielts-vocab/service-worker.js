@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ielts-vocab-pwa-v4';
+const CACHE_NAME = 'ielts-vocab-pwa-v5';
 const CHAPTER_FILES = Array.from({ length: 22 }, (_, index) => `/ielts-vocab/data-${index + 1}.js`);
 const APP_SHELL = [
   '/ielts-vocab/index.html',
@@ -27,15 +27,26 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
-  event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
+  const url = new URL(event.request.url);
+  if (url.origin !== self.location.origin) return;
 
-      return fetch(event.request).then((response) => {
-        const copy = response.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+  event.respondWith(
+    fetch(event.request)
+      .then((response) => {
+        if (response.ok) {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+        }
         return response;
-      });
-    })
+      })
+      .catch(() =>
+        caches.match(event.request, { ignoreSearch: true }).then((cached) => {
+          if (cached) return cached;
+          return new Response('Offline resource unavailable', {
+            status: 503,
+            statusText: 'Service Unavailable',
+          });
+        })
+      )
   );
 });
