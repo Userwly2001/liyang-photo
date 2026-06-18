@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>雅思听力精听工作台 · 剑10-剑20</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', 'Segoe UI', Roboto, sans-serif;
+            background-color: #f7f9fb;
+            color: #4a4a4a;
+            min-height: 100vh;
+        }
+
+        /* ========== 顶部横幅封面 ========== */
+        .hero-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 60px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('images/book19.jpg') center/cover no-repeat;
+            opacity: 0.15;
+        }
+        .site-switch {
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            z-index: 100;
+            display: inline-flex;
+            align-items: center;
+            min-height: 38px;
+            padding: 0 14px;
+            border: 1px solid rgba(255,255,255,0.5);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.94);
+            color: #4a4a4a;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 700;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+        }
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+        .hero-banner h1 {
+            color: white;
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            letter-spacing: 2px;
+        }
+        .hero-banner p {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.1rem;
+            margin-bottom: 24px;
+        }
+        .hero-tags {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .hero-tag {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            padding: 8px 20px;
+            border-radius: 50px;
+            color: white;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        .hero-btn-group {
+            margin-top: 28px;
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .hero-btn {
+            background: white;
+            color: #667eea;
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .hero-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+        .hero-btn.wechat-btn {
+            background: linear-gradient(135deg, #07c160, #06ad56);
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .hero-btn.wechat-btn:hover {
+            background: linear-gradient(135deg, #06ad56, #059c4c);
+        }
+        .hero-btn.group-btn {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a5a);
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .hero-btn.group-btn:hover {
+            background: linear-gradient(135deg, #ee5a5a, #dd4949);
+        }
+
+        /* ========== 主容器 ========== */
+        .home-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* 统计卡片 */
+        .stats-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 10;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 24px;
+            padding: 20px 28px;
+            flex: 1;
+            min-width: 160px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.03);
+            border: 1px solid rgba(0,0,0,0.02);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+        }
+        .stat-card h3 {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #9b9b9b;
+            margin-bottom: 8px;
+        }
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #4a4a4a;
+        }
+        .stat-bar {
+            margin-top: 12px;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .stat-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        /* 书架封面网格 */
+        .books-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 40px;
+            transition: all 0.3s;
+            position: relative;
+            z-index: 5;
+        }
+
+        /* 书本卡片容器 */
+        .book-card {
+            flex: 0 0 auto;
+            width: 180px;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.3s, filter 0.3s;
+            position: relative;
+        }
+        .cover {
+            aspect-ratio: 720 / 970;
+            width: 100%;
+            background-color: #e6e9f0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 12px 24px -8px rgba(0,0,0,0.15);
+            transition: box-shadow 0.2s;
+        }
+        .cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .book-card:hover .cover {
+            box-shadow: 0 18px 28px -6px rgba(0,0,0,0.2);
+        }
+        .book-card:hover {
+            transform: translateY(-8px);
+        }
+
+        /* 全局模糊/隐藏效果 */
+        body.blur-background .books-grid .book-card:not(.active-book) {
+            filter: blur(4px);
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        body.blur-background .books-grid .book-card.active-book {
+            filter: none;
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1.05);
+            z-index: 100;
+            position: relative;
+        }
+
+        /* 展开详情卡片 */
+        .detail-panel {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 800px;
+            max-height: 85vh;
+            background: white;
+            border-radius: 32px;
+            padding: 32px 28px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.25);
+            z-index: 200;
+            overflow-y: auto;
+        }
+        .detail-panel.show {
+            display: block;
+            animation: fadeUp 0.25s ease;
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translate(-50%, -48%); }
+            to { opacity: 1; transform: translate(-50%, -50%); }
+        }
+        .detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #eef2fa;
+        }
+        .detail-title {
+            font-size: 1.6rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .close-detail {
+            background: #f5f5f5;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .close-detail:hover {
+            background: #e0e0e0;
+            transform: rotate(90deg);
+        }
+        .test-group {
+            margin-bottom: 24px;
+        }
+        .test-label {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .test-label::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: linear-gradient(180deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+        .section-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-left: 12px;
+        }
+        .section-btn {
+            background: #f8f9fa;
+            padding: 8px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            color: #555;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+            border: 1px solid #eee;
+        }
+        .section-btn:hover {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-color: transparent;
+            transform: scale(1.05);
+        }
+        .check-mark {
+            font-size: 0.9rem;
+            cursor: pointer;
+            opacity: 0.5;
+        }
+        .check-mark.completed {
+            opacity: 1;
+        }
+
+        /* ========== 公众号弹窗 ========== */
+        .wechat-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+        .wechat-modal-overlay.show {
+            display: flex;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .wechat-modal {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+            animation: scaleIn 0.3s ease;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+        }
+        @keyframes scaleIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .wechat-modal .close-modal {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .wechat-modal .close-modal:hover {
+            background: #e0e0e0;
+            transform: rotate(90deg);
+        }
+        .wechat-modal h3 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        .wechat-modal .subtitle {
+            color: #888;
+            font-size: 0.9rem;
+            margin-bottom: 24px;
+        }
+        .qrcode-box {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+        .qrcode-box img {
+            width: 200px;
+            height: 200px;
+            border-radius: 8px;
+        }
+        .wechat-modal .tip {
+            color: #666;
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+        .wechat-modal .wechat-name {
+            display: inline-block;
+            background: linear-gradient(135deg, #07c160, #06ad56);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+        }
+
+        /* ========== 备考群弹窗 ========== */
+        .group-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+        .group-modal-overlay.show {
+            display: flex;
+        }
+        .group-modal {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+            animation: scaleIn 0.3s ease;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+        }
+        .group-modal .close-modal {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .group-modal .close-modal:hover {
+            background: #e0e0e0;
+            transform: rotate(90deg);
+        }
+        .group-modal h3 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        .group-modal .subtitle {
+            color: #888;
+            font-size: 0.9rem;
+            margin-bottom: 24px;
+        }
+        .group-modal .qrcode-box {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+        .group-modal .qrcode-box img {
+            width: 200px;
+            height: 200px;
+            border-radius: 8px;
+        }
+        .group-modal .tip {
+            color: #666;
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+        .group-modal .group-name {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a5a);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+        }
+
+        /* ========== 底部提示 ========== */
+        .footer-note {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #888;
+            padding: 16px;
+            background: linear-gradient(135deg, #f8f9fa, #fff);
+            border-radius: 16px;
+            border: 1px solid #eee;
+        }
+        .footer-note span {
+            margin: 0 8px;
+        }
+
+        /* ========== 课程卡片区域 ========== */
+        .courses-section {
+            margin: 40px 0;
+        }
+        .section-title {
+            text-align: center;
+            font-size: 1.4rem;
+            color: #333;
+            margin-bottom: 24px;
+            font-weight: 600;
+        }
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            margin: 12px auto 0;
+            border-radius: 2px;
+        }
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .course-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            border: 1px solid #eee;
+            transition: all 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        .course-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.2);
+            border-color: #667eea;
+        }
+        .course-card-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+        .course-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            flex-shrink: 0;
+        }
+        .course-card.listening .course-icon { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .course-card.writing .course-icon { background: linear-gradient(135deg, #f093fb, #f5576c); }
+        .course-card.speaking .course-icon { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+        .course-card.reading .course-icon { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+        .course-card.reading .course-icon { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+        .course-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+        }
+        .course-subtitle {
+            font-size: 0.85rem;
+            color: #888;
+            margin-top: 4px;
+        }
+        .course-card-desc {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.6;
+        }
+        .course-card-footer {
+            margin-top: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .course-tag {
+            background: #f0f2f5;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: #667eea;
+        }
+        .course-arrow {
+            color: #667eea;
+            font-size: 1.2rem;
+            transition: transform 0.2s;
+        }
+        .course-card:hover .course-arrow {
+            transform: translateX(4px);
+        }
+
+        /* ========== 响应式 ========== */
+        @media (max-width: 720px) {
+            .hero-banner h1 { font-size: 1.8rem; }
+            .hero-banner { padding: 40px 16px; }
+            .book-card { width: 140px; }
+            .detail-panel { padding: 20px; border-radius: 20px; }
+            .stat-card { padding: 16px 20px; }
+        }
+    </style>
+</head>
+<body>
+<a class="site-switch" href="/">返回博客</a>
+
+<!-- ========== 顶部横幅封面 ========== -->
+<div class="hero-banner">
+    <div class="hero-content">
+        <h1>🎧 雅思听力精听工作台</h1>
+        <p>剑桥雅思真题 · 逐句精听 · 智能错题本</p>
+        <div class="hero-tags">
+            <span class="hero-tag">📖 剑10-剑20</span>
+            <span class="hero-tag">✍️ 逐句填空</span>
+            <span class="hero-tag">📝 错题分析</span>
+            <span class="hero-tag">💾 本地保存</span>
+        </div>
+        <div class="hero-btn-group">
+            <button class="hero-btn wechat-btn" onclick="openWechatModal()">
+                <span>📱</span> 关注公众号
+            </button>
+            <button class="hero-btn group-btn" onclick="openGroupModal()">
+                <span>👥</span> 添加备考群
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ========== 主内容 ========== -->
+<div class="home-container">
+    <!-- 统计卡片 -->
+    <div class="stats-row">
+        <div class="stat-card">
+            <h3>📚 总练习数</h3>
+            <div class="stat-number" id="totalCount">0</div>
+        </div>
+        <div class="stat-card">
+            <h3>✅ 已完成</h3>
+            <div class="stat-number" id="completedCount">0</div>
+            <div class="stat-bar"><div class="stat-fill" id="progressFill"></div></div>
+        </div>
+        <div class="stat-card">
+            <h3>🎯 完成率</h3>
+            <div class="stat-number" id="percentComplete">0%</div>
+        </div>
+    </div>
+
+    <!-- 封面书架 -->
+    <div class="books-grid" id="booksGrid"></div>
+
+    <!-- ========== 课程跳转卡片 ========== -->
+    <div class="courses-section">
+        <h2 class="section-title">📚 配套视频课程</h2>
+        <div class="courses-grid">
+            <!-- 听力课程 -->
+            <a href="https://www.bilibili.com/video/BV1Gd4y1S7ca/" target="_blank" class="course-card listening">
+                <div class="course-card-header">
+                    <div class="course-icon">🎧</div>
+                    <div>
+                        <div class="course-title">全套雅思听力课程</div>
+                        <div class="course-subtitle">剑10-剑20 听力技巧</div>
+                    </div>
+                </div>
+                <p class="course-card-desc">系统学习雅思听力技巧，掌握高频场景词汇，提升定位和同义替换能力。</p>
+                <div class="course-card-footer">
+                    <span class="course-tag">B站免费</span>
+                    <span class="course-arrow">▶</span>
+                </div>
+            </a>
+
+            <!-- 写作课程 -->
+            <a href="https://www.bilibili.com/video/BV1gtV8zXEvT" target="_blank" class="course-card writing">
+                <div class="course-card-header">
+                    <div class="course-icon">✍️</div>
+                    <div>
+                        <div class="course-title">全套雅思写作课程</div>
+                        <div class="course-subtitle">Task 1 & Task 2 攻略</div>
+                    </div>
+                </div>
+                <p class="course-card-desc">掌握大小作文写作框架，积累高分句型和话题词汇，突破 6.5+ 写作瓶颈。</p>
+                <div class="course-card-footer">
+                    <span class="course-tag">B站免费</span>
+                    <span class="course-arrow">▶</span>
+                </div>
+            </a>
+
+            <!-- 口语课程 -->
+            <a href="https://www.bilibili.com/video/BV1dg4y1y7EG/" target="_blank" class="course-card speaking">
+                <div class="course-card-header">
+                    <div class="course-icon">🗣️</div>
+                    <div>
+                        <div class="course-title">全套雅思口语课程</div>
+                        <div class="course-subtitle">Part 1-3 完整攻略</div>
+                    </div>
+                </div>
+                <p class="course-card-desc">高分口语素材积累，流利度提升技巧，轻松应对各类话题和追问。</p>
+                <div class="course-card-footer">
+                    <span class="course-tag">B站免费</span>
+                    <span class="course-arrow">▶</span>
+                </div>
+            </a>
+
+            <!-- 阅读课程 -->
+            <a href="https://www.bilibili.com/video/BV1A84y1t7cf" target="_blank" class="course-card reading">
+                <div class="course-card-header">
+                    <div class="course-icon">📖</div>
+                    <div>
+                        <div class="course-title">全套雅思阅读课程</div>
+                        <div class="course-subtitle">长难句 & 定位技巧</div>
+                    </div>
+                </div>
+                <p class="course-card-desc">快速提升阅读速度和准确率，掌握定位词技巧和高频同义替换规律。</p>
+                <div class="course-card-footer">
+                    <span class="course-tag">B站免费</span>
+                    <span class="course-arrow">▶</span>
+                </div>
+            </a>
+        </div>
+    </div>
+    
+    <div class="footer-note">
+        💡 点击任意封面展开练习 · <span>|</span> 📱 关注公众号获取更多资源 · <span>|</span> ⌨️ 支持快捷键操作
+    </div>
+</div>
+
+<!-- ========== 详情弹窗 ========== -->
+<div id="detailPanel" class="detail-panel">
+    <div class="detail-header">
+        <span class="detail-title" id="detailBookTitle"></span>
+        <button class="close-detail" id="closeDetailBtn">✕</button>
+    </div>
+    <div id="detailContent"></div>
+</div>
+
+<!-- ========== 公众号弹窗 ========== -->
+<div class="wechat-modal-overlay" id="wechatModal">
+    <div class="wechat-modal">
+        <button class="close-modal" onclick="closeWechatModal()">✕</button>
+        <h3>📱 扫码关注公众号</h3>
+        <p class="subtitle">获取更多雅思学习资源与更新</p>
+        <div class="qrcode-box">
+            <img src="images/qrcode.jpg" alt="公众号二维码" onerror="this.parentElement.innerHTML='<div style=\'width:200px;height:200px;display:flex;align-items:center;justify-content:center;background:#f0f0f0;border-radius:8px;color:#999;\'>请添加 qrcode.jpg</div>'">
+        </div>
+        <div class="wechat-name">IELTS 行动派考鸭圈</div>
+        <p class="tip">长按识别二维码，或保存图片后用微信扫码关注<br>关注后获取全套雅思备考资料和课程</p>
+    </div>
+</div>
+
+<!-- ========== 备考群弹窗 ========== -->
+<div class="group-modal-overlay" id="groupModal">
+    <div class="group-modal">
+        <button class="close-modal" onclick="closeGroupModal()">✕</button>
+        <h3>👥 扫码加入备考群</h3>
+        <p class="subtitle">与烤鸭们一起交流学习经验</p>
+        <div class="qrcode-box">
+            <img src="images/group_qrcode.jpg" alt="备考群二维码" onerror="this.parentElement.innerHTML='<div style=\'width:200px;height:200px;display:flex;align-items:center;justify-content:center;background:#f0f0f0;border-radius:8px;color:#999;\'>请添加 group_qrcode.jpg</div>'">
+        </div>
+        <div class="group-name">雅思备考交流群</div>
+        <p class="tip">长按识别二维码，或保存图片后用微信扫码入群<br>群内有学习资料、干货分享和答疑互动</p>
+    </div>
+</div>
+
+<script>
+    const START_BOOK = 10;
+    const END_BOOK = 20;
+    const TESTS_PER_BOOK = 4;
+    const SECTIONS_PER_TEST = 4;
+
+    function generateAllKeys() {
+        const keys = [];
+        for (let book = START_BOOK; book <= END_BOOK; book++) {
+            for (let test = 1; test <= TESTS_PER_BOOK; test++) {
+                for (let section = 1; section <= SECTIONS_PER_TEST; section++) {
+                    keys.push(`C${book}T${test}S${section}`);
+                }
+            }
+        }
+        return keys;
+    }
+
+    const allKeys = generateAllKeys();
+    const totalSections = allKeys.length;
+    const STORAGE_KEY = 'ielts_listening_progress';
+
+    function loadProgress() {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        return stored ? JSON.parse(stored) : {};
+    }
+
+    function saveProgress(progress) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+    }
+
+    function updateStats() {
+        const progress = loadProgress();
+        const completedCount = Object.keys(progress).filter(k => progress[k] === true).length;
+        const percent = totalSections === 0 ? 0 : Math.round((completedCount / totalSections) * 100);
+        document.getElementById('totalCount').innerText = totalSections;
+        document.getElementById('completedCount').innerText = completedCount;
+        document.getElementById('percentComplete').innerText = `${percent}%`;
+        document.getElementById('progressFill').style.width = `${percent}%`;
+    }
+
+    function getBookProgress(book) {
+        const progress = loadProgress();
+        let completed = 0;
+        let total = 0;
+        for (let test = 1; test <= TESTS_PER_BOOK; test++) {
+            for (let section = 1; section <= SECTIONS_PER_TEST; section++) {
+                const key = `C${book}T${test}S${section}`;
+                total++;
+                if (progress[key] === true) completed++;
+            }
+        }
+        return { completed, total };
+    }
+
+    function renderBookshelf() {
+        const container = document.getElementById('booksGrid');
+        container.innerHTML = '';
+        for (let book = START_BOOK; book <= END_BOOK; book++) {
+            const card = document.createElement('div');
+            card.className = 'book-card';
+            card.setAttribute('data-book', book);
+            const coverDiv = document.createElement('div');
+            coverDiv.className = 'cover';
+            const img = document.createElement('img');
+            img.src = `images/book${book}.jpg`;
+            img.alt = `剑${book}`;
+            img.onerror = () => {
+                img.style.display = 'none';
+                coverDiv.style.background = 'linear-gradient(135deg, #667eea, #764ba2)';
+                coverDiv.style.display = 'flex';
+                coverDiv.style.alignItems = 'center';
+                coverDiv.style.justifyContent = 'center';
+                coverDiv.style.color = 'white';
+                coverDiv.style.fontSize = '2rem';
+                coverDiv.style.fontWeight = 'bold';
+                coverDiv.innerText = `剑${book}`;
+            };
+            coverDiv.appendChild(img);
+            card.appendChild(coverDiv);
+            card.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openBookDetail(book);
+            });
+            container.appendChild(card);
+        }
+        updateStats();
+    }
+
+    let currentOpenBook = null;
+    function openBookDetail(book) {
+        if (currentOpenBook === book) {
+            closeDetailPanel();
+            return;
+        }
+        currentOpenBook = book;
+        const panel = document.getElementById('detailPanel');
+        const detailTitle = document.getElementById('detailBookTitle');
+        detailTitle.innerText = `剑桥雅思 ${book}`;
+        const detailContent = document.getElementById('detailContent');
+        const progress = loadProgress();
+        let html = '';
+        for (let test = 1; test <= TESTS_PER_BOOK; test++) {
+            html += `<div class="test-group"><div class="test-label">Test ${test}</div><div class="section-buttons" id="sections-${book}-${test}"></div></div>`;
+        }
+        detailContent.innerHTML = html;
+        
+        for (let test = 1; test <= TESTS_PER_BOOK; test++) {
+            const container = document.getElementById(`sections-${book}-${test}`);
+            if (!container) continue;
+            for (let section = 1; section <= SECTIONS_PER_TEST; section++) {
+                const key = `C${book}T${test}S${section}`;
+                const isCompleted = progress[key] === true;
+                const link = document.createElement('a');
+                link.href = `practice.html?book=${book}&test=${test}&section=${section}`;
+                link.className = 'section-btn';
+                link.innerHTML = `Section ${section} <span class="check-mark ${isCompleted ? 'completed' : ''}" data-key="${key}">${isCompleted ? '✅' : '○'}</span>`;
+                const checkSpan = link.querySelector('.check-mark');
+                checkSpan.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const newProgress = loadProgress();
+                    const current = newProgress[key] === true;
+                    if (current) {
+                        delete newProgress[key];
+                    } else {
+                        newProgress[key] = true;
+                    }
+                    saveProgress(newProgress);
+                    openBookDetail(book);
+                    updateStats();
+                    renderBookshelf();
+                });
+                container.appendChild(link);
+            }
+        }
+        
+        panel.classList.add('show');
+        document.body.classList.add('blur-background');
+        const allCards = document.querySelectorAll('.book-card');
+        allCards.forEach(card => {
+            const cardBook = parseInt(card.getAttribute('data-book'));
+            if (cardBook === book) {
+                card.classList.add('active-book');
+            } else {
+                card.classList.remove('active-book');
+            }
+        });
+    }
+    
+    function closeDetailPanel() {
+        const panel = document.getElementById('detailPanel');
+        panel.classList.remove('show');
+        document.body.classList.remove('blur-background');
+        currentOpenBook = null;
+        const allCards = document.querySelectorAll('.book-card');
+        allCards.forEach(card => card.classList.remove('active-book'));
+    }
+    
+    // 公众号弹窗
+    function openWechatModal() {
+        document.getElementById('wechatModal').classList.add('show');
+        document.body.classList.add('blur-background');
+    }
+
+    function closeWechatModal() {
+        document.getElementById('wechatModal').classList.remove('show');
+        document.body.classList.remove('blur-background');
+    }
+
+    // 点击遮罩关闭
+    document.getElementById('wechatModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeWechatModal();
+        }
+    });
+
+    // 备考群弹窗
+    function openGroupModal() {
+        document.getElementById('groupModal').classList.add('show');
+        document.body.classList.add('blur-background');
+    }
+
+    function closeGroupModal() {
+        document.getElementById('groupModal').classList.remove('show');
+        document.body.classList.remove('blur-background');
+    }
+
+    // 点击遮罩关闭
+    document.getElementById('groupModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeGroupModal();
+        }
+    });
+
+    // ESC 关闭弹窗
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeWechatModal();
+            closeGroupModal();
+            closeDetailPanel();
+        }
+    });
+
+    // 事件绑定
+    document.getElementById('closeDetailBtn').addEventListener('click', closeDetailPanel);
+    window.addEventListener('click', (e) => {
+        const panel = document.getElementById('detailPanel');
+        if (panel.classList.contains('show') && !panel.contains(e.target) && !e.target.closest('.book-card')) {
+            closeDetailPanel();
+        }
+    });
+    
+    renderBookshelf();
+</script>
+</body>
+</html>

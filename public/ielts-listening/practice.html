@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>雅思精听工作台</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="site-switch" href="/">返回博客</a>
+<div class="dashboard">
+    <div class="bento-box header-panel">
+        <div>
+            <h2 id="pageTitle">加载中...</h2>
+            <p id="subTitle" style="margin:5px 0 0; font-size: 0.9rem; color: var(--text-light);"></p>
+        </div>
+        <div class="audio-controls">
+            <label for="file-input" class="upload-btn">📁 上传本地音频</label>
+            <input type="file" id="file-input" accept="audio/*">
+            <audio id="audio-player" controls preload="metadata"></audio>
+        </div>
+    </div>
+
+    <div class="main-content-area">
+        <div class="bento-box transcript-panel" id="transcriptPanel">
+            <span class="section-tag">🎧 准备就绪</span>
+            <p style="text-align:center; color:#aaa;">正在加载练习数据...</p>
+        </div>
+        <div class="mistake-panel-bottom" id="mistakePanelBottom">
+            <div class="mistake-header">
+                <h4 style="margin:0;">📘 错题本 · 完整原文 + 听力易错聚焦</h4>
+                <div>
+                    <button class="btn-icon" id="clearMistakeBtnBottom">🗑 清空错题</button>
+                    <button class="btn-icon" id="exportMistakeBtnBottom">📎 导出笔记</button>
+                </div>
+            </div>
+            <div id="mistakeListContainerBottom" class="mistake-list">
+                <div class="empty-mistake">✨ 提交校对后，错题会自动显示完整原文及听力易错点</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <div class="bento-box shortcut-card">
+            <h4 style="margin:0 0 10px 0;">⌨️ 快捷操作</h4>
+            <ul>
+                <li><b>Enter</b> : 播放 / 暂停</li>
+                <li><b>Shift</b> : 跳至下一填空</li>
+                <li><b>Alt+← / →</b> : 音频快退/快进5秒</li>
+            </ul>
+        </div>
+        <div class="bento-box">
+            <button class="btn-action btn-submit" id="submitBtn">✅ 提交并校对答案</button>
+            <button class="btn-action btn-reset" id="resetBtn">🔄 重置练习</button>
+            <button class="btn-action btn-listen-mode" id="fullListenBtn">🎧 原文精听 (一键填空+翻译+播放)</button>
+            <div id="result-board" class="score-board"></div>
+            <!-- ========= 新增：返回主页按钮 ========= -->
+            <button class="btn-action btn-home" id="homeBtn" style="margin-top: 10px; background: #dcd3ff; color: #4a3a7c;">🏠 返回主页</button>
+        </div>
+    </div>
+</div>
+
+<script src="data.js"></script>
+<script src="common.js"></script>
+<script>
+    // 解析URL参数: practice.html?book=19&test=1&section=1
+    const params = new URLSearchParams(window.location.search);
+    const book = params.get('book');
+    const test = params.get('test');
+    const section = params.get('section');
+
+    if (book && test && section) {
+        const key = `C${book}T${test}S${section}`;
+        const data = listeningData[key];
+        if (data) {
+            document.getElementById('pageTitle').innerText = `剑${book} Test ${test} Section ${section}`;
+            document.getElementById('subTitle').innerText = data.title || '';
+
+            // 音频托管在腾讯云 COS，网页服务器只提供练习页面和题库。
+            const audioPlayer = document.getElementById('audio-player');
+            const audioExtension = Number(book) === 20 ? 'MP3' : 'mp3';
+            const audioPath = `https://ielts-audio-1327591060.cos.ap-shanghai.myqcloud.com/audio/C${book}-T${test}-S${section}.${audioExtension}`;
+            audioPlayer.src = audioPath;
+            audioPlayer.onerror = function() {
+                console.warn(`自动加载音频失败: ${audioPath}`);
+                audioPlayer.src = '';
+                document.getElementById('subTitle').innerText = '在线音频加载失败，可使用右侧按钮选择本地音频';
+            };
+
+            renderPractice(data, key);
+            bindGlobalEvents();
+
+            // ========= 返回主页按钮事件 =========
+            const homeBtn = document.getElementById('homeBtn');
+            if (homeBtn) {
+                homeBtn.addEventListener('click', function() {
+                    window.location.href = 'index.html';
+                });
+            }
+        } else {
+            document.getElementById('transcriptPanel').innerHTML = '<p style="color:red;">❌ 未找到该练习数据，请检查 data.js 中是否包含 ' + key + '</p>';
+        }
+    } else {
+        document.getElementById('transcriptPanel').innerHTML = '<p style="color:red;">❌ 缺少参数，请从主页点击链接进入。</p>';
+    }
+</script>
+</body>
+</html>

@@ -115,12 +115,17 @@ export default function HomePortal({
                 {t.home.hero.identity}
               </span>
             </span>
-            <span className="flex items-center gap-3 text-[10px] uppercase tracking-[0.18em] text-foreground/72 sm:gap-5 sm:text-xs">
+            <span className="flex items-center gap-2 text-[9px] uppercase tracking-[0.12em] text-foreground/72 sm:gap-5 sm:text-xs sm:tracking-[0.18em]">
               <span className="hidden sm:inline">{displayLocation}</span>
-              <a href="/ielts-vocab/index.html" className="border-b border-accent/45 pb-1 transition-colors hover:border-accent hover:text-accent">
-                雅思刷词
+              <a href="/ielts-vocab/index.html" className="shrink-0 whitespace-nowrap border-b border-accent/45 pb-1 transition-colors hover:border-accent hover:text-accent">
+                <span className="sm:hidden">刷词</span>
+                <span className="hidden sm:inline">雅思刷词</span>
               </a>
-              <Link href="/about" className="border-b border-accent/45 pb-1 transition-colors hover:border-accent hover:text-accent">
+              <a href="/ielts-listening/index.html" className="shrink-0 whitespace-nowrap border-b border-accent/45 pb-1 transition-colors hover:border-accent hover:text-accent">
+                <span className="sm:hidden">听力</span>
+                <span className="hidden sm:inline">雅思听力</span>
+              </a>
+              <Link href="/about" className="shrink-0 whitespace-nowrap border-b border-accent/45 pb-1 transition-colors hover:border-accent hover:text-accent">
                 {t.home.hero.about}
               </Link>
               <LanguageSwitcher />

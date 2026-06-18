@@ -18,6 +18,7 @@ export default function Header() {
     { href: '/gallery', label: t.header.gallery },
     { href: '/blog', label: t.header.blog },
     { href: '/ielts-vocab/index.html', label: '雅思刷词' },
+    { href: '/ielts-listening/index.html', label: '雅思听力' },
     { href: '/guestbook', label: t.header.guestbook },
     { href: '/about', label: t.header.about },
   ]
