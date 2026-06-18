@@ -5,11 +5,34 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { MessageType } from '@/types'
 
+type StatsData = {
+  summary: {
+    totalUv: number
+    totalPv: number
+    todayUv: number
+    todayPv: number
+    sevenDayUv: number
+    sevenDayPv: number
+  }
+  sections: { section: string; uv: number; pv: number }[]
+  events: { event: string; today: number; sevenDays: number }[]
+}
+
+const sectionLabels: Record<string, string> = {
+  home: '首页',
+  gallery: '图库',
+  blog: '随笔',
+  ielts_vocab: '雅思刷词',
+  ielts_listening: '雅思听力',
+  other: '其他页面',
+}
+
 export default function AdminDashboard() {
   const [messages, setMessages] = useState<MessageType[]>([])
   const [pendingCount, setPendingCount] = useState(0)
   const [loading, setLoading] = useState(true)
   const [isAuth, setIsAuth] = useState(false)
+  const [stats, setStats] = useState<StatsData | null>(null)
   const router = useRouter()
 
   const getToken = () => {
@@ -26,9 +49,14 @@ export default function AdminDashboard() {
 
     const init = async () => {
       try {
-        const res = await fetch('/api/messages?status=pending&limit=50', {
-          headers: { Authorization: `Bearer ${token}` },
-        })
+        const [res, statsRes] = await Promise.all([
+          fetch('/api/messages?status=pending&limit=50', {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          fetch('/api/admin/stats', {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        ])
         if (res.status === 401) {
           localStorage.removeItem('admin_token')
           router.push('/admin/login')
@@ -36,6 +64,10 @@ export default function AdminDashboard() {
         }
         const data = await res.json()
         setMessages(data.data || [])
+        if (statsRes.ok) {
+          const statsData = await statsRes.json()
+          setStats(statsData.data || null)
+        }
 
         const pendingRes = await fetch('/api/messages?status=pending&limit=1', {
           headers: { Authorization: `Bearer ${token}` },
@@ -165,6 +197,74 @@ export default function AdminDashboard() {
             </button>
           </div>
         </div>
+
+        {stats && (
+          <section className="mb-10 border-y border-white/10 py-6">
+            <div className="mb-5 flex items-end justify-between gap-4">
+              <div>
+                <h2 className="text-lg font-semibold">访问统计</h2>
+                <p className="mt-1 text-xs text-white/35">UV 为匿名独立访客，PV 为页面浏览次数</p>
+              </div>
+              <span className="text-xs text-white/25">北京时间</span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-px overflow-hidden rounded-lg bg-white/10 sm:grid-cols-3 lg:grid-cols-6">
+              {[
+                ['今日 UV', stats.summary.todayUv],
+                ['今日 PV', stats.summary.todayPv],
+                ['近 7 天 UV', stats.summary.sevenDayUv],
+                ['近 7 天 PV', stats.summary.sevenDayPv],
+                ['累计 UV', stats.summary.totalUv],
+                ['累计 PV', stats.summary.totalPv],
+              ].map(([label, value]) => (
+                <div key={String(label)} className="bg-background px-4 py-4">
+                  <div className="text-[11px] text-white/35">{label}</div>
+                  <div className="mt-1 text-xl font-semibold tabular-nums">
+                    {Number(value).toLocaleString()}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-6 grid gap-6 lg:grid-cols-2">
+              <div>
+                <h3 className="mb-3 text-xs font-medium uppercase text-white/35">近 30 天页面</h3>
+                <div className="divide-y divide-white/8 border-y border-white/8">
+                  {stats.sections.length === 0 ? (
+                    <p className="py-4 text-sm text-white/25">暂无页面数据</p>
+                  ) : (
+                    stats.sections.map((item) => (
+                      <div key={item.section} className="grid grid-cols-[1fr_auto_auto] items-center gap-6 py-3 text-sm">
+                        <span className="text-white/65">{sectionLabels[item.section] || item.section}</span>
+                        <span className="tabular-nums text-white/35">UV {item.uv.toLocaleString()}</span>
+                        <span className="w-20 text-right tabular-nums text-white/55">PV {item.pv.toLocaleString()}</span>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <h3 className="mb-3 text-xs font-medium uppercase text-white/35">听力资源</h3>
+                <div className="divide-y divide-white/8 border-y border-white/8">
+                  {[
+                    ['签名成功', 'listening_signed'],
+                    ['触发限流', 'listening_rate_limited'],
+                  ].map(([label, eventName]) => {
+                    const item = stats.events.find((event) => event.event === eventName)
+                    return (
+                      <div key={eventName} className="grid grid-cols-[1fr_auto_auto] items-center gap-6 py-3 text-sm">
+                        <span className="text-white/65">{label}</span>
+                        <span className="tabular-nums text-white/35">今日 {(item?.today || 0).toLocaleString()}</span>
+                        <span className="w-24 text-right tabular-nums text-white/55">7 天 {(item?.sevenDays || 0).toLocaleString()}</span>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
 
         <div className="flex gap-2 mb-8">
           {['pending', 'approved', 'rejected'].map((tab) => (

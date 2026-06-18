@@ -2,6 +2,7 @@ import { createHash, randomUUID } from 'crypto'
 import COS from 'cos-nodejs-sdk-v5'
 import { NextRequest, NextResponse } from 'next/server'
 import { rateLimit } from '@/lib/rate-limit'
+import { recordSiteEvent } from '@/lib/site-stats'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -23,7 +24,8 @@ function getClientIp(request: NextRequest) {
   )
 }
 
-function rateLimitResponse(resetAt: number) {
+async function rateLimitResponse(resetAt: number) {
+  await recordSiteEvent('listening_rate_limited').catch(() => {})
   const retryAfter = Math.max(1, Math.ceil((resetAt - Date.now()) / 1000))
   return NextResponse.json(
     { success: false, error: '音频请求过于频繁，请稍后重试' },
@@ -91,6 +93,7 @@ export async function GET(request: NextRequest) {
       Expires: SIGNED_URL_EXPIRES_SECONDS,
       Protocol: 'https:',
     })
+    await recordSiteEvent('listening_signed').catch(() => {})
 
     const response = NextResponse.json(
       {

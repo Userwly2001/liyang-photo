@@ -117,8 +117,12 @@ async function init() {
   await prisma.$executeRawUnsafe(`
     CREATE TABLE IF NOT EXISTS site_stats (
       date DATE PRIMARY KEY,
-      count INTEGER DEFAULT 0
+      count INTEGER DEFAULT 0,
+      page_views INTEGER DEFAULT 0
     )
+  `);
+  await prisma.$executeRawUnsafe(`
+    ALTER TABLE site_stats ADD COLUMN IF NOT EXISTS page_views INTEGER DEFAULT 0
   `);
   await prisma.$executeRawUnsafe(`
     CREATE TABLE IF NOT EXISTS site_visitors (
@@ -126,6 +130,32 @@ async function init() {
       visitor_hash TEXT NOT NULL,
       created_at TIMESTAMP DEFAULT NOW(),
       PRIMARY KEY (date, visitor_hash)
+    )
+  `);
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS site_page_stats (
+      date DATE NOT NULL,
+      section TEXT NOT NULL,
+      page_views INTEGER DEFAULT 0,
+      unique_visitors INTEGER DEFAULT 0,
+      PRIMARY KEY (date, section)
+    )
+  `);
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS site_page_visitors (
+      date DATE NOT NULL,
+      section TEXT NOT NULL,
+      visitor_hash TEXT NOT NULL,
+      created_at TIMESTAMP DEFAULT NOW(),
+      PRIMARY KEY (date, section, visitor_hash)
+    )
+  `);
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS site_event_stats (
+      date DATE NOT NULL,
+      event TEXT NOT NULL,
+      count INTEGER DEFAULT 0,
+      PRIMARY KEY (date, event)
     )
   `);
   console.log('数据表已就绪');
