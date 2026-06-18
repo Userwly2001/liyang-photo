@@ -16,6 +16,7 @@
   "dependencies": {
     "@prisma/client": "^6.19.3",
     "blurhash": "^2.0.5",
+    "cos-nodejs-sdk-v5": "^2.15.4",
     "framer-motion": "^12.40.0",
     "gsap": "^3.15.0",
     "jose": "^6.2.3",
