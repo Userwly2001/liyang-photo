@@ -158,6 +158,30 @@ async function init() {
       PRIMARY KEY (date, event)
     )
   `);
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS site_dimension_stats (
+      date DATE NOT NULL,
+      dimension TEXT NOT NULL,
+      value TEXT NOT NULL,
+      page_views INTEGER DEFAULT 0,
+      unique_visitors INTEGER DEFAULT 0,
+      PRIMARY KEY (date, dimension, value)
+    )
+  `);
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS site_dimension_visitors (
+      date DATE NOT NULL,
+      dimension TEXT NOT NULL,
+      value TEXT NOT NULL,
+      visitor_hash TEXT NOT NULL,
+      created_at TIMESTAMP DEFAULT NOW(),
+      PRIMARY KEY (date, dimension, value, visitor_hash)
+    )
+  `);
+  await prisma.$executeRawUnsafe(`
+    CREATE INDEX IF NOT EXISTS site_dimension_stats_lookup
+    ON site_dimension_stats (dimension, date)
+  `);
   console.log('数据表已就绪');
 
   // 管理员

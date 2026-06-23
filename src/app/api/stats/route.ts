@@ -11,7 +11,12 @@ export async function POST(request: NextRequest) {
       typeof body.pathname === 'string' && body.pathname.startsWith('/')
         ? body.pathname.slice(0, 300)
         : '/'
-    const result = await recordSiteVisit(request, pathname)
+    const result = await recordSiteVisit(request, pathname, {
+      referrer: typeof body.referrer === 'string' ? body.referrer.slice(0, 500) : undefined,
+      search: typeof body.search === 'string' ? body.search.slice(0, 500) : undefined,
+      language: typeof body.language === 'string' ? body.language.slice(0, 40) : undefined,
+      screenWidth: typeof body.screenWidth === 'number' ? body.screenWidth : undefined,
+    })
     return NextResponse.json(
       { success: true, ...result },
       { headers: { 'Cache-Control': 'no-store' } }
