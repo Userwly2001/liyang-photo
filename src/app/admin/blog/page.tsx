@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import MarkdownEditor from '@/components/Admin/MarkdownEditor'
+import { getStoredAdminToken, redirectToAdminLogin, verifyStoredAdminToken } from '@/lib/admin-client-auth'
 
 interface BlogPost {
   id: string
@@ -39,8 +40,7 @@ export default function AdminBlogPage() {
   const router = useRouter()
 
   const getToken = useCallback(() => {
-    if (typeof window === 'undefined') return null
-    return localStorage.getItem('admin_token')
+    return getStoredAdminToken()
   }, [])
 
   const fetchPosts = useCallback(async () => {
@@ -51,7 +51,10 @@ export default function AdminBlogPage() {
       const res = await fetch('/api/admin/blog', {
         headers: { Authorization: `Bearer ${token}` },
       })
-      if (res.status === 401) { localStorage.removeItem('admin_token'); router.push('/admin/login'); return }
+      if (res.status === 401) {
+        redirectToAdminLogin(router)
+        return
+      }
       const data = await res.json()
       setPosts(data.data || [])
     } catch {
@@ -63,9 +66,8 @@ export default function AdminBlogPage() {
 
   useEffect(() => {
     const init = async () => {
-      const token = getToken()
+      const token = await verifyStoredAdminToken(router)
       if (!token) {
-        router.push('/admin/login')
         return
       }
       await fetchPosts()
@@ -175,8 +177,7 @@ export default function AdminBlogPage() {
   }
 
   const handleLogout = () => {
-    localStorage.removeItem('admin_token')
-    router.push('/admin/login')
+    redirectToAdminLogin(router)
   }
 
   if (!isAuth) return null

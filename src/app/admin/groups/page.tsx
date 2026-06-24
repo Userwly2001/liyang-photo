@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { getStoredAdminToken, redirectToAdminLogin, verifyStoredAdminToken } from '@/lib/admin-client-auth'
 
 interface GroupPhoto {
   id: string
@@ -57,12 +58,11 @@ export default function AdminGroupsPage() {
   const [error, setError] = useState(false)
   const router = useRouter()
 
-  const getToken = useCallback(() => localStorage.getItem('admin_token'), [])
+  const getToken = useCallback(() => getStoredAdminToken(), [])
 
   const loadData = useCallback(async () => {
-    const token = getToken()
+    const token = await verifyStoredAdminToken(router)
     if (!token) {
-      router.push('/admin/login')
       return
     }
     setLoading(true)
@@ -72,8 +72,7 @@ export default function AdminGroupsPage() {
         fetch('/api/admin/categories'),
       ])
       if (groupRes.status === 401) {
-        localStorage.removeItem('admin_token')
-        router.push('/admin/login')
+        redirectToAdminLogin(router)
         return
       }
       const groupData = await groupRes.json()
@@ -87,7 +86,7 @@ export default function AdminGroupsPage() {
     } finally {
       setLoading(false)
     }
-  }, [getToken, router])
+  }, [router])
 
   useEffect(() => {
     const timer = window.setTimeout(() => {

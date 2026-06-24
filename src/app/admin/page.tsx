@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { MessageType } from '@/types'
 import StatsDashboard, { type StatsData } from '@/components/Admin/StatsDashboard'
+import { getStoredAdminToken, redirectToAdminLogin, verifyStoredAdminToken } from '@/lib/admin-client-auth'
 
 export default function AdminDashboard() {
   const [messages, setMessages] = useState<MessageType[]>([])
@@ -15,19 +16,15 @@ export default function AdminDashboard() {
   const router = useRouter()
 
   const getToken = () => {
-    if (typeof window === 'undefined') return null
-    return localStorage.getItem('admin_token')
+    return getStoredAdminToken()
   }
 
   useEffect(() => {
-    const token = getToken()
-    if (!token) {
-      router.push('/admin/login')
-      return
-    }
-
     const init = async () => {
       try {
+        const token = await verifyStoredAdminToken(router)
+        if (!token) return
+
         const [res, statsRes] = await Promise.all([
           fetch('/api/messages?status=pending&limit=50', {
             headers: { Authorization: `Bearer ${token}` },
@@ -36,9 +33,8 @@ export default function AdminDashboard() {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ])
-        if (res.status === 401) {
-          localStorage.removeItem('admin_token')
-          router.push('/admin/login')
+        if (res.status === 401 || statsRes.status === 401) {
+          redirectToAdminLogin(router)
           return
         }
         const data = await res.json()
@@ -51,6 +47,10 @@ export default function AdminDashboard() {
         const pendingRes = await fetch('/api/messages?status=pending&limit=1', {
           headers: { Authorization: `Bearer ${token}` },
         })
+        if (pendingRes.status === 401) {
+          redirectToAdminLogin(router)
+          return
+        }
         const pendingData = await pendingRes.json()
         setPendingCount(pendingData.total || 0)
         setIsAuth(true)
@@ -72,8 +72,7 @@ export default function AdminDashboard() {
         headers: { Authorization: `Bearer ${token}` },
       })
       if (res.status === 401) {
-        localStorage.removeItem('admin_token')
-        router.push('/admin/login')
+        redirectToAdminLogin(router)
         return
       }
       const data = await res.json()
@@ -127,8 +126,7 @@ export default function AdminDashboard() {
   }
 
   const handleLogout = () => {
-    localStorage.removeItem('admin_token')
-    router.push('/admin/login')
+    redirectToAdminLogin(router)
   }
 
   if (!isAuth) return null

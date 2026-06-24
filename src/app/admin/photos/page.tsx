@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
+import { getStoredAdminToken, redirectToAdminLogin, verifyStoredAdminToken } from '@/lib/admin-client-auth'
 
 interface PhotoItem {
   id: string
@@ -88,8 +89,7 @@ export default function AdminPhotosPage() {
   const router = useRouter()
 
   const getToken = useCallback(() => {
-    if (typeof window === 'undefined') return null
-    return localStorage.getItem('admin_token')
+    return getStoredAdminToken()
   }, [])
 
   const fetchPhotos = useCallback(async () => {
@@ -102,8 +102,7 @@ export default function AdminPhotosPage() {
         headers: { Authorization: `Bearer ${token}` },
       })
       if (res.status === 401) {
-        localStorage.removeItem('admin_token')
-        router.push('/admin/login')
+        redirectToAdminLogin(router)
         return
       }
       const data = await res.json()
@@ -266,9 +265,8 @@ export default function AdminPhotosPage() {
 
   useEffect(() => {
     const init = async () => {
-      const token = getToken()
+      const token = await verifyStoredAdminToken(router)
       if (!token) {
-        router.push('/admin/login')
         return
       }
       await Promise.all([fetchPhotos(), fetchCategories(), fetchGroups()])
@@ -393,8 +391,7 @@ export default function AdminPhotosPage() {
   }
 
   const handleLogout = () => {
-    localStorage.removeItem('admin_token')
-    router.push('/admin/login')
+    redirectToAdminLogin(router)
   }
 
   if (!isAuth) return null

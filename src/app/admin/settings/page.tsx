@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { getStoredAdminToken, redirectToAdminLogin, verifyStoredAdminToken } from '@/lib/admin-client-auth'
 
 interface Profile {
   id: string
@@ -33,8 +34,7 @@ export default function AdminSettingsPage() {
   const router = useRouter()
 
   const getToken = useCallback(() => {
-    if (typeof window === 'undefined') return null
-    return localStorage.getItem('admin_token')
+    return getStoredAdminToken()
   }, [])
 
   const loadProfile = useCallback(async () => {
@@ -50,9 +50,8 @@ export default function AdminSettingsPage() {
 
   useEffect(() => {
     const init = async () => {
-      const token = getToken()
+      const token = await verifyStoredAdminToken(router)
       if (!token) {
-        router.push('/admin/login')
         return
       }
       await loadProfile()
@@ -75,8 +74,7 @@ export default function AdminSettingsPage() {
       })
       const data = await res.json().catch(() => null)
       if (res.status === 401) {
-        localStorage.removeItem('admin_token')
-        router.push('/admin/login')
+        redirectToAdminLogin(router)
         throw new Error('登录已过期，请重新登录后保存')
       }
       if (!res.ok) throw new Error(data?.error || '保存失败')
@@ -148,8 +146,7 @@ export default function AdminSettingsPage() {
   }
 
   const handleLogout = () => {
-    localStorage.removeItem('admin_token')
-    router.push('/admin/login')
+    redirectToAdminLogin(router)
   }
 
   if (!isAuth || loading) return null
