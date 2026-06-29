@@ -20,6 +20,9 @@
 # production
 /build
 
+# generated media
+/generated-audio/
+
 # misc
 .DS_Store
 *.pem

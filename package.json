@@ -10,6 +10,8 @@
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push",
     "seed": "tsx scripts/seed.ts",
+    "vocab:audio": "tsx scripts/generate-vocab-audio.ts",
+    "vocab:audio:upload": "tsx scripts/generate-vocab-audio.ts --upload",
     "setup": "prisma db push && tsx scripts/seed.ts",
     "postinstall": "prisma generate"
   },

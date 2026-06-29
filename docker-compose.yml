@@ -20,6 +20,8 @@ services:
     restart: unless-stopped
     depends_on:
       - postgres
+    env_file:
+      - .env.local
     environment:
       DATABASE_URL: "${DATABASE_URL:-postgresql://photography:sqlwly2026%21%40%23@postgres:5432/liyang_photo}"
       JWT_SECRET: "${JWT_SECRET:-sqlwly2026!@#}"

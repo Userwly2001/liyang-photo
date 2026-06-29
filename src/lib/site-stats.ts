@@ -299,7 +299,7 @@ export async function recordSiteVisit(
   return { counted: siteInserted > 0, section }
 }
 
-export async function recordSiteEvent(event: 'listening_signed' | 'listening_rate_limited') {
+export async function recordSiteEvent(event: 'listening_signed' | 'listening_rate_limited' | 'vocab_audio_signed' | 'vocab_audio_rate_limited') {
   await ensureStatsTables()
   const date = getShanghaiDate()
   await prisma.$executeRawUnsafe(

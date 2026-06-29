@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ielts-vocab-pwa-v5';
+const CACHE_NAME = 'ielts-vocab-pwa-v6';
 const CHAPTER_FILES = Array.from({ length: 22 }, (_, index) => `/ielts-vocab/data-${index + 1}.js`);
 const APP_SHELL = [
   '/ielts-vocab/index.html',
@@ -7,6 +7,15 @@ const APP_SHELL = [
   '/ielts-vocab/icon.svg',
   ...CHAPTER_FILES,
 ];
+
+function shouldBypassCache(url) {
+  return (
+    url.pathname === '/ielts-vocab/index.html' ||
+    url.pathname === '/ielts-vocab/handout.html' ||
+    url.pathname === '/ielts-vocab/audio-manifest.json' ||
+    url.pathname.startsWith('/api/vocab/audio')
+  );
+}
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -29,6 +38,11 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(event.request.url);
   if (url.origin !== self.location.origin) return;
+
+  if (shouldBypassCache(url)) {
+    event.respondWith(fetch(event.request, { cache: 'no-store' }));
+    return;
+  }
 
   event.respondWith(
     fetch(event.request)

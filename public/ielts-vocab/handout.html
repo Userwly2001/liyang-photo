@@ -774,42 +774,111 @@
 
         // ===================== 语音 =====================
         let cachedVoices = [];
+        const VOCAB_AUDIO_VERSION = '20260629-audio-1';
+        let vocabAudioManifest = null;
+        let vocabAudioPromise = null;
+        let wordAudio = null;
+        function loadVocabAudioManifest() {
+            if (vocabAudioPromise) return vocabAudioPromise;
+            vocabAudioPromise = fetch(`/ielts-vocab/audio-manifest.json?v=${VOCAB_AUDIO_VERSION}&t=${Date.now()}`, {
+                cache: 'no-store',
+                headers: { 'Cache-Control': 'no-cache' }
+            })
+                .then(res => res.ok ? res.json() : null)
+                .then(data => {
+                    vocabAudioManifest = data && data.words ? data : { words: {} };
+                    return vocabAudioManifest;
+                })
+                .catch(() => {
+                    vocabAudioManifest = { words: {} };
+                    return vocabAudioManifest;
+                });
+            return vocabAudioPromise;
+        }
+        function getWordAudioUrl(wordData) {
+            if (!vocabAudioManifest || !wordData) return '';
+            const entry = vocabAudioManifest.words?.[`c${currentChapter}:${wordData.id}`];
+            return entry?.url || '';
+        }
+        async function playWordAudio(wordData) {
+            const manifest = await loadVocabAudioManifest();
+            if (!manifest?.words) return false;
+            const entry = manifest.words?.["c" + currentChapter + ":" + wordData.id];
+            if (!entry?.key) return false;
+            try {
+                const res = await fetch("/api/vocab/audio?key=" + encodeURIComponent(entry.key), { credentials: "same-origin" });
+                const result = await res.json();
+                if (!res.ok || !result.success) throw new Error(result.error || "音频获取失败");
+                if (wordAudio) {
+                    wordAudio.pause();
+                    wordAudio.currentTime = 0;
+                }
+                wordAudio = new Audio(result.data.url);
+                wordAudio.preload = "auto";
+                await wordAudio.play();
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
         async function initVoices() {
             return new Promise(resolve => {
-                const voices = speechSynthesis.getVoices();
+                if (!('speechSynthesis' in window)) {
+                    resolve([]);
+                    return;
+                }
+                const voices = window.speechSynthesis.getVoices();
                 if (voices.length > 0) {
                     cachedVoices = voices;
                     resolve(voices);
                 } else {
-                    speechSynthesis.addEventListener('voiceschanged', () => {
-                        cachedVoices = speechSynthesis.getVoices();
+                    window.speechSynthesis.addEventListener('voiceschanged', () => {
+                        cachedVoices = window.speechSynthesis.getVoices();
                         resolve(cachedVoices);
                     }, { once: true });
                 }
             });
         }
 
-        async function speakWord(word) {
-            if (!('speechSynthesis' in window)) {
-                alert('您的浏览器不支持语音朗读功能');
-                return;
-            }
+        async function speakWithBrowser(word) {
+            if (!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) return false;
             if (cachedVoices.length === 0) await initVoices();
-            speechSynthesis.cancel();
+            window.speechSynthesis.cancel();
             await new Promise(resolve => setTimeout(resolve, 20));
 
-            const utterance = new SpeechSynthesisUtterance(word);
-            utterance.lang = 'en-US';
-            utterance.rate = 0.9;
-            utterance.volume = 1;
-            const voices = cachedVoices.length ? cachedVoices : speechSynthesis.getVoices();
-            const preferredVoice = voices.find(v => v.lang === 'en-US') || voices.find(v => v.lang.startsWith('en'));
-            if (preferredVoice) utterance.voice = preferredVoice;
-            utterance.onend = () => {};
-            utterance.onerror = (e) => {
-                if (e.error !== 'canceled') console.warn('朗读出错:', e.error);
-            };
-            speechSynthesis.speak(utterance);
+            return new Promise(resolve => {
+                let settled = false;
+                const utterance = new SpeechSynthesisUtterance(word);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.9;
+                utterance.volume = 1;
+                const voices = cachedVoices.length ? cachedVoices : window.speechSynthesis.getVoices();
+                const preferredVoice = voices.find(v => v.lang === 'en-US') || voices.find(v => v.lang.startsWith('en'));
+                if (preferredVoice) utterance.voice = preferredVoice;
+                const done = (ok) => {
+                    if (settled) return;
+                    settled = true;
+                    clearTimeout(timer);
+                    resolve(ok);
+                };
+                const timer = setTimeout(() => {
+                    try { window.speechSynthesis.cancel(); } catch (e) {}
+                    done(false);
+                }, 1200);
+                utterance.onstart = () => done(true);
+                utterance.onend = () => {};
+                utterance.onerror = (e) => {
+                    if (e.error !== 'canceled') console.warn('朗读出错:', e.error);
+                    done(false);
+                };
+                try { window.speechSynthesis.speak(utterance); } catch (e) { done(false); }
+            });
+        }
+
+        async function speakWord(word, wordData) {
+            if (await speakWithBrowser(word)) return;
+            if (wordData && await playWordAudio(wordData)) return;
+            alert('您的浏览器暂时无法播放发音');
         }
         initVoices();
 
@@ -876,7 +945,7 @@
                     <span class="tag tag-${word.tag === '核心' ? 'core' : word.tag === '高频' ? 'high' : word.tag === '低频' ? 'low' : 'recog'}">${word.tag}</span>
                     <div class="meaning">${word.meaningCN}</div>
                     <div class="card-actions">
-                        <button class="btn-icon" onclick="event.stopPropagation(); speakWord('${word.word}')" title="朗读">🔊</button>
+                        <button class="btn-icon" onclick="event.stopPropagation(); speakWord('${word.word}', currentVocabulary.find(item => item.id === ${word.id}))" title="朗读">🔊</button>
                     </div>
                 </div>
             `).join('');
@@ -927,7 +996,7 @@
                     <div class="word-main">
                         <h2>${word.word}</h2>
                         <span class="phonetic">${word.phonetic}</span>
-                        <button class="btn-icon" onclick="speakWord('${word.word}')">🔊</button>
+                        <button class="btn-icon" onclick="speakWord('${word.word}', currentVocabulary.find(item => item.id === ${word.id}))">🔊</button>
                     </div>
                     <span class="pos-badge">${word.pos}</span>
                     <span class="tag-badge ${tagClass}">${word.tag}</span>
@@ -1076,7 +1145,7 @@
             } else if (e.key === ' ') {
                 e.preventDefault();
                 const word = currentVocabulary.find(w => w.id === currentWordId);
-                if (word) speakWord(word.word);
+                if (word) speakWord(word.word, word);
             } else if (e.key === 'Escape') {
                 e.preventDefault();
                 closeOverlay();

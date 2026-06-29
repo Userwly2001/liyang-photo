@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#3b82f6">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="雅思刷词">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <link rel="manifest" href="./manifest.json">
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <title>Lexxxi✨ 真经刷词神器（词汇带背课程B站@lexi学姐教雅思）</title>
@@ -683,22 +683,97 @@
 
   // 语音
   let voices=[], speechReady=false;
-  function loadVoices(){ return new Promise(resolve => { voices=speechSynthesis.getVoices(); if(voices.length) resolve(voices); else speechSynthesis.addEventListener('voiceschanged',()=>{ voices=speechSynthesis.getVoices(); resolve(voices); },{once:true}); }); }
-  async function initSpeech(){ if(speechReady) return true; try{ await loadVoices(); speechSynthesis.resume(); speechReady=true; return true; }catch(e){ return false; } }
-  async function speakWord(word){
-    if(!speechSynthesis) return;
+  const VOCAB_AUDIO_VERSION = '20260629-audio-1';
+  let vocabAudioManifest = null;
+  let vocabAudioPromise = null;
+  let wordAudio = null;
+  function loadVocabAudioManifest(){
+    if(vocabAudioPromise) return vocabAudioPromise;
+    vocabAudioPromise = fetch(`/ielts-vocab/audio-manifest.json?v=${VOCAB_AUDIO_VERSION}&t=${Date.now()}`, {
+      cache: 'no-store',
+      headers: { 'Cache-Control': 'no-cache' }
+    })
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        vocabAudioManifest = data && data.words ? data : { words: {} };
+        return vocabAudioManifest;
+      })
+      .catch(() => {
+        vocabAudioManifest = { words: {} };
+        return vocabAudioManifest;
+      });
+    return vocabAudioPromise;
+  }
+  function getWordAudioUrl(word){
+    if(!vocabAudioManifest || !word) return '';
+    const chapterId = Number(chapterSelect.value || 1);
+    const entry = vocabAudioManifest.words?.[`c${chapterId}:${word.id}`];
+    return entry?.url || '';
+  }
+  async function playWordAudio(word){
+    const manifest = await loadVocabAudioManifest();
+    if(!manifest?.words) return false;
+    const chapterId = Number(document.getElementById("chapterSelect").value || 1);
+    const entry = manifest.words?.["c" + chapterId + ":" + word.id];
+    if(!entry?.key) return false;
+    const statusEl = document.getElementById("speechStatus");
+    try{
+      const res = await fetch("/api/vocab/audio?key=" + encodeURIComponent(entry.key), { credentials: "same-origin" });
+      const result = await res.json();
+      if(!res.ok || !result.success) throw new Error(result.error || "音频获取失败");
+      if(wordAudio){
+        wordAudio.pause();
+        wordAudio.currentTime = 0;
+      }
+      wordAudio = new Audio(result.data.url);
+      wordAudio.preload = "auto";
+      statusEl.textContent = "🔊";
+      wordAudio.onended = () => { statusEl.textContent = ""; };
+      wordAudio.onerror = () => { statusEl.textContent = "⚠️"; };
+      await wordAudio.play();
+      return true;
+    }catch(e){
+      statusEl.textContent = "";
+      return false;
+    }
+  }
+  function loadVoices(){ return new Promise(resolve => { if(!('speechSynthesis' in window)) return resolve([]); voices=window.speechSynthesis.getVoices(); if(voices.length) resolve(voices); else window.speechSynthesis.addEventListener('voiceschanged',()=>{ voices=window.speechSynthesis.getVoices(); resolve(voices); },{once:true}); }); }
+  async function initSpeech(){ if(speechReady) return true; try{ await loadVoices(); if('speechSynthesis' in window) window.speechSynthesis.resume(); speechReady=true; return true; }catch(e){ return false; } }
+  async function speakWithBrowser(word){
+    if(!('speechSynthesis' in window)) return false;
     if(!speechReady) await initSpeech();
-    speechSynthesis.cancel();
+    if(!('SpeechSynthesisUtterance' in window)) return false;
+    window.speechSynthesis.cancel();
     await new Promise(r=>setTimeout(r,50));
-    if(voices.length===0) voices = speechSynthesis.getVoices();
-    const u = new SpeechSynthesisUtterance(word); u.lang='en-US'; u.rate=0.9; u.volume=1;
-    const pref = voices.find(v=>v.lang==='en-US')||voices.find(v=>v.lang.startsWith('en'));
-    if(pref) u.voice=pref;
+    if(voices.length===0) voices = window.speechSynthesis.getVoices();
+    return new Promise(resolve=>{
+      let settled = false;
+      const u = new SpeechSynthesisUtterance(word); u.lang='en-US'; u.rate=0.9; u.volume=1;
+      const pref = voices.find(v=>v.lang==='en-US')||voices.find(v=>v.lang.startsWith('en'));
+      if(pref) u.voice=pref;
+      const statusEl = document.getElementById('speechStatus');
+      const done = (ok)=>{
+        if(settled) return;
+        settled = true;
+        clearTimeout(timer);
+        resolve(ok);
+      };
+      const timer = setTimeout(()=>{
+        try{ window.speechSynthesis.cancel(); }catch(e){}
+        statusEl.textContent='';
+        done(false);
+      }, 1200);
+      u.onstart = ()=>{ statusEl.textContent='🔊'; done(true); };
+      u.onend = ()=>{ statusEl.textContent=''; };
+      u.onerror = ()=>{ statusEl.textContent='⚠️'; done(false); };
+      try{ window.speechSynthesis.speak(u); }catch(e){ done(false); }
+    });
+  }
+  async function speakWord(word, wordData){
+    if(await speakWithBrowser(word)) return;
+    if(wordData && await playWordAudio(wordData)) return;
     const statusEl = document.getElementById('speechStatus');
-    u.onstart = ()=> statusEl.textContent='🔊';
-    u.onend = ()=> statusEl.textContent='';
-    u.onerror = ()=>{ statusEl.textContent='⚠️'; };
-    speechSynthesis.speak(u);
+    statusEl.textContent='⚠️';
   }
   document.addEventListener('click', ()=>initSpeech(), {once:true});
   document.addEventListener('keydown', ()=>initSpeech(), {once:true});
@@ -964,7 +1039,7 @@
     completedCount++;
     renderSlots();
     if(currentWord.exampleEN){ exampleEN.textContent=`“${currentWord.exampleEN}”`; exampleCN.textContent=currentWord.exampleCN||''; exampleBox.style.display='block'; }
-    speakWord(currentWord.word);
+    speakWord(currentWord.word, currentWord);
     updateWrongBookUI(); updateStats(); incrementDaily(); saveState(); updateSidebar();
   }
 
@@ -979,7 +1054,7 @@
     if(globalMode==='random') currentMode = Math.random()<0.5?'chinese':'audio';
     else currentMode = globalMode;
     if(currentMode==='chinese') chineseDisplay.textContent = currentWord.meaningCN;
-    else { chineseDisplay.textContent = ''; speakWord(currentWord.word); }
+    else { chineseDisplay.textContent = ''; speakWord(currentWord.word, currentWord); }
     if(hintEnabled && currentWord.word.length>0) userInput = [currentWord.word[0].toLowerCase()];
     renderSlots();
     if(timerEnabled) startTimer();
@@ -1042,7 +1117,7 @@
     completedCount++;
     renderSlots();
     if(currentWord.exampleEN){ exampleEN.textContent=`“${currentWord.exampleEN}”`; exampleCN.textContent=currentWord.exampleCN||''; exampleBox.style.display='block'; }
-    speakWord(currentWord.word);
+    speakWord(currentWord.word, currentWord);
     updateWrongBookUI(); updateStats(); incrementDaily(); saveState(); updateSidebar();
     if(completedCount >= shuffledWords.length) showReport();
   }
@@ -1070,13 +1145,21 @@
     wrongBookCount.textContent = wrongBook.length;
     wrongList.innerHTML = wrongBook.map(w=>`<div class="word-chip"><span>${w.word}</span> ${w.meaningCN} <span data-remove-wrong data-id="${w.id}" style="margin-left:4px;cursor:pointer;">✕</span></div>`).join('') || '<span style="color:#94a3b8;">暂无错题</span>';
     document.querySelectorAll('[data-remove-wrong]').forEach(el=>el.addEventListener('click', e=>{ e.stopPropagation(); wrongBook = wrongBook.filter(w=>w.id!==parseInt(el.dataset.id)); updateWrongBookUI(); saveState(); updateSidebar(); }));
-    document.querySelectorAll('#wrongList .word-chip').forEach(chip=>chip.addEventListener('click', function(){ speakWord(this.querySelector('span').textContent); }));
+    document.querySelectorAll('#wrongList .word-chip').forEach(chip=>chip.addEventListener('click', function(){
+      const id = parseInt(this.querySelector('[data-remove-wrong]')?.dataset.id || '0');
+      const word = wrongBook.find(w=>w.id===id);
+      speakWord(this.querySelector('span').textContent, word);
+    }));
   }
   function updateNewWordBookUI(){
     newWordCount.textContent = newWordBook.length;
     newWordList.innerHTML = newWordBook.map(w=>`<div class="word-chip new-word"><span>${w.word}</span> ${w.meaningCN} <span data-remove-new data-id="${w.id}" style="margin-left:4px;cursor:pointer;">✕</span></div>`).join('') || '<span style="color:#94a3b8;">暂无生词</span>';
     document.querySelectorAll('[data-remove-new]').forEach(el=>el.addEventListener('click', e=>{ e.stopPropagation(); newWordBook = newWordBook.filter(w=>w.id!==parseInt(el.dataset.id)); updateNewWordBookUI(); saveState(); updateSidebar(); }));
-    document.querySelectorAll('#newWordList .word-chip').forEach(chip=>chip.addEventListener('click', function(){ speakWord(this.querySelector('span').textContent); }));
+    document.querySelectorAll('#newWordList .word-chip').forEach(chip=>chip.addEventListener('click', function(){
+      const id = parseInt(this.querySelector('[data-remove-new]')?.dataset.id || '0');
+      const word = newWordBook.find(w=>w.id===id);
+      speakWord(this.querySelector('span').textContent, word);
+    }));
   }
 
   document.getElementById('reviewBookBtn').addEventListener('click', ()=>{
@@ -1182,7 +1265,7 @@
   nextBtn.addEventListener('click', ()=>{ if(!isAnswered) submitAnswer(); else moveToNextWord(); });
   skipBtn.addEventListener('click', skipWord);
   restartBtn.addEventListener('click', ()=>{ resetAndStart(); });
-  repeatBtn.addEventListener('click', ()=>{ if(currentWord) speakWord(currentWord.word); });
+  repeatBtn.addEventListener('click', ()=>{ if(currentWord) speakWord(currentWord.word, currentWord); });
   document.getElementById('clearWrongBtn').addEventListener('click', ()=>{ wrongBook=[]; updateWrongBookUI(); saveState(); updateSidebar(); });
   document.getElementById('clearNewWordsBtn').addEventListener('click', ()=>{ newWordBook=[]; updateNewWordBookUI(); saveState(); updateSidebar(); });
 
@@ -1256,7 +1339,9 @@
 
   if('serviceWorker' in navigator){
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/ielts-vocab/service-worker.js').catch(() => {});
+      navigator.serviceWorker.register('/ielts-vocab/service-worker.js')
+        .then((registration) => registration.update())
+        .catch(() => {});
     });
   }
 })();

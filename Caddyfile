@@ -1,3 +1,7 @@
+leonwang.cc {
+    redir https://www.leonwang.cc{uri} permanent
+}
+
 www.leonwang.cc {
     # 直接提供上传的图片文件
     handle_path /uploads/* {
